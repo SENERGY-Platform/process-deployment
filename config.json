@@ -5,7 +5,7 @@
 	"IotRepoUrl":		          "https://iot-device-repo",
 	"EventManagerUrl":		      "http://eventmanager:8080",
 	"ProcessEngineUrl":		      "http://process-engine",
-	"DeviceLogUrl":				  "http://fgseitsrancher.wifa.intern.uni-leipzig.de:8090/devicelog",
+	"ConnectionLogUrl":			  "http://connectionlog",
 	"ServerPort":		          "8080",
 	"LogLevel":		              "CALL",
 	"ServingServiceUrl":		  "http://analytics-serving",

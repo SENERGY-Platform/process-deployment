@@ -17,17 +17,11 @@
 package com
 
 import (
-	"net/url"
-
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
 )
 
-func GetDeviceState(id string, jwthttp jwt_http_router.JwtImpersonate) (state string, err error) {
-	result := struct {
-		State string `json:"state"`
-	}{}
-	err = jwthttp.GetJSON(util.Config.DeviceLogUrl+"/"+url.QueryEscape(id), &result)
-	state = result.State
+func CheckDeviceStates(jwtimpersonate jwt_http_router.JwtImpersonate, ids []string)(result map[string]bool, err error){
+	err = jwtimpersonate.PostJSON(util.Config.ConnectionLogUrl + "/state/device/check", ids, &result)
 	return
 }

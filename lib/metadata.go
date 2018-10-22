@@ -31,29 +31,32 @@ func GetMetadataWithOnlineState(id string, jwtimpersonate jwt_http_router.JwtImp
 	}
 	metadata.Online = true
 
+	ids := []string{}
+	for _, param := range metadata.Abstract.AbstractTasks {
+		ids = append(ids, param.Selected.Id)
+	}
+	deviceStates, err := com.CheckDeviceStates(jwtimpersonate, ids)
+	if err != nil {
+		log.Println("WARNING: error in CheckDeviceStates()", err)
+	}
+	if deviceStates == nil {
+		deviceStates = map[string]bool{}
+	}
 	for index, param := range metadata.Abstract.AbstractTasks {
-		state, err := com.GetDeviceState(param.Selected.Id, jwtimpersonate)
-		if err != nil {
-			log.Println("ERROR in GetDeviceState()", err)
-			return metadata, err
-		}
-		instance, err := com.GetDeviceInstance(param.Selected.Id, jwtimpersonate)
-		if err != nil {
-			log.Println("ERROR in GetDeviceInstance(): ", err)
-			state = "iot_repo_error"
-		}
-		if instance.Id != param.Selected.Id || instance.DeviceType == "" {
-			log.Println("OFFLINE: inconsistend repo: ", instance.Id, param.Selected.Id, instance.DeviceType)
-			state = "inconsistent_iot_repo"
-		}
-		if state != "connected" && state != "" && state != "unknown" {
+		state, ok := deviceStates[param.Selected.Id]
+		if ok && !state {
 			log.Println("OFFLING: device state = ", state)
 			metadata.Online = false
 		}
-		param.State = state
+		if !ok {
+			param.State = "unknown"
+		}else if state{
+			param.State = "connected"
+		}else{
+			param.State = "disconnected"
+		}
 		metadata.Abstract.AbstractTasks[index] = param
 	}
-
 	for index, event := range metadata.Abstract.MsgEvents {
 		state, err := com.GetEventState(event.FilterId)
 		if err != nil {
@@ -67,7 +70,6 @@ func GetMetadataWithOnlineState(id string, jwtimpersonate jwt_http_router.JwtImp
 		event.State = state
 		metadata.Abstract.MsgEvents[index] = event
 	}
-
 	for index, event := range metadata.Abstract.ReceiveTasks {
 		state, err := com.GetEventState(event.FilterId)
 		if err != nil {

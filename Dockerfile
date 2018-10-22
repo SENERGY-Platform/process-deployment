@@ -10,4 +10,4 @@ RUN go build
 
 EXPOSE 8080
 
-CMD ./moses
+CMD ./process-deployment

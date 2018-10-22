@@ -34,7 +34,7 @@ type ConfigStruct struct {
 	IotRepoUrl                string
 	EventManagerUrl           string
 	ProcessEngineUrl          string
-	DeviceLogUrl              string
+	ConnectionLogUrl              string
 	ServerPort                string
 	LogLevel                  string
 	ServingServiceUrl		  string
