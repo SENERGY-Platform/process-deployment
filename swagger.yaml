@@ -1,0 +1,391 @@
+swagger: '2.0'
+info:
+  title: Process Deployment
+  termsOfService: http://swagger.io/terms/
+  description: 'Process Deployment organizes, prepares and manages processes and their deployments.'
+  version: '1.0'
+  contact:
+    name: sh20xyqi
+    email: sh20xyqi@studserv.uni-leipzig.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+schemes:
+  - https
+
+host: api.sepl.infai.org
+
+basePath: /processdeployment
+
+produces:
+  - text/plain
+
+paths:
+
+definitions:
+  BpmnAbstractMsg:
+    type: object
+    properties:
+      task_id:
+        type: string
+        format: string
+      parameter:
+        type: array
+        items:
+          $ref: 'TaskParameter'
+      reuse_id:
+        type: string
+        format: string
+      device_type:
+        type: string
+        format: string
+      service:
+        type: string
+        format: string
+      label:
+        type: string
+        format: string
+      values:
+        type: object
+        format: '#/definitions/BpmnValueSkeleton'
+    required:
+      - task_id
+      - parameter
+      - reuse_id
+      - device_type
+      - service
+      - label
+      - values
+  InputOutput:
+    type: object
+    properties:
+      name:
+        type: string
+        format: string
+      field_id:
+        type: string
+        format: string
+      type:
+        type: object
+        format: '#/definitions/Type'
+      value:
+        type: string
+        format: string
+      values:
+        type: string
+        items:
+          $ref: '#/definitions/InputOutput'
+    required:
+      - name
+      - field_id
+      - type
+      - value
+      - values
+  Type:
+    type: object
+    properties:
+      id:
+        type: string
+        format: string
+      name:
+        type: string
+        format: string
+      desc:
+        type: string
+        format: string
+      base:
+        type: string
+        format: string
+    required:
+      - id
+      - name
+      - desc
+      - base
+  AbstractTask:
+    type: object
+    properties:
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/Task'
+      device_type_id:
+        type: string
+        format: string
+      options:
+        type: array
+        items:
+          $ref: '#/definitions/DeviceInstance'
+      selected:
+        type: object
+        format: '#/definitions/DeviceInstance'
+      state:
+        type: string
+        format: string
+    required:
+      - tasks
+      - device_type_id
+      - options
+      - selected
+      - state
+  TaskParameter:
+    type: object
+    properties:
+      name:
+        type: string
+        format: string
+      value:
+        type: string
+        format: string
+    required:
+      - name
+      - value
+  Task:
+    type: object
+    properties:
+      id:
+        type: string
+        format: string
+      values:
+        type: object
+        format: '#/definitions/BpmnValueSkeleton'
+      parameter:
+        type: array
+        items:
+          $ref: '#/definitions/TaskParameter'
+      service_id:
+        type: string
+        format: string
+      label:
+        type: string
+        format: string
+    required:
+      - id
+      - values
+      - parameter
+      - service_id
+      - label
+  MsgEvent:
+    type: object
+    properties:
+      filter_id:
+        type: string
+        format: string
+      shape_id:
+        type: string
+        format: string
+      filter:
+        type: object
+        format: '#/definitions/Filter'
+      state:
+        type: string
+        format: string
+    required:
+      - filter_id
+      - shape_id
+      - filter
+      - state
+  TimeEvent:
+    type: object
+    properties:
+      shape_id:
+        type: string
+        format: string
+      kind:
+        type: string
+        format: string
+      time:
+        type: string
+        format: string
+      label:
+        type: string
+        format: string
+    required:
+      - shape_id
+      - kind
+      - time
+      - label
+  AbstactProcess:
+    type: object
+    properties:
+      xml:
+        type: string
+        format: string
+      name:
+        type: string
+        format: string
+      abstract_tasks:
+        type: array
+        items:
+          $ref: '#/definitions/AbstractTask'
+      recieve_tasks:
+        type: array
+        items:
+          $ref: '#/definitions/MsgEvent'
+      msg_events:
+        type: array
+        items:
+          $ref: '#/definitions/MsgEvent'
+      time_events:
+        type: array
+        items:
+          $ref: '#/definitions/TimeEvent'
+    required:
+      - xml
+      - name
+      - abstract_tasks
+      - recieve_tasks
+      - msg_events
+      - time_events
+  Rule:
+    type: object
+    properties:
+      path:
+        type: string
+        format: string
+      scope:
+        type: string
+        format: string
+      operator:
+        type: string
+        format: string
+      value:
+        type: string
+        format: string
+    required:
+      - path
+      - scope
+      - operator
+      - value
+  Filter:
+    type: object
+    properties:
+      scope:
+        type: string
+        format: string
+      rules:
+        type: array
+        items:
+          $ref: '#/definitions/Rule'
+      topic:
+        type: string
+        format: string
+      device_id:
+        type: string
+        format: string
+    required:
+      - scope
+      - rules
+      - topic
+      - device_id
+  DeploymentRequest:
+    type: object
+    properties:
+      process:
+        type: object
+        format: '#/definitions/AbstractProcess'
+      svg:
+        type: string
+        format: string
+    required:
+      - process
+      - svg
+  BpmnValueSkeleton:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          format: string
+      outputs:
+        type: array
+        items:
+          format: string
+    required:
+      - inputs
+      - outputs
+  BpmnMsg:
+    type: object
+    properties:
+      instance_id:
+        type: string
+        format: string
+      service_id:
+        type: string
+        format: string
+      inputs:
+        type: array
+        items:
+          format: string
+      outputs:
+        type: array
+        items:
+          format: string
+      error_msg:
+        type: string
+        format: string
+    required:
+      - instance_id
+      - service_id
+      - inputs
+      - outputs
+      - error_msg
+  DeviceInstance:
+    type: object
+    properties:
+      id:
+        type: string
+        format: string
+      name:
+        type: string
+        format: string
+      device_type:
+        type: string
+        format: astring
+      config:
+        type: array
+        items:
+          $ref: '#/definitions/ConfigField'
+      uri:
+        type: string
+        format: string
+      tags:
+        type: array
+        items:
+          format: string
+      user_tags:
+        type: array
+        items:
+          format: string
+      gateway:
+        type: string
+        format: string
+      img:
+        type: string
+        format: string
+    required:
+      - id
+      - name
+      - device_type
+      - config
+      - uri
+      - tags
+      - user_tags
+      - gateway
+      - img
+  ConfigField:
+    type: object
+    properties:
+      id:
+        type: string
+        format: string
+      name:
+        type: string
+        format: string
+      value:
+        type: string
+        format: string
+    required:
+      - id
+      - name
+      - value
