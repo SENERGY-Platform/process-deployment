@@ -17,25 +17,11 @@
 package com
 
 import (
-	"net/http"
-	"net/url"
-	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
 	"github.com/SmartEnergyPlatform/util/http/request"
+	"net/url"
 )
 
-func DeployEvent(filterId string, processId string, filter model.Filter) (err error) {
-	err, _, _ = request.Post(util.Config.EventManagerUrl+"/filter/"+url.QueryEscape(processId)+"/"+url.QueryEscape(filterId), filter, nil)
-	return
-}
-
-func RemoveEvent(processId string) (err error) {
-	client := &http.Client{}
-	url := util.Config.EventManagerUrl + "/filter/" + url.QueryEscape(processId)
-	request, err := http.NewRequest("DELETE", url, nil)
-	_, err = client.Do(request)
-	return
-}
 
 func GetEventState(filterId string) (state string, err error) {
 	result := struct {

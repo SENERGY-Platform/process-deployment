@@ -20,20 +20,18 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/satori/go.uuid"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
 	"github.com/SmartEnergyPlatform/util/http/logger"
 	"github.com/SmartEnergyPlatform/util/http/response"
+	"github.com/satori/go.uuid"
 
 	"github.com/SmartEnergyPlatform/util/http/cors"
 
 	"encoding/json"
 
 	"bytes"
-
-	"github.com/SmartEnergyPlatform/process-deployment/lib/com"
 )
 
 func StartRest() {
@@ -126,42 +124,23 @@ func getRoutes() (router *jwt_http_router.Router) {
 			response.To(res).DefaultError(err.Error(), http.StatusBadRequest)
 			return
 		}
-
-		processId, err := com.DeployProcess(msg.Process.Name, xmlString, msg.Svg, jwt.UserId)
+		err = PublishDeployment(jwt.UserId, msg, xmlString)
 		if err != nil {
 			log.Println("error on DeployProcess(): ", err)
 			response.To(res).DefaultError("serverside error", 500)
 			return
 		}
-		err = SetMetadata(processId, msg, jwt.UserId)
-		if err != nil {
-			log.Println("error on SetMetadata(): ", err)
-			response.To(res).DefaultError("serverside error", 500)
-			return
-		}
-		err = DeployEvents(msg.Process.MsgEvents, processId)
-		if err != nil {
-			log.Println("error on DeployEvents(MsgEvents): ", err)
-			response.To(res).DefaultError("serverside error", 500)
-			return
-		}
-		err = DeployEvents(msg.Process.ReceiveTasks, processId)
-		if err != nil {
-			log.Println("error on DeployEvents(ReceiveTasks): ", err)
-			response.To(res).DefaultError("serverside error", 500)
-			return
-		}
-		response.To(res).Text(processId)
+		response.To(res).Text("ok")
 	})
 
 	router.DELETE("/deployment/:id", func(res http.ResponseWriter, r *http.Request, ps jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := ps.ByName("id")
-		known, err := CheckAccess(id, jwt.UserId)
+		err := CheckAccess(id, jwt.UserId)
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		err = removeDeployment(id, known)
+		err = PublishDeploymentDelete(id)
 		if err != nil {
 			log.Println(err)
 			response.To(res).DefaultError("serverside error", 500)
@@ -183,20 +162,4 @@ func setFilterIds(events []model.MsgEvent) (result []model.MsgEvent, err error) 
 		result = append(result, event)
 	}
 	return
-}
-
-func removeDeployment(deploymentId string, known bool) error {
-	err := com.RemoveEvent(deploymentId)
-	if err != nil && known {
-		return err
-	}
-	err = com.RemoveProcess(deploymentId)
-	if err != nil && known {
-		return err
-	}
-	err = RemoveMetadata(deploymentId)
-	if err != nil && known {
-		return err
-	}
-	return nil
 }

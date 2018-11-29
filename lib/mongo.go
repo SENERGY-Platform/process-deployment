@@ -71,7 +71,7 @@ func GetMetadata(id string, owner string) (result Metadata, err error) {
 func RemoveMetadata(id string) (err error) {
 	session, collection := getMetadataCollection()
 	defer session.Close()
-	err = collection.Remove(bson.M{"process": id})
+	_, err = collection.RemoveAll(bson.M{"process": id})
 	return
 }
 
@@ -111,17 +111,28 @@ func sanitizeDeploymentParameter(parameters []model.AbstractTask) (result []mode
 	return
 }
 
-func CheckAccess(id string, owner string) (known bool, err error) {
+func CheckAccess(id string, owner string) (err error) {
 	session, collection := getMetadataCollection()
 	defer session.Close()
 	metadata := []Metadata{}
 	err = collection.Find(bson.M{"process": id}).All(&metadata)
-	if err == nil && len(metadata) == 0 {
-		log.Println("WARNING: process is unknown in metadata database", id)
-		return false, err
+	if err != nil {
+		return err
 	}
-	if err == nil && metadata[0].Owner != owner {
-		return true, errors.New("access denied")
+	if len(metadata) == 0 {
+		return nil	//allow deletion of inconsistent data
+	}
+	if metadata[0].Owner != owner {
+		return errors.New("access denied")
 	}
 	return
+}
+
+
+func MetadataExists(id string) (exists bool, err error) {
+	session, collection := getMetadataCollection()
+	defer session.Close()
+	metadata := []Metadata{}
+	err = collection.Find(bson.M{"process": id}).All(&metadata)
+	return len(metadata) > 0, err
 }

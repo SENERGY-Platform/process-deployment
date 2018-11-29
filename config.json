@@ -15,5 +15,10 @@
 
 	"PermissionsUrl": "http://permissionsearch:8080",
 
-	"IotTaskTopic": "execute_in_dose"
+	"IotTaskTopic": "execute_in_dose",
+
+	"AmqpUrl": "amqp://guest:guest@rabbitmq:5672/",
+	"AmqpReconnectTimeout": 10,
+	"AmqpConsumerName": "deployment",
+	"AmqpDeploymentTopic": "deployment"
 }

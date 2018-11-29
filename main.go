@@ -32,5 +32,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = lib.InitEventSourcing()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer lib.CloseEventSourcing()
+
 	lib.StartRest()
 }

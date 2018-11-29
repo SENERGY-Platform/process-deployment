@@ -33,7 +33,6 @@ type ConfigStruct struct {
 	ProcessMetadataCollection string
 	IotRepoUrl                string
 	EventManagerUrl           string
-	ProcessEngineUrl          string
 	ConnectionLogUrl              string
 	ServerPort                string
 	LogLevel                  string
@@ -46,6 +45,11 @@ type ConfigStruct struct {
 	PermissionsUrl string
 
 	IotTaskTopic string
+
+	AmqpUrl					string
+	AmqpReconnectTimeout    int64
+	AmqpConsumerName		string
+	AmqpDeploymentTopic		string
 }
 
 type ConfigType *ConfigStruct
