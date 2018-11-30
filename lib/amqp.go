@@ -22,6 +22,7 @@ import (
 	"github.com/SmartEnergyPlatform/amqp-wrapper-lib"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
+	"github.com/satori/go.uuid"
 	"log"
 )
 
@@ -87,13 +88,14 @@ func CloseEventSourcing(){
 	amqp.Close()
 }
 
-func PublishDeployment(userId string, deployment model.DeploymentRequest, xml string)error{
-	command := DeploymentCommand{Owner:userId, Deployment:deployment, DeploymentXml:xml,Command:"POST"}
+func PublishDeployment(userId string, deployment model.DeploymentRequest, xml string)(id string, err error){
+	id = uuid.NewV4().String()
+	command := DeploymentCommand{Owner:userId, Deployment:deployment, DeploymentXml:xml,Command:"PUT", Id:id}
 	payload, err := json.Marshal(command)
 	if err != nil {
-		return err
+		return id, err
 	}
-	return amqp.Publish(util.Config.AmqpDeploymentTopic, payload)
+	return id, amqp.Publish(util.Config.AmqpDeploymentTopic, payload)
 }
 
 func PublishDeploymentDelete(id string)error{

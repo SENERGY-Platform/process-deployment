@@ -124,13 +124,13 @@ func getRoutes() (router *jwt_http_router.Router) {
 			response.To(res).DefaultError(err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = PublishDeployment(jwt.UserId, msg, xmlString)
+		id, err := PublishDeployment(jwt.UserId, msg, xmlString)
 		if err != nil {
 			log.Println("error on DeployProcess(): ", err)
 			response.To(res).DefaultError("serverside error", 500)
 			return
 		}
-		response.To(res).Text("ok")
+		response.To(res).Text(id)
 	})
 
 	router.DELETE("/deployment/:id", func(res http.ResponseWriter, r *http.Request, ps jwt_http_router.Params, jwt jwt_http_router.Jwt) {
