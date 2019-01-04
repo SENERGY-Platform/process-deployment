@@ -53,6 +53,7 @@ func InitEventSourcing()(err error){
 		log.Println("amqp receive ", string(delivery))
 		switch command.Command {
 		case "POST":
+			log.Println("WARNING: deprecated event type", command)
 			return nil
 		case "PUT":
 			return handleDeploymentMetadataUpdate(command)
