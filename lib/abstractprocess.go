@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"runtime/debug"
 	"strings"
 
 	"github.com/SmartEnergyPlatform/jwt-http-router"
@@ -55,6 +56,7 @@ func GetBpmnAbstractPrepare(xmlValue string, jwtimpersonate jwt_http_router.JwtI
 	resp.Xml = xmlValue
 	defer func() {
 		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -92,6 +94,19 @@ func GetBpmnAbstractPrepare(xmlValue string, jwtimpersonate jwt_http_router.JwtI
 					return resp, err
 				}
 				abstractDataExportTasks = append(abstractDataExportTasks, abstract)
+			}
+		} else {
+			placeholderTask := model.PlaceholderTask{Id: task.SelectAttr("id").Value}
+			for _, inputParameter := range task.FindElements("//camunda:inputParameter") {
+				placeholder, err := getPlaceholder(inputParameter)
+				if err != nil {
+					log.Println("ERROR: unable to find placeholder", err)
+					return resp, err
+				}
+				placeholderTask.Parameter = append(placeholderTask.Parameter, placeholder...)
+			}
+			if len(placeholderTask.Parameter) > 0 {
+				resp.PlaceholderTasks = append(resp.PlaceholderTasks, placeholderTask)
 			}
 		}
 	}
@@ -322,8 +337,21 @@ func InstantiateAbstractProcess(msg model.AbstractProcess, impersonate jwt_http_
 		eventDef.AddChild(timeElement)
 	}
 
+	for _, placeholderTask := range msg.PlaceholderTasks {
+		xpath := "//bpmn:serviceTask[@id='" + placeholderTask.Id + "']//camunda:inputParameter"
+		inputs := doc.FindElements(xpath)
+		for _, input := range inputs {
+			placeholderText := input.Text()
+			text, err := renderPlaceholder(placeholderText, placeholderTask.Parameter)
+			if err != nil {
+				return xmlString, err
+			}
+			if placeholderText != text {
+				input.SetText(text)
+			}
+		}
+	}
 	xmlString, err = doc.WriteToString()
-
 	return
 }
 

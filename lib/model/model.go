@@ -77,17 +77,28 @@ type Task struct {
 	Label     string            `json:"label"`
 }
 
+type PlaceholderTask struct {
+	Id        string        `json:"id"`
+	Parameter []Placeholder `json:"parameter"`
+}
+
+type Placeholder struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	Label string `json:"label"`
+}
+
 type AbstractDataExportTask struct {
-	Id        string            `json:"id"`
-	MeasurementField			string		`json:"measurementField"`
-	MeasurementIdSelected		string		`json:"measurement"`
-	AnalysisAction string `json:"analysisAction"`
-	Interval Interval `json:"interval"`
-	UserId string `json:"userid"`
+	Id                    string   `json:"id"`
+	MeasurementField      string   `json:"measurementField"`
+	MeasurementIdSelected string   `json:"measurement"`
+	AnalysisAction        string   `json:"analysisAction"`
+	Interval              Interval `json:"interval"`
+	UserId                string   `json:"userid"`
 }
 
 type Interval struct {
-	Value string `json:"value"`
+	Value    string `json:"value"`
 	TimeType string `json:"timeType"`
 }
 
@@ -106,13 +117,14 @@ type TimeEvent struct {
 }
 
 type AbstractProcess struct {
-	Xml           string         `json:"xml"`
-	Name          string         `json:"name"`
-	AbstractTasks []AbstractTask `json:"abstract_tasks"`
+	Xml                     string                   `json:"xml"`
+	Name                    string                   `json:"name"`
+	AbstractTasks           []AbstractTask           `json:"abstract_tasks"`
 	AbstractDataExportTasks []AbstractDataExportTask `json:"abstract_data_export_tasks"`
-	ReceiveTasks  []MsgEvent     `json:"receive_tasks"`
-	MsgEvents     []MsgEvent     `json:"msg_events"`
-	TimeEvents    []TimeEvent    `json:"time_events"`
+	ReceiveTasks            []MsgEvent               `json:"receive_tasks"`
+	MsgEvents               []MsgEvent               `json:"msg_events"`
+	TimeEvents              []TimeEvent              `json:"time_events"`
+	PlaceholderTasks        []PlaceholderTask        `json:"placeholder_tasks"`
 }
 
 type Rule struct {
