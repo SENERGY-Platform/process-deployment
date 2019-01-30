@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"runtime/debug"
 	"strings"
 
@@ -233,11 +234,14 @@ func InstantiateAbstractProcess(msg model.AbstractProcess, impersonate jwt_http_
 	if err != nil {
 		return
 	}
+	newId := newXsdId(msg.Name)
+	doc.FindElement("//bpmn:process").RemoveAttr("name")
+	doc.FindElement("//bpmn:process").CreateAttr("name", msg.Name)
 	processId := doc.FindElement("//bpmn:process").SelectAttr("id")
 	for _, ref := range doc.FindElements("//*[@bpmnElement='" + processId.Value + "']") {
-		ref.SelectAttr("bpmnElement").Value = msg.Name
+		ref.SelectAttr("bpmnElement").Value = newId
 	}
-	processId.Value = msg.Name
+	processId.Value = newId
 
 	for _, param := range msg.AbstractTasks {
 		taskInstance := model.BpmnMsg{
@@ -353,6 +357,16 @@ func InstantiateAbstractProcess(msg model.AbstractProcess, impersonate jwt_http_
 	}
 	xmlString, err = doc.WriteToString()
 	return
+}
+
+//if hint matches xsd:id restrictions -> return hint
+//else return new generated id
+func newXsdId(hint string) string {
+	re := regexp.MustCompile(`^[a-zA-Z_][\w.-]*$`)
+	if re.MatchString(hint) {
+		return hint
+	}
+	return "ID_" + uuid.NewV4().String()
 }
 
 func getAbstractDataExportTask(task *etree.Element, jwtimpersonate jwt_http_router.JwtImpersonate) (result model.AbstractDataExportTask, err error) {
