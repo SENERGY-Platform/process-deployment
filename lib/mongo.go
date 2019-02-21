@@ -99,6 +99,9 @@ func sanitizeDeployment(deployment model.DeploymentRequest) (result model.Abstra
 	result.Name = deployment.Process.Name
 	result.Xml = deployment.Process.Xml
 	result.MsgEvents = deployment.Process.MsgEvents
+	result.TimeEvents = deployment.Process.TimeEvents
+	result.PlaceholderTasks = deployment.Process.PlaceholderTasks
+	result.AbstractDataExportTasks = deployment.Process.AbstractDataExportTasks
 	result.ReceiveTasks = deployment.Process.ReceiveTasks
 	result.AbstractTasks = sanitizeDeploymentParameter(deployment.Process.AbstractTasks)
 	return
@@ -120,14 +123,13 @@ func CheckAccess(id string, owner string) (err error) {
 		return err
 	}
 	if len(metadata) == 0 {
-		return nil	//allow deletion of inconsistent data
+		return nil //allow deletion of inconsistent data
 	}
 	if metadata[0].Owner != owner {
 		return errors.New("access denied")
 	}
 	return
 }
-
 
 func MetadataExists(id string) (exists bool, err error) {
 	session, collection := getMetadataCollection()
