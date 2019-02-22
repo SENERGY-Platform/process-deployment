@@ -135,17 +135,25 @@ func getRoutes() (router *jwt_http_router.Router) {
 
 	router.DELETE("/deployment/:id", func(res http.ResponseWriter, r *http.Request, ps jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := ps.ByName("id")
-		err := CheckAccess(id, jwt.UserId)
+		exists, err := CheckAccess(id, jwt.UserId)
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusUnauthorized)
 			return
 		}
+
+		//try to delete deployments even if you think it does not exist
 		err = PublishDeploymentDelete(id)
 		if err != nil {
 			log.Println(err)
 			response.To(res).DefaultError("serverside error", 500)
 			return
 		}
+
+		if !exists {
+			response.To(res).DefaultError("unknown id", http.StatusBadRequest)
+			return
+		}
+
 		response.To(res).Text("ok")
 	})
 

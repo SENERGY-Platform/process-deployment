@@ -114,21 +114,21 @@ func sanitizeDeploymentParameter(parameters []model.AbstractTask) (result []mode
 	return
 }
 
-func CheckAccess(id string, owner string) (err error) {
+func CheckAccess(id string, owner string) (exists bool, err error) {
 	session, collection := getMetadataCollection()
 	defer session.Close()
 	metadata := []Metadata{}
 	err = collection.Find(bson.M{"process": id}).All(&metadata)
 	if err != nil {
-		return err
+		return exists, err
 	}
 	if len(metadata) == 0 {
-		return nil //allow deletion of inconsistent data
+		return false, nil //allow deletion of inconsistent data
 	}
 	if metadata[0].Owner != owner {
-		return errors.New("access denied")
+		return true, errors.New("access denied")
 	}
-	return
+	return true, nil
 }
 
 func MetadataExists(id string) (exists bool, err error) {
