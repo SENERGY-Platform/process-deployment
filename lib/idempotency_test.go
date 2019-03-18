@@ -18,6 +18,7 @@ package lib
 
 import (
 	"flag"
+	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
 	"github.com/ory/dockertest"
@@ -26,8 +27,8 @@ import (
 	"testing"
 )
 
-
 const owner = "owner"
+const ownerJwt = jwt_http_router.JwtImpersonate("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJvd25lciIsIm5hbWUiOiJKb2huIERvZSIsImlhdCI6MTUxNjIzOTAyMn0.M33n6BgW1v-RcR0XaI4z288FwnctuijTuaHDIKBnKpI")
 
 func Test(t *testing.T) {
 	closer, mongoport, _, err := testHelper_getMongoDependency()
@@ -46,7 +47,7 @@ func Test(t *testing.T) {
 		return
 	}
 
-	util.Config.MongoUrl = "mongodb://localhost:"+mongoport
+	util.Config.MongoUrl = "mongodb://localhost:" + mongoport
 
 	err = testHelper_putProcess("1", "f1")
 	if err != nil {
@@ -111,7 +112,6 @@ func Test(t *testing.T) {
 
 }
 
-
 func testHelper_getMongoDependency() (closer func(), hostPort string, ipAddress string, err error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -137,14 +137,14 @@ func testHelper_getMongoDependency() (closer func(), hostPort string, ipAddress 
 
 func testHelper_putProcess(vid string, filterId string) error {
 	return handleDeploymentMetadataUpdate(DeploymentCommand{
-		Id:            vid,
-		Command:       "PUT",
-		Owner:			owner,
+		Id:      vid,
+		Command: "PUT",
+		Owner:   owner,
 		Deployment: model.DeploymentRequest{
-			Process:model.AbstractProcess{
+			Process: model.AbstractProcess{
 				MsgEvents: []model.MsgEvent{
 					{
-						FilterId:filterId,
+						FilterId: filterId,
 					},
 				},
 			},
@@ -156,6 +156,6 @@ func testHelper_deleteProcess(vid string) error {
 	return handleDeploymentMetadataDelete(DeploymentCommand{
 		Id:      vid,
 		Command: "DELETE",
-		Owner:	 owner,
+		Owner:   owner,
 	})
 }

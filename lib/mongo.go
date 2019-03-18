@@ -68,6 +68,14 @@ func GetMetadata(id string, owner string) (result Metadata, err error) {
 	return
 }
 
+func GetMetadataList(ids []string, owner string) (result []Metadata, err error) {
+	session, collection := getMetadataCollection()
+	defer session.Close()
+	log.Println("DEBUG", bson.M{"process": bson.M{"$in": ids}, "owner": owner})
+	err = collection.Find(bson.M{"process": bson.M{"$in": ids}, "owner": owner}).All(&result)
+	return
+}
+
 func RemoveMetadata(id string) (err error) {
 	session, collection := getMetadataCollection()
 	defer session.Close()

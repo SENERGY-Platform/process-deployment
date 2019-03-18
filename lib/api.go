@@ -19,6 +19,7 @@ package lib
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
@@ -66,6 +67,24 @@ func getRoutes() (router *jwt_http_router.Router) {
 			response.To(res).Json(metadata)
 		} else {
 			log.Println("error on GetMetadata(): ", err)
+			response.To(res).DefaultError("serverside error", 500)
+		}
+	})
+
+	/*
+		query-parameter:
+			deployments:
+				mandatory;
+				comma separated list of deployment ids;
+				filters dependencies by given deployments
+	*/
+	router.GET("/dependencies", func(res http.ResponseWriter, r *http.Request, ps jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+		ids := strings.Split(strings.Replace(r.URL.Query().Get("deployments"), " ", "", -1), ",")
+		metadata, err := GetMetadataListWithOnlineState(ids, jwt.Impersonate, jwt.UserId)
+		if err == nil {
+			response.To(res).Json(metadata)
+		} else {
+			log.Println("error on GetMetadataListWithOnlineState(): ", err)
 			response.To(res).DefaultError("serverside error", 500)
 		}
 	})
