@@ -37,7 +37,7 @@ func GetMetadataWithOnlineState(id string, jwtimpersonate jwt_http_router.JwtImp
 	}
 	deviceStates := map[string]bool{}
 	if len(ids) > 0 {
-		deviceStates, err := com.CheckDeviceStates(jwtimpersonate, ids)
+		deviceStates, err = com.CheckDeviceStates(jwtimpersonate, ids)
 		if err != nil {
 			log.Println("WARNING: error in CheckDeviceStates()", err)
 		}
@@ -109,7 +109,7 @@ func GetMetadataListWithOnlineState(ids []string, jwtimpersonate jwt_http_router
 
 	deviceStates := map[string]bool{}
 	if len(deviceIds) > 0 {
-		deviceStates, err := com.CheckDeviceStates(jwtimpersonate, deviceIds)
+		deviceStates, err = com.CheckDeviceStates(jwtimpersonate, deviceIds)
 		if err != nil {
 			log.Println("WARNING: error in CheckDeviceStates()", err)
 		}
