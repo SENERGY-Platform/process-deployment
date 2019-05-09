@@ -237,6 +237,8 @@ func InstantiateAbstractProcess(msg model.AbstractProcess, impersonate jwt_http_
 	newId := newXsdId(msg.Name)
 	doc.FindElement("//bpmn:process").RemoveAttr("name")
 	doc.FindElement("//bpmn:process").CreateAttr("name", msg.Name)
+	doc.FindElement("//bpmn:process").RemoveAttr("isExecutable")
+	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
 	processId := doc.FindElement("//bpmn:process").SelectAttr("id")
 	for _, ref := range doc.FindElements("//*[@bpmnElement='" + processId.Value + "']") {
 		ref.SelectAttr("bpmnElement").Value = newId
