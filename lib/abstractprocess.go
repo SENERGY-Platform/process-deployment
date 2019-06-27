@@ -111,14 +111,18 @@ func GetBpmnAbstractPrepare(xmlValue string, jwtimpersonate jwt_http_router.JwtI
 			}
 		}
 	}
-	for _, eventDefiniton := range doc.FindElements("//bpmn:messageEventDefinition") {
-		shapeId := eventDefiniton.Parent().SelectAttr("id").Value
-		resp.MsgEvents = append(resp.MsgEvents, model.MsgEvent{Filter: createDefaultFilter(), ShapeId: shapeId})
-	}
-	for _, receiveTask := range doc.FindElements("//bpmn:receiveTask") {
-		shapeId := receiveTask.SelectAttr("id").Value
-		resp.ReceiveTasks = append(resp.ReceiveTasks, model.MsgEvent{Filter: createDefaultFilter(), ShapeId: shapeId})
-	}
+	/*
+		for _, eventDefiniton := range doc.FindElements("//bpmn:messageEventDefinition") {
+			shapeId := eventDefiniton.Parent().SelectAttr("id").Value
+			resp.MsgEvents = append(resp.MsgEvents, model.MsgEvent{Filter: createDefaultFilter(), ShapeId: shapeId})
+		}
+	*/
+	/*
+		for _, receiveTask := range doc.FindElements("//bpmn:receiveTask") {
+			shapeId := receiveTask.SelectAttr("id").Value
+			resp.ReceiveTasks = append(resp.ReceiveTasks, model.MsgEvent{Filter: createDefaultFilter(), ShapeId: shapeId})
+		}
+	*/
 	for _, timeEventDefinition := range doc.FindElements("//bpmn:timerEventDefinition") {
 		shapeId := timeEventDefinition.Parent().SelectAttr("id").Value
 		timeEvent := model.TimeEvent{ShapeId: shapeId}
