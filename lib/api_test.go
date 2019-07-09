@@ -52,19 +52,6 @@ func TestDependenciesEndpoint(t *testing.T) {
 		return
 	}
 
-	eventmanagerMock := http.NewServeMux()
-	eventmanagerMock.HandleFunc("/filter/f1", func(writer http.ResponseWriter, request *http.Request) {
-		json.NewEncoder(writer).Encode(map[string]string{"state": "running"})
-	})
-	eventmanagerMock.HandleFunc("/filter/f2", func(writer http.ResponseWriter, request *http.Request) {
-		json.NewEncoder(writer).Encode(map[string]string{"state": "running"})
-	})
-	eventmanagerMock.HandleFunc("/filter/f3", func(writer http.ResponseWriter, request *http.Request) {
-		json.NewEncoder(writer).Encode(map[string]string{"state": "running"})
-	})
-	eventmanagerMockServer := httptest.NewServer(eventmanagerMock)
-	defer eventmanagerMockServer.Close()
-
 	closer, mongoport, _, err := testHelper_getMongoDependency()
 	defer closer()
 	if err != nil {
@@ -82,7 +69,6 @@ func TestDependenciesEndpoint(t *testing.T) {
 	}
 
 	util.Config.MongoUrl = "mongodb://localhost:" + mongoport
-	util.Config.EventManagerUrl = eventmanagerMockServer.URL
 
 	s := httptest.NewServer(getRoutes())
 	defer s.Close()

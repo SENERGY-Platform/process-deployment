@@ -3,7 +3,6 @@
 	"MongoTable":		          "processdeployment",
 	"ProcessMetadataCollection":  "process_metadata",
 	"IotRepoUrl":		          "https://iot-device-repo",
-	"EventManagerUrl":		      "http://eventmanager:8080",
 	"ProcessEngineUrl":		      "http://process-engine",
 	"ConnectionLogUrl":			  "http://connectionlog",
 	"ServerPort":		          "8080",

@@ -17,7 +17,6 @@
 package lib
 
 import (
-	"flag"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
@@ -38,10 +37,7 @@ func Test(t *testing.T) {
 		return
 	}
 
-	configLocation := flag.String("config", "../config.json", "configuration file")
-	flag.Parse()
-
-	err = util.LoadConfig(*configLocation)
+	err = util.LoadConfig("../config.json")
 	if err != nil {
 		t.Error(err)
 		return

@@ -21,6 +21,7 @@ import (
 	"errors"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/SmartEnergyPlatform/process-deployment/lib/model"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
@@ -69,10 +70,14 @@ func GetMetadata(id string, owner string) (result Metadata, err error) {
 }
 
 func GetMetadataList(ids []string, owner string) (result []Metadata, err error) {
+	start := time.Now()
 	session, collection := getMetadataCollection()
 	defer session.Close()
 	log.Println("DEBUG", bson.M{"process": bson.M{"$in": ids}, "owner": owner})
 	err = collection.Find(bson.M{"process": bson.M{"$in": ids}, "owner": owner}).All(&result)
+	if util.Config.Debug {
+		log.Println("DEBUG: GetMetadataList()", time.Now().Sub(start))
+	}
 	return
 }
 

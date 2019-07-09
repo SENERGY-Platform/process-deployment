@@ -19,9 +19,15 @@ package com
 import (
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
+	"log"
+	"time"
 )
 
-func CheckDeviceStates(jwtimpersonate jwt_http_router.JwtImpersonate, ids []string)(result map[string]bool, err error){
-	err = jwtimpersonate.PostJSON(util.Config.ConnectionLogUrl + "/state/device/check", ids, &result)
+func CheckDeviceStates(jwtimpersonate jwt_http_router.JwtImpersonate, ids []string) (result map[string]bool, err error) {
+	start := time.Now()
+	err = jwtimpersonate.PostJSON(util.Config.ConnectionLogUrl+"/state/device/check", ids, &result)
+	if util.Config.Debug {
+		log.Println("DEBUG: CheckDeviceStates()", time.Now().Sub(start))
+	}
 	return
 }

@@ -60,32 +60,6 @@ func GetMetadataWithOnlineState(id string, jwtimpersonate jwt_http_router.JwtImp
 		}
 		metadata.Abstract.AbstractTasks[index] = param
 	}
-	for index, event := range metadata.Abstract.MsgEvents {
-		state, err := com.GetEventState(event.FilterId)
-		if err != nil {
-			log.Println("ERROR in GetEventState()", err)
-			return metadata, err
-		}
-		if state != "running" {
-			log.Println("OFFLINE: event state = ", state)
-			metadata.Online = false
-		}
-		event.State = state
-		metadata.Abstract.MsgEvents[index] = event
-	}
-	for index, event := range metadata.Abstract.ReceiveTasks {
-		state, err := com.GetEventState(event.FilterId)
-		if err != nil {
-			log.Println("ERROR in GetEventState()[1]", err)
-			return metadata, err
-		}
-		if state != "running" {
-			log.Println("OFFLINE: receive task state = ", state)
-			metadata.Online = false
-		}
-		event.State = state
-		metadata.Abstract.ReceiveTasks[index] = event
-	}
 
 	return
 }
@@ -123,7 +97,7 @@ func GetMetadataListWithOnlineState(ids []string, jwtimpersonate jwt_http_router
 		for index, param := range metadata.Abstract.AbstractTasks {
 			state, ok := deviceStates[param.Selected.Id]
 			if ok && !state {
-				log.Println("OFFLING: device state = ", state)
+				//log.Println("OFFLINE: device state = ", state)
 				metadata.Online = false
 			}
 			if !ok {
@@ -134,32 +108,6 @@ func GetMetadataListWithOnlineState(ids []string, jwtimpersonate jwt_http_router
 				param.State = "disconnected"
 			}
 			metadata.Abstract.AbstractTasks[index] = param
-		}
-		for index, event := range metadata.Abstract.MsgEvents {
-			state, err := com.GetEventState(event.FilterId)
-			if err != nil {
-				log.Println("ERROR in GetEventState()", err)
-				return result, err
-			}
-			if state != "running" {
-				log.Println("OFFLINE: event state = ", state)
-				metadata.Online = false
-			}
-			event.State = state
-			metadata.Abstract.MsgEvents[index] = event
-		}
-		for index, event := range metadata.Abstract.ReceiveTasks {
-			state, err := com.GetEventState(event.FilterId)
-			if err != nil {
-				log.Println("ERROR in GetEventState()[1]", err)
-				return result, err
-			}
-			if state != "running" {
-				log.Println("OFFLINE: receive task state = ", state)
-				metadata.Online = false
-			}
-			event.State = state
-			metadata.Abstract.ReceiveTasks[index] = event
 		}
 		result = append(result, metadata)
 	}
