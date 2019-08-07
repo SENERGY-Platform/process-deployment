@@ -84,7 +84,7 @@ func TestGetPlaceholder(t *testing.T) {
 		json.NewEncoder(w).Encode([]interface{}{})
 	}))
 	defer server.Close()
-	util.Config = &util.ConfigStruct{IotRepoUrl: server.URL, IotTaskTopic: "execute_in_dose"}
+	util.Config = &util.ConfigStruct{IotRepoUrl: server.URL, DeprecatedTopic: "execute_in_dose"}
 
 	process, err := GetBpmnAbstractPrepare(test_bpmn_example, jwt_http_router.JwtImpersonate(""))
 
@@ -146,7 +146,7 @@ func TestInstantiateAbstractProcessWithPlaceholder(t *testing.T) {
 		json.NewEncoder(w).Encode(true)
 	}))
 	defer sliceserver.Close()
-	util.Config = &util.ConfigStruct{IotRepoUrl: sliceserver.URL, IotTaskTopic: "execute_in_dose", PermissionsUrl: boolserver.URL}
+	util.Config = &util.ConfigStruct{IotRepoUrl: sliceserver.URL, DeprecatedTopic: "execute_in_dose", PermissionsUrl: boolserver.URL}
 
 	process, err := GetBpmnAbstractPrepare(test_bpmn_example, jwt_http_router.JwtImpersonate(""))
 

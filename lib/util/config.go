@@ -43,7 +43,9 @@ type ConfigStruct struct {
 
 	PermissionsUrl string
 
-	IotTaskTopic string
+	DeprecatedTopic  string
+	OptimisticTopic  string
+	PessimisticTopic string
 
 	AmqpUrl              string
 	AmqpReconnectTimeout int64

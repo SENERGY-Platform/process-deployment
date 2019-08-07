@@ -14,7 +14,9 @@
 
 	"PermissionsUrl": "http://permissionsearch:8080",
 
-	"IotTaskTopic": "execute_in_dose",
+	"DeprecatedTopic": "execute_in_dose",
+	"OptimisticTopic": "optimistic",
+	"PessimisticTopic": "pessimistic",
 
 	"AmqpUrl": "amqp://guest:guest@rabbitmq:5672/",
 	"AmqpReconnectTimeout": 10,

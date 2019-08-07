@@ -80,7 +80,7 @@ func GetBpmnAbstractPrepare(xmlValue string, jwtimpersonate jwt_http_router.JwtI
 	for _, task := range doc.FindElements("//bpmn:serviceTask") {
 		topic := task.SelectAttr("camunda:topic")
 		if topic != nil {
-			if topic.Value == util.Config.IotTaskTopic {
+			if topic.Value == util.Config.DeprecatedTopic || topic.Value == util.Config.OptimisticTopic || topic.Value == util.Config.PessimisticTopic {
 				log.Println("DEBUG: service task is execute_in_dose")
 				abstract, err := GetAbstractTask(task)
 				if err != nil {
