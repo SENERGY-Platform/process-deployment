@@ -1,25 +1,5 @@
 {
-    "MongoUrl":		              "mongodb://mongo",
-	"MongoTable":		          "processdeployment",
-	"ProcessMetadataCollection":  "process_metadata",
-	"IotRepoUrl":		          "https://iot-device-repo",
-	"ProcessEngineUrl":		      "http://process-engine",
-	"ConnectionLogUrl":			  "http://connectionlog",
-	"ServerPort":		          "8080",
-	"LogLevel":		              "CALL",
-	"ServingServiceUrl":		  "http://analytics-serving",
-
-	"ForceUser": "true",
-	"ForceAuth": "true",
-
-	"PermissionsUrl": "http://permissionsearch:8080",
-
-	"DeprecatedTopic": "execute_in_dose",
-	"OptimisticTopic": "optimistic",
-	"PessimisticTopic": "pessimistic",
-
-	"AmqpUrl": "amqp://guest:guest@rabbitmq:5672/",
-	"AmqpReconnectTimeout": 10,
-	"AmqpConsumerName": "deployment",
-	"AmqpDeploymentTopic": "deployment"
+  "zookeeper_url": "zk",
+  "consumer_group": "process-deployment",
+  "debug": false
 }

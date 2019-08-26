@@ -17,26 +17,45 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"github.com/SENERGY-Platform/process-deployment/lib"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/connectionlog"
+	"github.com/SENERGY-Platform/process-deployment/lib/db"
+	"github.com/SENERGY-Platform/process-deployment/lib/devicerepository"
+	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
 	"log"
-	"github.com/SmartEnergyPlatform/process-deployment/lib"
-	"github.com/SmartEnergyPlatform/process-deployment/lib/util"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
 	configLocation := flag.String("config", "config.json", "configuration file")
 	flag.Parse()
 
-	err := util.LoadConfig(*configLocation)
+	config, err := config.LoadConfig(*configLocation)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = lib.InitEventSourcing()
+	ctx, cancel := context.WithCancel(context.Background())
+
+	err = lib.New(ctx, config, kafka.Factory, db.Factory, connectionlog.Factory, devicerepository.Factory)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer lib.CloseEventSourcing()
 
-	lib.StartRest()
+	go func() {
+		shutdown := make(chan os.Signal, 1)
+		signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+		sig := <-shutdown
+		log.Println("received shutdown signal", sig)
+		cancel()
+	}()
+
+	<-ctx.Done()                //waiting for context end; may happen by shutdown signal
+	time.Sleep(1 * time.Second) //give go routines time for cleanup
 }

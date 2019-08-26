@@ -1,4 +1,4 @@
-module github.com/SmartEnergyPlatform/process-deployment
+module github.com/SENERGY-Platform/process-deployment
 
 require (
 	github.com/SmartEnergyPlatform/amqp-wrapper-lib v0.0.0-20181018071408-32e07d9d89bb
@@ -13,8 +13,11 @@ require (
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
 	github.com/ory/dockertest v3.3.2+incompatible
+	github.com/samuel/go-zookeeper v0.0.0-20190810000440-0ceca61e4d75 // indirect
 	github.com/satori/go.uuid v1.2.0
+	github.com/segmentio/kafka-go v0.3.2
 	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/wvanbergen/kazoo-go v0.0.0-20180202103751-f72d8611297a
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
