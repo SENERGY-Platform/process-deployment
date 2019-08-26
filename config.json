@@ -1,5 +1,8 @@
 {
   "zookeeper_url": "zk",
   "consumer_group": "process-deployment",
-  "debug": false
+  "debug": false,
+  "log_level": "call",
+  "api_port": "8080",
+  "connectivity_test": true
 }
