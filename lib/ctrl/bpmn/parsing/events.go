@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 )
 
-func BpmnToMsgEvent(event *etree.Element, eventDefinition *etree.Element) (result model.MsgEvent, err error) {
+func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -34,7 +34,7 @@ func BpmnToMsgEvent(event *etree.Element, eventDefinition *etree.Element) (resul
 		}
 	}()
 	id := event.SelectAttr("id").Value
-	label := event.SelectAttr("name").Value
+	label := event.SelectAttrValue("name", id)
 	documentation := model.Documentation{}
 	documentations := event.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
@@ -61,7 +61,7 @@ func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (resu
 		}
 	}()
 	id := event.SelectAttr("id").Value
-	label := event.SelectAttr("name").Value
+	label := event.SelectAttrValue("name", id)
 	documentation := model.Documentation{}
 	documentations := event.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {

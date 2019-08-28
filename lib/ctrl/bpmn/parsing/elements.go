@@ -56,7 +56,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 	}
 
 	for _, event := range doc.FindElements("//bpmn:receiveTask") {
-		msgEvent, err := BpmnToMsgEvent(event.Parent(), event)
+		msgEvent, err := BpmnToMsgEvent(event)
 		if err != nil {
 			return result, err
 		}
@@ -64,7 +64,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 	}
 
 	for _, event := range doc.FindElements("//bpmn:messageEventDefinition") {
-		msgEvent, err := BpmnToMsgEvent(event.Parent(), event)
+		msgEvent, err := BpmnToMsgEvent(event.Parent())
 		if err != nil {
 			return result, err
 		}

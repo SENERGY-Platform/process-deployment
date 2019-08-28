@@ -48,14 +48,17 @@ func BpmnToMultitask(task *etree.Element) (result model.MultiTask, err error) {
 
 	parameter, err := BpmnToParameter(task)
 
+	id := task.SelectAttr("id").Value
+	label := task.SelectAttrValue("name", id)
+
 	result = model.MultiTask{
-		Label:            task.SelectAttr("name").Value,
+		Label:            label,
 		CharacteristicId: cmd.CharacteristicId,
 		Function:         cmd.Function,
 		DeviceClass:      cmd.DeviceClass,
 		Aspect:           cmd.Aspect,
 		Order:            documentation.Order,
-		BpmnElementId:    task.SelectAttr("id").Value,
+		BpmnElementId:    id,
 		Input:            cmd.Input,
 		Parameter:        parameter,
 	}
@@ -86,14 +89,17 @@ func BpmnToTask(task *etree.Element) (result model.Task, err error) {
 
 	parameter, err := BpmnToParameter(task)
 
+	id := task.SelectAttr("id").Value
+	label := task.SelectAttrValue("name", id)
+
 	result = model.Task{
-		Label:            task.SelectAttr("name").Value,
+		Label:            label,
 		CharacteristicId: cmd.CharacteristicId,
 		Function:         cmd.Function,
 		DeviceClass:      cmd.DeviceClass,
 		Aspect:           cmd.Aspect,
 		Order:            documentation.Order,
-		BpmnElementId:    task.SelectAttr("id").Value,
+		BpmnElementId:    id,
 		Parameter:        parameter,
 		Input:            cmd.Input,
 	}
