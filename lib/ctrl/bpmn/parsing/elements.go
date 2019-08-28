@@ -39,7 +39,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 	for _, task := range doc.FindElements("//bpmn:serviceTask") {
 		topic := task.SelectAttr("camunda:topic")
 		if topic != nil && topic.Value != "" {
-			if len(task.FindElements("//bpmn:multiInstanceLoopCharacteristics")) > 0 {
+			if len(task.FindElements(".//bpmn:multiInstanceLoopCharacteristics")) > 0 {
 				multitask, err := BpmnToMultitask(task)
 				if err != nil {
 					return result, err
@@ -56,27 +56,27 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 	}
 
 	for _, event := range doc.FindElements("//bpmn:receiveTask") {
-		msgEvent, err := BpmnToMsgEvent(event)
+		msgEvent, order, err := BpmnToMsgEvent(event)
 		if err != nil {
 			return result, err
 		}
-		result = append(result, msgEvent)
+		result = append(result, model.Element{Order: order, ReceiveTaskEvent: &msgEvent})
 	}
 
 	for _, event := range doc.FindElements("//bpmn:messageEventDefinition") {
-		msgEvent, err := BpmnToMsgEvent(event.Parent())
+		msgEvent, order, err := BpmnToMsgEvent(event.Parent())
 		if err != nil {
 			return result, err
 		}
-		result = append(result, msgEvent)
+		result = append(result, model.Element{Order: order, MsgEvent: &msgEvent})
 	}
 
 	for _, event := range doc.FindElements("//bpmn:timerEventDefinition") {
-		timeEvent, err := BpmnToTimeEvent(event.Parent(), event)
+		timeEvent, order, err := BpmnToTimeEvent(event.Parent(), event)
 		if err != nil {
 			return result, err
 		}
-		result = append(result, timeEvent)
+		result = append(result, model.Element{Order: order, TimeEvent: &timeEvent})
 	}
 
 	return result, nil

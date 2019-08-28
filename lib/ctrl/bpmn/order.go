@@ -22,10 +22,16 @@ type LaneByOrder []model.LaneElement
 
 func (a LaneByOrder) Len() int           { return len(a) }
 func (a LaneByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a LaneByOrder) Less(i, j int) bool { return a[i].GetOrder() < a[j].GetOrder() }
+func (a LaneByOrder) Less(i, j int) bool { return a[i].Order < a[j].Order }
+
+type LaneElementByOrder []model.LaneSubElement
+
+func (a LaneElementByOrder) Len() int           { return len(a) }
+func (a LaneElementByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a LaneElementByOrder) Less(i, j int) bool { return a[i].Order < a[j].Order }
 
 type ElementByOrder []model.Element
 
 func (a ElementByOrder) Len() int           { return len(a) }
 func (a ElementByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ElementByOrder) Less(i, j int) bool { return a[i].GetOrder() < a[j].GetOrder() }
+func (a ElementByOrder) Less(i, j int) bool { return a[i].Order < a[j].Order }

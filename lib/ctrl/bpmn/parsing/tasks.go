@@ -24,7 +24,7 @@ import (
 	"github.com/beevik/etree"
 )
 
-func BpmnToMultitask(task *etree.Element) (result model.MultiTask, err error) {
+func BpmnToMultitask(task *etree.Element) (result model.Element, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
@@ -51,21 +51,23 @@ func BpmnToMultitask(task *etree.Element) (result model.MultiTask, err error) {
 	id := task.SelectAttr("id").Value
 	label := task.SelectAttrValue("name", id)
 
-	result = model.MultiTask{
-		Label:            label,
-		CharacteristicId: cmd.CharacteristicId,
-		Function:         cmd.Function,
-		DeviceClass:      cmd.DeviceClass,
-		Aspect:           cmd.Aspect,
-		Order:            documentation.Order,
-		BpmnElementId:    id,
-		Input:            cmd.Input,
-		Parameter:        parameter,
+	result = model.Element{
+		Order: documentation.Order,
+		MultiTask: &model.MultiTask{
+			Label:            label,
+			CharacteristicId: cmd.CharacteristicId,
+			Function:         cmd.Function,
+			DeviceClass:      cmd.DeviceClass,
+			Aspect:           cmd.Aspect,
+			BpmnElementId:    id,
+			Input:            cmd.Input,
+			Parameter:        parameter,
+		},
 	}
 	return result, nil
 }
 
-func BpmnToTask(task *etree.Element) (result model.Task, err error) {
+func BpmnToTask(task *etree.Element) (result model.Element, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
@@ -92,16 +94,18 @@ func BpmnToTask(task *etree.Element) (result model.Task, err error) {
 	id := task.SelectAttr("id").Value
 	label := task.SelectAttrValue("name", id)
 
-	result = model.Task{
-		Label:            label,
-		CharacteristicId: cmd.CharacteristicId,
-		Function:         cmd.Function,
-		DeviceClass:      cmd.DeviceClass,
-		Aspect:           cmd.Aspect,
-		Order:            documentation.Order,
-		BpmnElementId:    id,
-		Parameter:        parameter,
-		Input:            cmd.Input,
+	result = model.Element{
+		Order: documentation.Order,
+		Task: &model.Task{
+			Label:            label,
+			CharacteristicId: cmd.CharacteristicId,
+			Function:         cmd.Function,
+			DeviceClass:      cmd.DeviceClass,
+			Aspect:           cmd.Aspect,
+			BpmnElementId:    id,
+			Parameter:        parameter,
+			Input:            cmd.Input,
+		},
 	}
 	return result, nil
 }

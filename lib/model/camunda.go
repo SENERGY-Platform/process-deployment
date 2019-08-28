@@ -43,5 +43,5 @@ type Command struct {
 }
 
 type Documentation struct {
-	Order int `json:"order"`
+	Order int64 `json:"order"`
 }

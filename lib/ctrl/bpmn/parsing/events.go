@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 )
 
-func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, err error) {
+func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, order int64, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -40,20 +40,18 @@ func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, err error) {
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
 		if err != nil {
-			return result, err
+			return result, 0, err
 		}
 	}
 	result = model.MsgEvent{
 		Label:         label,
 		BpmnElementId: id,
-		Order:         documentation.Order,
 	}
 
-	return result, nil
+	return result, documentation.Order, nil
 }
 
-//TODO: test
-func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (result model.TimeEvent, err error) {
+func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (result model.TimeEvent, order int64, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -67,13 +65,12 @@ func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (resu
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
 		if err != nil {
-			return result, err
+			return result, 0, err
 		}
 	}
 	result = model.TimeEvent{
 		BpmnElementId: id,
 		Label:         label,
-		Order:         documentation.Order,
 	}
 	for _, child := range eventDefinition.ChildElements() {
 		result.Kind = child.Tag
@@ -86,5 +83,5 @@ func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (resu
 			result.Kind = "timeDuration"
 		}
 	}
-	return result, nil
+	return result, documentation.Order, nil
 }

@@ -25,7 +25,6 @@ type Task struct {
 	Function         devicemodel.Function     `json:"function" bson:"function"`
 	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
-	Order            int                      `json:"order" bson:"order"`
 	BpmnElementId    string                   `json:"bpmn_element_id" bson:"bpmn_element_id"`
 	Input            interface{}              `json:"input"`
 
@@ -39,10 +38,6 @@ type Task struct {
 	Parameter map[string]string
 }
 
-func (this Task) GetOrder() int {
-	return this.Order
-}
-
 type MultiTask struct {
 	//information direct from model
 	Label            string                   `json:"label" bson:"label"`
@@ -50,7 +45,6 @@ type MultiTask struct {
 	Function         devicemodel.Function     `json:"function" bson:"function"`
 	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
-	Order            int                      `json:"order" bson:"order"`
 	BpmnElementId    string                   `json:"bpmn_element_id" bson:"bpmn_element_id"`
 	Input            interface{}              `json:"input"`
 
@@ -62,8 +56,4 @@ type MultiTask struct {
 
 	//information to be completed by the user
 	Parameter map[string]string
-}
-
-func (this MultiTask) GetOrder() int {
-	return this.Order
 }

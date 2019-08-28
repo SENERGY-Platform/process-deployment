@@ -22,7 +22,6 @@ type Lane struct {
 	//information direct from model
 	Label         string `json:"label" bson:"label"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	Order         int    `json:"order" bson:"order"`
 
 	CharacteristicIds []string                  `json:"characteristic_ids" bson:"characteristic_ids"`
 	Functions         []devicemodel.Function    `json:"function_id" bson:"function_id"`
@@ -35,18 +34,13 @@ type Lane struct {
 	//information from user to deploy
 	Selection devicemodel.Device `json:"selection" bson:"selection"`
 
-	Elements []LaneTask `json:"elements" bson:"elements"`
-}
-
-func (this Lane) GetOrder() int {
-	return this.Order
+	Elements []LaneSubElement `json:"elements" bson:"elements"`
 }
 
 type MultiLane struct {
 	//information direct from model
 	Label         string `json:"label" bson:"label"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	Order         int    `json:"order" bson:"order"`
 
 	CharacteristicIds []string                  `json:"characteristic_ids" bson:"characteristic_ids"`
 	Functions         []devicemodel.Function    `json:"function_id" bson:"function_id"`
@@ -59,11 +53,14 @@ type MultiLane struct {
 	//information from user to deploy
 	Selections []devicemodel.Device `json:"selections" bson:"selections"`
 
-	Elements []LaneTask `json:"elements" bson:"elements"`
+	Elements []LaneSubElement `json:"elements" bson:"elements"`
 }
 
-func (this MultiLane) GetOrder() int {
-	return this.Order
+type LaneSubElement struct {
+	Order     int64      `json:"order"`
+	LaneTask  *LaneTask  `json:"task,omitempty"`
+	MsgEvent  *MsgEvent  `json:"msg_event,omitempty"`
+	TimeEvent *TimeEvent `json:"time_event,omitempty"`
 }
 
 type LaneTask struct {
@@ -76,7 +73,6 @@ type LaneTask struct {
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
 	Input            interface{}              `json:"input"`
 
-	Order         int    `json:"order" bson:"order"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task" bson:"multi_task"`
 
@@ -86,8 +82,4 @@ type LaneTask struct {
 
 	//information to be completed by the user
 	Parameter map[string]string
-}
-
-func (this LaneTask) GetOrder() int {
-	return this.Order
 }

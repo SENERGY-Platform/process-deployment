@@ -22,7 +22,6 @@ type MsgEvent struct {
 	//from model
 	Label         string `json:"label" bson:"label"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	Order         int    `json:"order" bson:"order"`
 
 	//from user selection
 	Device    devicemodel.Device  `json:"device" bson:"device"`
@@ -35,18 +34,9 @@ type MsgEvent struct {
 	EventId string `json:"event_id" bson:"event_id"`
 }
 
-func (this MsgEvent) GetOrder() int {
-	return this.Order
-}
-
 type TimeEvent struct {
 	BpmnElementId string `json:"bpmn_element_id"`
 	Kind          string `json:"kind"`
 	Time          string `json:"time"`
 	Label         string `json:"label"`
-	Order         int    `json:"order"`
-}
-
-func (this TimeEvent) GetOrder() int {
-	return this.Order
 }
