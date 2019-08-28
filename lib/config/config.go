@@ -31,6 +31,7 @@ type ConfigStruct struct {
 	LogLevel         string `json:"log_level"`
 	ApiPort          string `json:"api_port"`
 	ZookeeperUrl     string `json:"zookeeper_url"`
+	MongoUrl         string `json:"mongo_url"`
 	ConsumerGroup    string `json:"consumer_group"`
 	Debug            bool   `json:"debug"`
 	ConnectivityTest bool   `json:"connectivity_test"`

@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-package process
+package db
+
+import (
+	"context"
+	"time"
+)
+
+func getTimeoutContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 10*time.Second)
+}

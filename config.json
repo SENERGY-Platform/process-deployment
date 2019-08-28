@@ -1,5 +1,6 @@
 {
   "zookeeper_url": "zk",
+  "mongo_url": "mongo",
   "consumer_group": "process-deployment",
   "debug": false,
   "log_level": "call",

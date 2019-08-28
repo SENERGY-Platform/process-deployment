@@ -15,3 +15,42 @@
  */
 
 package db
+
+import (
+	"context"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type FactoryType struct{}
+
+var Factory = FactoryType{}
+
+type Mongo struct {
+	config config.Config
+	client *mongo.Client
+}
+
+var CreateCollections = []func(db *Mongo, config config.Config) error{}
+
+func (f FactoryType) New(ctx context.Context, config config.Config) (result interfaces.Database, err error) {
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(config.MongoUrl))
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		<-ctx.Done()
+		client.Disconnect(context.Background())
+	}()
+	db := &Mongo{config: config, client: client}
+	for _, creators := range CreateCollections {
+		err = creators(db, config)
+		if err != nil {
+			client.Disconnect(context.Background())
+			return nil, err
+		}
+	}
+	return db, nil
+}

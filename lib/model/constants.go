@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-package process
+package model
+
+const CAMUNDA_VARIABLES_PAYLOAD = "payload"

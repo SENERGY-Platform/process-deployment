@@ -6,6 +6,7 @@ require (
 	github.com/SmartEnergyPlatform/iot-device-repository v0.0.0-20181018081528-7297409a5f9f
 	github.com/SmartEnergyPlatform/jwt-http-router v0.0.0-20190722084820-0e1fe0dc7a07
 	github.com/SmartEnergyPlatform/util v0.0.0-20181018070938-b26ca656886c
+	github.com/beevik/etree v1.1.0
 	github.com/cbroglie/mustache v1.0.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/lib/pq v1.0.0 // indirect
@@ -15,6 +16,7 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/segmentio/kafka-go v0.3.2
 	github.com/wvanbergen/kazoo-go v0.0.0-20180202103751-f72d8611297a
+	go.mongodb.org/mongo-driver v1.1.0 // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528

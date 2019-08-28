@@ -1,0 +1,59 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+    <bpmn:process id="multitest_listener_local" isExecutable="true">
+        <bpmn:extensionElements>
+            <camunda:executionListener event="start">
+                <camunda:script scriptFormat="groovy">execution.setVariable(&quot;devices&quot;, [&quot;ld1&quot;,
+                    &quot;ld2&quot;])
+                </camunda:script>
+            </camunda:executionListener>
+        </bpmn:extensionElements>
+        <bpmn:startEvent id="StartEvent_1">
+            <bpmn:outgoing>SequenceFlow_0155elk</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:sequenceFlow id="SequenceFlow_0155elk" sourceRef="StartEvent_1" targetRef="Task_1vq9p83"/>
+        <bpmn:sequenceFlow id="SequenceFlow_1ws84pl" sourceRef="Task_1vq9p83" targetRef="EndEvent_0pz77hn"/>
+        <bpmn:endEvent id="EndEvent_0pz77hn">
+            <bpmn:incoming>SequenceFlow_1ws84pl</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:serviceTask id="Task_1vq9p83" camunda:type="external" camunda:topic="test">
+            <bpmn:extensionElements>
+                <camunda:inputOutput>
+                    <camunda:inputParameter name="payload">{&quot;foo&quot;:&quot;bar&quot;}</camunda:inputParameter>
+                </camunda:inputOutput>
+                <camunda:executionListener event="start">
+                    <camunda:script scriptFormat="groovy">execution.setVariable(&quot;devices&quot;, [&quot;ld1&quot;,
+                        &quot;ld2&quot;])
+                    </camunda:script>
+                </camunda:executionListener>
+            </bpmn:extensionElements>
+            <bpmn:incoming>SequenceFlow_0155elk</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_1ws84pl</bpmn:outgoing>
+            <bpmn:multiInstanceLoopCharacteristics camunda:collection="devices" camunda:elementVariable="device"/>
+        </bpmn:serviceTask>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="multitest_listener_local">
+            <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+                <dc:Bounds x="173" y="102" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_0pz77hn_di" bpmnElement="EndEvent_0pz77hn">
+                <dc:Bounds x="409" y="102" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ServiceTask_1nplt4b_di" bpmnElement="Task_1vq9p83">
+                <dc:Bounds x="259" y="80" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="SequenceFlow_0155elk_di" bpmnElement="SequenceFlow_0155elk">
+                <di:waypoint x="209" y="120"/>
+                <di:waypoint x="259" y="120"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="SequenceFlow_1ws84pl_di" bpmnElement="SequenceFlow_1ws84pl">
+                <di:waypoint x="359" y="120"/>
+                <di:waypoint x="409" y="120"/>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>
