@@ -57,10 +57,11 @@ type MultiLane struct {
 }
 
 type LaneSubElement struct {
-	Order     int64      `json:"order"`
-	LaneTask  *LaneTask  `json:"task,omitempty"`
-	MsgEvent  *MsgEvent  `json:"msg_event,omitempty"`
-	TimeEvent *TimeEvent `json:"time_event,omitempty"`
+	Order            int64      `json:"order"`
+	LaneTask         *LaneTask  `json:"task,omitempty"`
+	MsgEvent         *MsgEvent  `json:"msg_event,omitempty"`
+	ReceiveTaskEvent *MsgEvent  `json:"receive_task_event,omitempty"`
+	TimeEvent        *TimeEvent `json:"time_event,omitempty"`
 }
 
 type LaneTask struct {

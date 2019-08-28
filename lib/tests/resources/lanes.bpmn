@@ -9,6 +9,7 @@
     <bpmn:process id="lanes" isExecutable="true">
         <bpmn:laneSet id="LaneSet_1ekoknz">
             <bpmn:lane id="Lane_0v679jg" name="taskLane">
+                <bpmn:documentation>{&quot;order&quot;:1}</bpmn:documentation>
                 <bpmn:flowNodeRef>IntermediateThrowEvent_1tchutl</bpmn:flowNodeRef>
                 <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
                 <bpmn:flowNodeRef>Task_0nmb2on</bpmn:flowNodeRef>
