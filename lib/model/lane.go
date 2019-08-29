@@ -23,10 +23,7 @@ type Lane struct {
 	Label         string `json:"label" bson:"label"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
 
-	CharacteristicIds []string                  `json:"characteristic_ids" bson:"characteristic_ids"`
-	Functions         []devicemodel.Function    `json:"function_id" bson:"function_id"`
-	DeviceClasses     []devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
-	Aspects           []devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
+	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
 	DeviceOptions []devicemodel.Device `json:"device_options" bson:"device_options"`
@@ -42,10 +39,7 @@ type MultiLane struct {
 	Label         string `json:"label" bson:"label"`
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
 
-	CharacteristicIds []string                  `json:"characteristic_ids" bson:"characteristic_ids"`
-	Functions         []devicemodel.Function    `json:"function_id" bson:"function_id"`
-	DeviceClasses     []devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
-	Aspects           []devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
+	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
 	DeviceOptions []devicemodel.Device `json:"device_options" bson:"device_options"`
@@ -68,11 +62,8 @@ type LaneTask struct {
 	//information direct from model
 	Label string `json:"label" bson:"label"`
 
-	CharacteristicId string                   `json:"characteristic_id" bson:"characteristic_id"`
-	Function         devicemodel.Function     `json:"function" bson:"function"`
-	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
-	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
-	Input            interface{}              `json:"input"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	Input             interface{}       `json:"input"`
 
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task" bson:"multi_task"`

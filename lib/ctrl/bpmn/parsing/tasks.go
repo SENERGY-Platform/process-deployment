@@ -54,14 +54,16 @@ func BpmnToMultitask(task *etree.Element) (result model.Element, err error) {
 	result = model.Element{
 		Order: documentation.Order,
 		MultiTask: &model.MultiTask{
-			Label:            label,
-			CharacteristicId: cmd.CharacteristicId,
-			Function:         cmd.Function,
-			DeviceClass:      cmd.DeviceClass,
-			Aspect:           cmd.Aspect,
-			BpmnElementId:    id,
-			Input:            cmd.Input,
-			Parameter:        parameter,
+			Label: label,
+			DeviceDescription: model.DeviceDescription{
+				CharacteristicId: cmd.CharacteristicId,
+				Function:         cmd.Function,
+				DeviceClass:      cmd.DeviceClass,
+				Aspect:           cmd.Aspect,
+			},
+			BpmnElementId: id,
+			Input:         cmd.Input,
+			Parameter:     parameter,
 		},
 	}
 	return result, nil
@@ -97,14 +99,16 @@ func BpmnToTask(task *etree.Element) (result model.Element, err error) {
 	result = model.Element{
 		Order: documentation.Order,
 		Task: &model.Task{
-			Label:            label,
-			CharacteristicId: cmd.CharacteristicId,
-			Function:         cmd.Function,
-			DeviceClass:      cmd.DeviceClass,
-			Aspect:           cmd.Aspect,
-			BpmnElementId:    id,
-			Parameter:        parameter,
-			Input:            cmd.Input,
+			Label: label,
+			DeviceDescription: model.DeviceDescription{
+				CharacteristicId: cmd.CharacteristicId,
+				Function:         cmd.Function,
+				DeviceClass:      cmd.DeviceClass,
+				Aspect:           cmd.Aspect,
+			},
+			BpmnElementId: id,
+			Parameter:     parameter,
+			Input:         cmd.Input,
 		},
 	}
 	return result, nil

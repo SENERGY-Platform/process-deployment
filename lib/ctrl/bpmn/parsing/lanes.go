@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
@@ -73,44 +72,31 @@ func bpmnToLane(lane *etree.Element) (result model.LaneElement, err error) {
 
 	id := lane.SelectAttr("id").Value
 	label := lane.SelectAttrValue("name", id)
-	characteristics, functions, deviceClasses, aspects := aggregateLaneTaskInfo(subElements)
+	deviceDescriptions := aggregateLaneTaskInfo(subElements)
 
 	isMulti := isMultiTaskLane(subElements)
 	if isMulti {
 		result.MultiLane = &model.MultiLane{
-			Label:             label,
-			BpmnElementId:     id,
-			CharacteristicIds: characteristics,
-			Functions:         functions,
-			DeviceClasses:     deviceClasses,
-			Aspects:           aspects,
-			Elements:          subElements,
+			Label:              label,
+			BpmnElementId:      id,
+			DeviceDescriptions: deviceDescriptions,
+			Elements:           subElements,
 		}
 	} else {
 		result.Lane = &model.Lane{
-			Label:             label,
-			BpmnElementId:     id,
-			CharacteristicIds: characteristics,
-			Functions:         functions,
-			DeviceClasses:     deviceClasses,
-			Aspects:           aspects,
-			Elements:          subElements,
+			Label:              label,
+			BpmnElementId:      id,
+			DeviceDescriptions: deviceDescriptions,
+			Elements:           subElements,
 		}
 	}
 	return
 }
 
-func aggregateLaneTaskInfo(elements []model.LaneSubElement) (characteristicsIds []string, functions []devicemodel.Function, deviceClasses []devicemodel.DeviceClass, aspects []devicemodel.Aspect) {
+func aggregateLaneTaskInfo(elements []model.LaneSubElement) (result []model.DeviceDescription) {
 	for _, element := range elements {
 		if element.LaneTask != nil {
-			characteristicsIds = append(characteristicsIds, element.LaneTask.CharacteristicId)
-			functions = append(functions, element.LaneTask.Function)
-			if element.LaneTask.DeviceClass != nil {
-				deviceClasses = append(deviceClasses, *element.LaneTask.DeviceClass)
-			}
-			if element.LaneTask.Aspect != nil {
-				aspects = append(aspects, *element.LaneTask.Aspect)
-			}
+			result = append(result, element.LaneTask.DeviceDescription)
 		}
 	}
 	return
@@ -163,15 +149,12 @@ func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubEleme
 			}
 			result.Order = simpletask.Order
 			result.LaneTask = &model.LaneTask{
-				Label:            simpletask.Task.Label,
-				CharacteristicId: simpletask.Task.CharacteristicId,
-				Function:         simpletask.Task.Function,
-				DeviceClass:      simpletask.Task.DeviceClass,
-				Aspect:           simpletask.Task.Aspect,
-				Input:            simpletask.Task.Input,
-				BpmnElementId:    simpletask.Task.BpmnElementId,
-				MultiTask:        len(task.FindElements(".//bpmn:multiInstanceLoopCharacteristics")) > 0,
-				Parameter:        simpletask.Task.Parameter,
+				Label:             simpletask.Task.Label,
+				DeviceDescription: simpletask.Task.DeviceDescription,
+				Input:             simpletask.Task.Input,
+				BpmnElementId:     simpletask.Task.BpmnElementId,
+				MultiTask:         len(task.FindElements(".//bpmn:multiInstanceLoopCharacteristics")) > 0,
+				Parameter:         simpletask.Task.Parameter,
 			}
 			return result, true, nil
 		}

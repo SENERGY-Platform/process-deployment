@@ -16,17 +16,12 @@
 
 package model
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-
 type Task struct {
 	//information direct from model
-	Label            string                   `json:"label" bson:"label"`
-	CharacteristicId string                   `json:"characteristic_id" bson:"characteristic_id"`
-	Function         devicemodel.Function     `json:"function" bson:"function"`
-	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
-	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
-	BpmnElementId    string                   `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	Input            interface{}              `json:"input"`
+	Label             string            `json:"label" bson:"label"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	BpmnElementId     string            `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
 	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
@@ -40,13 +35,10 @@ type Task struct {
 
 type MultiTask struct {
 	//information direct from model
-	Label            string                   `json:"label" bson:"label"`
-	CharacteristicId string                   `json:"characteristic_id" bson:"characteristic_id"`
-	Function         devicemodel.Function     `json:"function" bson:"function"`
-	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty" bson:"device_class,omitempty"`
-	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty" bson:"aspect,omitempty"`
-	BpmnElementId    string                   `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	Input            interface{}              `json:"input"`
+	Label             string            `json:"label" bson:"label"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	BpmnElementId     string            `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
 	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
