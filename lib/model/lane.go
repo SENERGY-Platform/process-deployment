@@ -20,34 +20,34 @@ import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 
 type Lane struct {
 	//information direct from model
-	Label         string `json:"label" bson:"label"`
-	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	Label         string `json:"label"`
+	BpmnElementId string `json:"bpmn_element_id"`
 
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options"`
 
 	//information from user to deploy
-	Selection devicemodel.Device `json:"selection" bson:"selection"`
+	Selection devicemodel.Device `json:"selection"`
 
-	Elements []LaneSubElement `json:"elements" bson:"elements"`
+	Elements []LaneSubElement `json:"elements"`
 }
 
 type MultiLane struct {
 	//information direct from model
-	Label         string `json:"label" bson:"label"`
-	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	Label         string `json:"label"`
+	BpmnElementId string `json:"bpmn_element_id"`
 
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options"`
 
 	//information from user to deploy
-	Selections []devicemodel.Device `json:"selections" bson:"selections"`
+	Selections []devicemodel.Device `json:"selections"`
 
-	Elements []LaneSubElement `json:"elements" bson:"elements"`
+	Elements []LaneSubElement `json:"elements"`
 }
 
 type LaneSubElement struct {
@@ -65,11 +65,11 @@ type LaneTask struct {
 	DeviceDescription DeviceDescription `json:"device_description"`
 	Input             interface{}       `json:"input"`
 
-	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
-	MultiTask     bool   `json:"multi_task" bson:"multi_task"`
+	BpmnElementId string `json:"bpmn_element_id"`
+	MultiTask     bool   `json:"multi_task"`
 
 	SelectedService devicemodel.Service `json:"selected_service" bson:"selected_service"`
 
 	//information to be completed by the user
-	Parameter map[string]string
+	Parameter map[string]string `json:"parameter"`
 }

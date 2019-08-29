@@ -20,18 +20,18 @@ import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 
 type MsgEvent struct {
 	//from model
-	Label         string `json:"label" bson:"label"`
-	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	Label         string `json:"label"`
+	BpmnElementId string `json:"bpmn_element_id"`
 
 	//from user selection
-	Device    devicemodel.Device  `json:"device" bson:"device"`
-	Service   devicemodel.Service `json:"service" bson:"service"`
-	Path      string              `json:"path" bson:"path"`
-	Value     string              `json:"value" bson:"value"`
+	Device    devicemodel.Device  `json:"device"`
+	Service   devicemodel.Service `json:"service"`
+	Path      string              `json:"path"`
+	Value     string              `json:"value"`
 	Operation string              `json:"operation"`
 
 	//generated
-	EventId string `json:"event_id" bson:"event_id"`
+	EventId string `json:"event_id"`
 }
 
 type TimeEvent struct {

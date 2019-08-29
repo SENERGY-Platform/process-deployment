@@ -18,34 +18,34 @@ package model
 
 type Task struct {
 	//information direct from model
-	Label             string            `json:"label" bson:"label"`
+	Label             string            `json:"label"`
 	DeviceDescription DeviceDescription `json:"device_description"`
-	BpmnElementId     string            `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	BpmnElementId     string            `json:"bpmn_element_id"`
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options"`
 
 	//information from user to deploy
-	Selection Selection `json:"selection" bson:"selection"`
+	Selection Selection `json:"selection"`
 
 	//information to be completed by the user
-	Parameter map[string]string
+	Parameter map[string]string `json:"parameter"`
 }
 
 type MultiTask struct {
 	//information direct from model
-	Label             string            `json:"label" bson:"label"`
+	Label             string            `json:"label"`
 	DeviceDescription DeviceDescription `json:"device_description"`
-	BpmnElementId     string            `json:"bpmn_element_id" bson:"bpmn_element_id"`
+	BpmnElementId     string            `json:"bpmn_element_id"`
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options"`
 
 	//information from user to deploy
-	Selections []Selection `json:"selections" bson:"selections"`
+	Selections []Selection `json:"selections"`
 
 	//information to be completed by the user
-	Parameter map[string]string
+	Parameter map[string]string `json:"parameter"`
 }
