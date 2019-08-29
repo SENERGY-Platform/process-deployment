@@ -26,7 +26,7 @@ type Lane struct {
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []devicemodel.Device `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
 
 	//information from user to deploy
 	Selection devicemodel.Device `json:"selection" bson:"selection"`
@@ -42,7 +42,7 @@ type MultiLane struct {
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []devicemodel.Device `json:"device_options" bson:"device_options"`
+	DeviceOptions []DeviceOption `json:"device_options" bson:"device_options"`
 
 	//information from user to deploy
 	Selections []devicemodel.Device `json:"selections" bson:"selections"`
@@ -68,9 +68,7 @@ type LaneTask struct {
 	BpmnElementId string `json:"bpmn_element_id" bson:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task" bson:"multi_task"`
 
-	//prepared
-	ServiceOptions  []devicemodel.Service `json:"service_options" bson:"-"`
-	SelectedService devicemodel.Service   `json:"selected_service" bson:"selected_service"`
+	SelectedService devicemodel.Service `json:"selected_service" bson:"selected_service"`
 
 	//information to be completed by the user
 	Parameter map[string]string

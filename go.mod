@@ -16,7 +16,7 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/segmentio/kafka-go v0.3.2
 	github.com/wvanbergen/kazoo-go v0.0.0-20180202103751-f72d8611297a
-	go.mongodb.org/mongo-driver v1.1.0 // indirect
+	go.mongodb.org/mongo-driver v1.1.0
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528

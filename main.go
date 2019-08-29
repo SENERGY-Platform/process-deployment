@@ -23,8 +23,8 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/connectionlog"
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
-	"github.com/SENERGY-Platform/process-deployment/lib/devicerepository"
 	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
+	"github.com/SENERGY-Platform/process-deployment/lib/semanticrepository"
 	"log"
 	"os"
 	"os/signal"
@@ -43,7 +43,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	err = lib.New(ctx, config, kafka.Factory, db.Factory, connectionlog.Factory, devicerepository.Factory)
+	err = lib.New(ctx, config, kafka.Factory, db.Factory, connectionlog.Factory, semanticrepository.Factory)
 	if err != nil {
 		log.Fatal(err)
 	}

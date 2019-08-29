@@ -26,15 +26,15 @@ type Ctrl struct {
 	config        config.Config
 	db            interfaces.Database
 	connectionLog interfaces.Connectionlog
-	deviceRepo    interfaces.DeviceRepo
+	semanticRepo  interfaces.SemanticRepository
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, connlog interfaces.Connectionlog, repo interfaces.DeviceRepo) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, connlog interfaces.Connectionlog, repo interfaces.SemanticRepository) (result *Ctrl, err error) {
 	result = &Ctrl{
 		config:        config,
 		db:            db,
 		connectionLog: connlog,
-		deviceRepo:    repo,
+		semanticRepo:  repo,
 	}
 	return result, nil
 }

@@ -19,5 +19,41 @@ package ctrl
 import "github.com/SENERGY-Platform/process-deployment/lib/model"
 
 func (this *Ctrl) SetDeploymentOptions(deployment *model.Deployment) (err error) {
-	panic("not implemented") //TODO
+	for _, element := range deployment.Elements {
+		if element.Task != nil {
+			options, err := this.GetOptions([]model.DeviceDescription{element.Task.DeviceDescription})
+			if err != nil {
+				return err
+			}
+			element.Task.DeviceOptions = options
+		}
+		if element.MultiTask != nil {
+			options, err := this.GetOptions([]model.DeviceDescription{element.MultiTask.DeviceDescription})
+			if err != nil {
+				return err
+			}
+			element.MultiTask.DeviceOptions = options
+		}
+	}
+	for _, lane := range deployment.Lanes {
+		if lane.Lane != nil {
+			options, err := this.GetOptions(lane.Lane.DeviceDescriptions)
+			if err != nil {
+				return err
+			}
+			lane.Lane.DeviceOptions = options
+		}
+		if lane.MultiLane != nil {
+			options, err := this.GetOptions(lane.MultiLane.DeviceDescriptions)
+			if err != nil {
+				return err
+			}
+			lane.MultiLane.DeviceOptions = options
+		}
+	}
+	return nil
+}
+
+func (this *Ctrl) GetOptions(descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
+	return this.semanticRepo.GetDeploymentOptions(descriptions)
 }

@@ -19,11 +19,13 @@ package interfaces
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 )
 
-type DeviceRepoFactory interface {
-	New(ctx context.Context, config config.Config) (DeviceRepo, error)
+type SemanticRepositoryFactory interface {
+	New(ctx context.Context, config config.Config) (SemanticRepository, error)
 }
 
-type DeviceRepo interface {
+type SemanticRepository interface {
+	GetDeploymentOptions(descriptions []model.DeviceDescription) ([]model.DeviceOption, error)
 }
