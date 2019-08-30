@@ -14,29 +14,36 @@
  * limitations under the License.
  */
 
-package ctrl
+package mock
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"sync"
 )
 
-type Ctrl struct {
-	config        config.Config
-	db            interfaces.Database
-	connectionLog interfaces.Connectionlog
-	semanticRepo  interfaces.SemanticRepository
-	processRepo   interfaces.ProcessRepository
+type ProcessRepoMock struct {
+	mux       sync.Mutex
+	processes map[string]string
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, connlog interfaces.Connectionlog, repo interfaces.SemanticRepository, processRepo interfaces.ProcessRepository) (result *Ctrl, err error) {
-	result = &Ctrl{
-		config:        config,
-		db:            db,
-		connectionLog: connlog,
-		semanticRepo:  repo,
-		processRepo:   processRepo,
-	}
-	return result, nil
+var ProcessRepository = &ProcessRepoMock{processes: map[string]string{}}
+
+func (this *ProcessRepoMock) New(ctx context.Context, config config.Config) (interfaces.ProcessRepository, error) {
+	return this, nil
+}
+
+func (this *ProcessRepoMock) GetBpmn(id string) (xml string, exists bool, err error) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	xml, exists = this.processes[id]
+	return
+}
+
+func (this *ProcessRepoMock) SetBpmn(id string, xml string) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.processes[id] = xml
+	return
 }

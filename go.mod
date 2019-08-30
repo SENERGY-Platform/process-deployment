@@ -1,6 +1,7 @@
 module github.com/SENERGY-Platform/process-deployment
 
 require (
+	github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141950 // indirect
 	github.com/SENERGY-Platform/process-model-repository v0.0.0-20190813135900-cd1b69b9c2c5
 	github.com/SmartEnergyPlatform/amqp-wrapper-lib v0.0.0-20181018071408-32e07d9d89bb
 	github.com/SmartEnergyPlatform/iot-device-repository v0.0.0-20181018081528-7297409a5f9f

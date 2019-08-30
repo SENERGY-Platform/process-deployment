@@ -41,11 +41,7 @@ func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	log.Println("add logging and cors")
 	corsHandler := util.NewCors(router)
 	logger := util.NewLogger(corsHandler, config.LogLevel)
-	log.Println("listen on port", config.ApiPort)
 	server := &http.Server{Addr: ":" + config.ApiPort, Handler: logger, WriteTimeout: 10 * time.Second, ReadTimeout: 2 * time.Second, ReadHeaderTimeout: 2 * time.Second}
-	server.RegisterOnShutdown(func() {
-		log.Println("DEBUG: api shutdown")
-	})
 	go func() {
 		log.Println("Listening on ", server.Addr)
 		if err := server.ListenAndServe(); err != nil {
@@ -55,7 +51,7 @@ func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	}()
 	go func() {
 		<-ctx.Done()
-		log.Println("DEBUG: api shutdown result: ", server.Shutdown(context.Background()))
+		log.Println("DEBUG: api shutdown", server.Shutdown(context.Background()))
 	}()
 	return nil
 }

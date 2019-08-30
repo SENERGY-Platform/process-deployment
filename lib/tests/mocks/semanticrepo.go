@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-package ctrl
+package mock
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"sync"
 )
 
-type Ctrl struct {
-	config        config.Config
-	db            interfaces.Database
-	connectionLog interfaces.Connectionlog
-	semanticRepo  interfaces.SemanticRepository
-	processRepo   interfaces.ProcessRepository
+type SemanticRepoMock struct {
+	mux     sync.Mutex
+	options []model.DeviceOption
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, connlog interfaces.Connectionlog, repo interfaces.SemanticRepository, processRepo interfaces.ProcessRepository) (result *Ctrl, err error) {
-	result = &Ctrl{
-		config:        config,
-		db:            db,
-		connectionLog: connlog,
-		semanticRepo:  repo,
-		processRepo:   processRepo,
-	}
-	return result, nil
+var SemanticRepository = &SemanticRepoMock{}
+
+func (this *SemanticRepoMock) New(ctx context.Context, config config.Config) (interfaces.SemanticRepository, error) {
+	return this, nil
+}
+
+func (this *SemanticRepoMock) GetDeploymentOptions(descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	return this.options, nil
+}
+
+func (this *SemanticRepoMock) SetOptions(options []model.DeviceOption) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.options = options
 }

@@ -24,7 +24,15 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 )
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, database interfaces.DatabaseFactory, connectionlog interfaces.ConnectionlogFactory, semanticRepository interfaces.SemanticRepositoryFactory) error {
+func New(
+	ctx context.Context,
+	config config.Config,
+	sourcing interfaces.SourcingFactory,
+	database interfaces.DatabaseFactory,
+	connectionlog interfaces.ConnectionlogFactory,
+	semanticRepository interfaces.SemanticRepositoryFactory,
+	processRepository interfaces.ProcessRepositoryFactory) error {
+
 	db, err := database.New(ctx, config)
 	if err != nil {
 		return err
@@ -37,7 +45,9 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 	if err != nil {
 		return err
 	}
-	controller, err := ctrl.New(ctx, config, sourcing, db, connlog, repo)
+	processRepo, err := processRepository.New(ctx, config)
+
+	controller, err := ctrl.New(ctx, config, sourcing, db, connlog, repo, processRepo)
 	if err != nil {
 		return err
 	}

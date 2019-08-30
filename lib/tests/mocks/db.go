@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ctrl
+package mock
 
 import (
 	"context"
@@ -22,21 +22,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 )
 
-type Ctrl struct {
-	config        config.Config
-	db            interfaces.Database
-	connectionLog interfaces.Connectionlog
-	semanticRepo  interfaces.SemanticRepository
-	processRepo   interfaces.ProcessRepository
+type DatabaseMock struct {
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, connlog interfaces.Connectionlog, repo interfaces.SemanticRepository, processRepo interfaces.ProcessRepository) (result *Ctrl, err error) {
-	result = &Ctrl{
-		config:        config,
-		db:            db,
-		connectionLog: connlog,
-		semanticRepo:  repo,
-		processRepo:   processRepo,
-	}
-	return result, nil
+var Database = &DatabaseMock{}
+
+func (this *DatabaseMock) New(ctx context.Context, config config.Config) (interfaces.Database, error) {
+	return this, nil
 }
