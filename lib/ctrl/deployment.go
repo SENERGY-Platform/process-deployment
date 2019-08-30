@@ -20,6 +20,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
 
@@ -31,7 +32,7 @@ func (this *Ctrl) PrepareDeployment(id string) (result model.Deployment, err err
 	if !exists {
 		return result, errors.New("process modell not found"), http.StatusNotFound
 	}
-	result, err = bpmn.BpmnToDeployment(xml)
+	result, err = bpmn.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
@@ -40,4 +41,24 @@ func (this *Ctrl) PrepareDeployment(id string) (result model.Deployment, err err
 		return result, err, http.StatusInternalServerError
 	}
 	return result, nil, http.StatusOK
+}
+
+func (this *Ctrl) Deploy(deployment model.Deployment) (result model.Deployment, err error, code int) {
+	//TODO
+	deployment.Id = uuid.NewV4().String()
+	if err := deployment.Validate(false); err != nil {
+		return deployment, err, http.StatusBadRequest
+	}
+
+	//TODO: ensure selected devices and services exist and have the given content and are executable for the requesting user (if not using id ref)
+
+	//TODO: use bpmn sub lib
+
+	if err := deployment.Validate(true); err != nil {
+		return deployment, err, http.StatusInternalServerError
+	}
+
+	//TODO: use cqrs to deploy (maybe move validation to producing cqrs function)
+
+	panic("not implemented")
 }

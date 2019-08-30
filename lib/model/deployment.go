@@ -2,6 +2,7 @@ package model
 
 type Deployment struct {
 	Id       string        `json:"id"`
+	XmlRaw   string        `json:"xml_raw"`
 	Xml      string        `json:"xml"`
 	Name     string        `json:"name"`
 	Elements []Element     `json:"elements"`

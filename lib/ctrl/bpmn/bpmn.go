@@ -27,8 +27,8 @@ import (
 	"sort"
 )
 
-func BpmnToDeployment(xml string) (result model.Deployment, err error) {
-	result.Xml = xml
+func PrepareDeployment(xml string) (result model.Deployment, err error) {
+	result.XmlRaw = xml
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -57,6 +57,6 @@ func BpmnToDeployment(xml string) (result model.Deployment, err error) {
 	return
 }
 
-func SetDeploymentXml(deployment *model.Deployment) (err error) {
+func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool) (err error) {
 	panic("not implemented") //TODO
 }
