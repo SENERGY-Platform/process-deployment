@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
@@ -56,6 +57,55 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 		command.Device = &task.Selection.SelectedDevice
 		command.Service = &task.Selection.SelectedService
 		protocol, err := deviceRepo.GetProtocol(task.Selection.SelectedService.ProtocolId)
+		if err != nil {
+			return err
+		}
+		command.Protocol = &protocol
+	}
+
+	commandStr, err := json.Marshal(command)
+
+	if err != nil {
+		return err
+	}
+
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	doc.FindElement(xpath).SetText(string(commandStr))
+
+	for name, value := range task.Parameter {
+		xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + name + "']"
+		doc.FindElement(xpath).SetText(value)
+	}
+	return nil
+}
+
+func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Device, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	if task == nil {
+		return nil
+	}
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+
+	command := model.Command{
+		Function:         task.DeviceDescription.Function,
+		CharacteristicId: task.DeviceDescription.CharacteristicId,
+		DeviceClass:      task.DeviceDescription.DeviceClass,
+		Aspect:           task.DeviceDescription.Aspect,
+		Input:            task.Input,
+	}
+
+	if selectAsRef {
+		command.DeviceId = device.Id
+		command.ServiceId = task.SelectedService.Id
+		command.ProtocolId = task.SelectedService.ProtocolId
+	} else {
+		command.Device = &device
+		command.Service = &task.SelectedService
+		protocol, err := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
 		if err != nil {
 			return err
 		}
@@ -130,8 +180,79 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	return nil
 }
 
+func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemodel.Device, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	if task == nil {
+		return nil
+	}
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+
+	command := model.Command{
+		Function:         task.DeviceDescription.Function,
+		CharacteristicId: task.DeviceDescription.CharacteristicId,
+		DeviceClass:      task.DeviceDescription.DeviceClass,
+		Aspect:           task.DeviceDescription.Aspect,
+		Input:            task.Input,
+	}
+
+	commandStr, err := json.Marshal(command)
+	if err != nil {
+		return err
+	}
+
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	doc.FindElement(xpath).SetText(string(commandStr))
+
+	for name, value := range task.Parameter {
+		xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + name + "']"
+		doc.FindElement(xpath).SetText(value)
+	}
+
+	overwrites := []model.Overwrite{}
+	for _, device := range devices {
+		overwrite := model.Overwrite{}
+		if selectAsRef {
+			protocol, err := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
+			if err != nil {
+				return err
+			}
+			overwrite.Device = &device
+			overwrite.Service = &task.SelectedService
+			overwrite.Protocol = &protocol
+		} else {
+			overwrite.DeviceId = device.Id
+			overwrite.ServiceId = task.SelectedService.Id
+			overwrite.ProtocolId = task.SelectedService.ProtocolId
+		}
+		overwrites = append(overwrites, overwrite)
+	}
+
+	script, err := overwritesToScript(overwrites)
+	if err != nil {
+		return err
+	}
+
+	loopElement := doc.FindElement("//bpmn:serviceTask[@id='" + task.BpmnElementId + "']/bpmn:multiInstanceLoopCharacteristics")
+	loopElement.CreateAttr("camunda:collection", model.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION)
+	loopElement.CreateAttr("camunda:elementVariable", model.CAMUNDA_VARIABLES_OVERWRITE)
+
+	scriptElement := doc.CreateElement("camunda:script")
+	scriptElement.CreateAttr("scriptFormat", "groovy")
+	scriptElement.SetText(script)
+
+	executionListener := doc.CreateElement("camunda:executionListener")
+	executionListener.CreateAttr("event", "start")
+	executionListener.InsertChild(nil, scriptElement)
+	doc.FindElement("//bpmn:serviceTask[@id='"+task.BpmnElementId+"']/bpmn:extensionElements").InsertChild(nil, executionListener)
+	return nil
+}
+
 func createOverwriteVariableScript(selections []model.Selection, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (script string, err error) {
-	overwriteSelections := []string{}
+	overwrites := []model.Overwrite{}
 	for _, selection := range selections {
 		overwrite := model.Overwrite{}
 		if selectAsRef {
@@ -147,13 +268,20 @@ func createOverwriteVariableScript(selections []model.Selection, selectAsRef boo
 			overwrite.ServiceId = selection.SelectedService.Id
 			overwrite.ProtocolId = selection.SelectedService.ProtocolId
 		}
+		overwrites = append(overwrites, overwrite)
+	}
+	return overwritesToScript(overwrites)
+}
+
+func overwritesToScript(overwrites []model.Overwrite) (script string, err error) {
+	overwriteSelections := []string{}
+	for _, overwrite := range overwrites {
 		overwriteMsg, err := json.Marshal(overwrite)
 		if err != nil {
 			return "", err
 		}
 		overwriteSelections = append(overwriteSelections, string(overwriteMsg))
 	}
-
 	collection, err := json.Marshal(overwriteSelections)
 	if err != nil {
 		return "", err

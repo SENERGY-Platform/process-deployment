@@ -17,11 +17,87 @@
 package stringify
 
 import (
+	"errors"
+	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/beevik/etree"
+	"log"
+	"runtime/debug"
 )
 
-func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool) error {
-	//TODO
-	panic("not implemented")
+func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	if err := Lane(doc, lane.Lane, selectionAsRef, deviceRepo); err != nil {
+		return err
+	}
+	if err := MultiLane(doc, lane.MultiLane, selectionAsRef, deviceRepo); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	if lane == nil {
+		return nil
+	}
+
+	for _, element := range lane.Elements {
+		if err := LaneTask(doc, element.LaneTask, lane.Selection, selectionAsRef, deviceRepo); err != nil {
+			return err
+		}
+		if err := MsgEvent(doc, element.MsgEvent); err != nil {
+			return err
+		}
+
+		if err := ReceiverTask(doc, element.ReceiveTaskEvent); err != nil {
+			return err
+		}
+
+		if err := TimeEvent(doc, element.TimeEvent); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func MultiLane(doc *etree.Document, lane *model.MultiLane, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	if lane == nil {
+		return nil
+	}
+
+	for _, element := range lane.Elements {
+		if err := LaneMultiTask(doc, element.LaneTask, lane.Selections, selectionAsRef, deviceRepo); err != nil {
+			return err
+		}
+		if err := MsgEvent(doc, element.MsgEvent); err != nil {
+			return err
+		}
+
+		if err := ReceiverTask(doc, element.ReceiveTaskEvent); err != nil {
+			return err
+		}
+
+		if err := TimeEvent(doc, element.TimeEvent); err != nil {
+			return err
+		}
+	}
+	return nil
 }

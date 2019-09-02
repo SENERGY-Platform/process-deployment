@@ -37,7 +37,7 @@ func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo int
 	}
 
 	for _, lane := range deployment.Lanes {
-		err = LaneElement(doc, lane, selectionAsRef)
+		err = LaneElement(doc, lane, selectionAsRef, deviceRepo)
 		if err != nil {
 			return "", err
 		}
