@@ -45,10 +45,15 @@ func Element(doc *etree.Document, element model.Element, selectionAsRef bool, de
 		return err
 	}
 
+	if err := ReceiverTask(doc, element.ReceiveTaskEvent); err != nil {
+		return err
+	}
+
+	if err := TimeEvent(doc, element.TimeEvent); err != nil {
+		return err
+	}
+
 	/*
-		if err := ReceiverTask(doc, element.ReceiveTaskEvent, selectionAsRef); err != nil {
-			return err
-		}
 		if err := TimeEvent(doc, element.TimeEvent, selectionAsRef); err != nil {
 			return err
 		}

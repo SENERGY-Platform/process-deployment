@@ -1,0 +1,40 @@
+{
+  "id": "uuid",
+  "xml_raw": "\u003cbpmn:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                  xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\"\n                  xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\"\n                  xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\"\n                  id=\"Definitions_1\" targetNamespace=\"http://bpmn.io/schema/bpmn\"\u003e\n    \u003cbpmn:process id=\"timeAndReceive\" isExecutable=\"true\"\u003e\n        \u003cbpmn:startEvent id=\"StartEvent_1\"\u003e\n            \u003cbpmn:outgoing\u003eSequenceFlow_1nh3k2a\u003c/bpmn:outgoing\u003e\n        \u003c/bpmn:startEvent\u003e\n        \u003cbpmn:sequenceFlow id=\"SequenceFlow_1nh3k2a\" sourceRef=\"StartEvent_1\"\n                           targetRef=\"IntermediateThrowEvent_10mhx3e\"/\u003e\n        \u003cbpmn:sequenceFlow id=\"SequenceFlow_0d8iosp\" sourceRef=\"IntermediateThrowEvent_10mhx3e\"\n                           targetRef=\"Task_1uyyxb0\"/\u003e\n        \u003cbpmn:sequenceFlow id=\"SequenceFlow_006q38h\" sourceRef=\"Task_1uyyxb0\" targetRef=\"EndEvent_0oatj6u\"/\u003e\n        \u003cbpmn:intermediateCatchEvent id=\"IntermediateThrowEvent_10mhx3e\" name=\"eine Minute\"\u003e\n            \u003cbpmn:incoming\u003eSequenceFlow_1nh3k2a\u003c/bpmn:incoming\u003e\n            \u003cbpmn:outgoing\u003eSequenceFlow_0d8iosp\u003c/bpmn:outgoing\u003e\n            \u003cbpmn:timerEventDefinition\u003e\n                \u003cbpmn:timeDuration xsi:type=\"bpmn:tFormalExpression\"\u003ePT1M\u003c/bpmn:timeDuration\u003e\n            \u003c/bpmn:timerEventDefinition\u003e\n        \u003c/bpmn:intermediateCatchEvent\u003e\n        \u003cbpmn:receiveTask id=\"Task_1uyyxb0\"\u003e\n            \u003cbpmn:incoming\u003eSequenceFlow_0d8iosp\u003c/bpmn:incoming\u003e\n            \u003cbpmn:outgoing\u003eSequenceFlow_006q38h\u003c/bpmn:outgoing\u003e\n        \u003c/bpmn:receiveTask\u003e\n        \u003cbpmn:endEvent id=\"EndEvent_0oatj6u\"\u003e\n            \u003cbpmn:incoming\u003eSequenceFlow_006q38h\u003c/bpmn:incoming\u003e\n        \u003c/bpmn:endEvent\u003e\n    \u003c/bpmn:process\u003e\n    \u003cbpmndi:BPMNDiagram id=\"BPMNDiagram_1\"\u003e\n        \u003cbpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"timeAndReceive\"\u003e\n            \u003cbpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\"\u003e\n                \u003cdc:Bounds x=\"173\" y=\"102\" width=\"36\" height=\"36\"/\u003e\n            \u003c/bpmndi:BPMNShape\u003e\n            \u003cbpmndi:BPMNShape id=\"IntermediateCatchEvent_0ztbgip_di\" bpmnElement=\"IntermediateThrowEvent_10mhx3e\"\u003e\n                \u003cdc:Bounds x=\"259\" y=\"102\" width=\"36\" height=\"36\"/\u003e\n                \u003cbpmndi:BPMNLabel\u003e\n                    \u003cdc:Bounds x=\"249\" y=\"145\" width=\"57\" height=\"14\"/\u003e\n                \u003c/bpmndi:BPMNLabel\u003e\n            \u003c/bpmndi:BPMNShape\u003e\n            \u003cbpmndi:BPMNShape id=\"ReceiveTask_08kr9nv_di\" bpmnElement=\"Task_1uyyxb0\"\u003e\n                \u003cdc:Bounds x=\"345\" y=\"80\" width=\"100\" height=\"80\"/\u003e\n            \u003c/bpmndi:BPMNShape\u003e\n            \u003cbpmndi:BPMNShape id=\"EndEvent_0oatj6u_di\" bpmnElement=\"EndEvent_0oatj6u\"\u003e\n                \u003cdc:Bounds x=\"495\" y=\"102\" width=\"36\" height=\"36\"/\u003e\n            \u003c/bpmndi:BPMNShape\u003e\n            \u003cbpmndi:BPMNEdge id=\"SequenceFlow_1nh3k2a_di\" bpmnElement=\"SequenceFlow_1nh3k2a\"\u003e\n                \u003cdi:waypoint x=\"209\" y=\"120\"/\u003e\n                \u003cdi:waypoint x=\"259\" y=\"120\"/\u003e\n            \u003c/bpmndi:BPMNEdge\u003e\n            \u003cbpmndi:BPMNEdge id=\"SequenceFlow_0d8iosp_di\" bpmnElement=\"SequenceFlow_0d8iosp\"\u003e\n                \u003cdi:waypoint x=\"295\" y=\"120\"/\u003e\n                \u003cdi:waypoint x=\"345\" y=\"120\"/\u003e\n            \u003c/bpmndi:BPMNEdge\u003e\n            \u003cbpmndi:BPMNEdge id=\"SequenceFlow_006q38h_di\" bpmnElement=\"SequenceFlow_006q38h\"\u003e\n                \u003cdi:waypoint x=\"445\" y=\"120\"/\u003e\n                \u003cdi:waypoint x=\"495\" y=\"120\"/\u003e\n            \u003c/bpmndi:BPMNEdge\u003e\n        \u003c/bpmndi:BPMNPlane\u003e\n    \u003c/bpmndi:BPMNDiagram\u003e\n\u003c/bpmn:definitions\u003e",
+  "name": "timeAndReceive",
+  "elements": [
+    {
+      "order": 0,
+      "receive_task_event": {
+        "label": "Task_1uyyxb0",
+        "bpmn_element_id": "Task_1uyyxb0",
+        "device": {
+          "id": "deviceId",
+          "local_id": "deviceUrl",
+          "name": "d1"
+        },
+        "service": {
+          "id": "serviceId",
+          "local_id": "serviceUri",
+          "name": "s1",
+          "aspects": null,
+          "protocol_id": "pid"
+        },
+        "path": "$.path.to.value",
+        "value": "42",
+        "operation": "==",
+        "event_id": "eventid"
+      }
+    },
+    {
+      "order": 0,
+      "time_event": {
+        "bpmn_element_id": "IntermediateThrowEvent_10mhx3e",
+        "kind": "timeDuration",
+        "time": "PT2M",
+        "label": "eine Minute"
+      }
+    }
+  ],
+  "lanes": null
+}

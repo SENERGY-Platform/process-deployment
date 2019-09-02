@@ -44,3 +44,37 @@ func MsgEvent(doc *etree.Document, event *model.MsgEvent) (err error) {
 	doc.FindElement("//*[@id='"+event.BpmnElementId+"']/bpmn:messageEventDefinition").CreateAttr("messageRef", msgRef)
 	return nil
 }
+
+func ReceiverTask(doc *etree.Document, event *model.MsgEvent) (err error) {
+	if event == nil {
+		return nil
+	}
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	msgRef := strings.Replace("e_"+event.EventId, "-", "_", -1)
+	bpmnMsg := doc.CreateElement("bpmn:message")
+	doc.SelectElement("bpmn:definitions").InsertChild(doc.SelectElement("bpmn:definitions").SelectElement("bpmndi:BPMNDiagram"), bpmnMsg)
+	bpmnMsg.CreateAttr("id", msgRef)
+	bpmnMsg.CreateAttr("name", event.EventId)
+	doc.FindElement("//*[@id='"+event.BpmnElementId+"']").CreateAttr("messageRef", msgRef)
+	return nil
+}
+
+func TimeEvent(doc *etree.Document, event *model.TimeEvent) (err error) {
+	if event == nil {
+		return nil
+	}
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+
+	doc.FindElement("//*[@id='" + event.BpmnElementId + "']/bpmn:timerEventDefinition/bpmn:" + event.Kind).SetText(event.Time)
+	return nil
+}

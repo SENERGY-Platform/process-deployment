@@ -341,3 +341,105 @@ func ExampleSimpleBpmnDeploymentToXml() {
 	// </bpmn:definitions>
 
 }
+
+func ExampleTimeAndReceiveBpmnDeploymentToXml() {
+	file, err := ioutil.ReadFile("../../tests/resources/timeAndReceive.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "test_id"
+	}
+
+	deployment := model.Deployment{}
+	err = json.Unmarshal(file, &deployment)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = deployment.Validate(false)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	mock.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+
+	err = UseDeploymentSelections(&deployment, false, mock.DeviceRepository)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = deployment.Validate(true)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(html.UnescapeString(deployment.Xml))
+
+	//output:
+	//<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+	//     <bpmn:process id="timeAndReceive" isExecutable="true">
+	//         <bpmn:startEvent id="StartEvent_1">
+	//             <bpmn:outgoing>SequenceFlow_1nh3k2a</bpmn:outgoing>
+	//         </bpmn:startEvent>
+	//         <bpmn:sequenceFlow id="SequenceFlow_1nh3k2a" sourceRef="StartEvent_1" targetRef="IntermediateThrowEvent_10mhx3e"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0d8iosp" sourceRef="IntermediateThrowEvent_10mhx3e" targetRef="Task_1uyyxb0"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_006q38h" sourceRef="Task_1uyyxb0" targetRef="EndEvent_0oatj6u"/>
+	//         <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_10mhx3e" name="eine Minute">
+	//             <bpmn:incoming>SequenceFlow_1nh3k2a</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_0d8iosp</bpmn:outgoing>
+	//             <bpmn:timerEventDefinition>
+	//                 <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2M</bpmn:timeDuration>
+	//             </bpmn:timerEventDefinition>
+	//         </bpmn:intermediateCatchEvent>
+	//         <bpmn:receiveTask id="Task_1uyyxb0" messageRef="e_test_id">
+	//             <bpmn:incoming>SequenceFlow_0d8iosp</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_006q38h</bpmn:outgoing>
+	//         </bpmn:receiveTask>
+	//         <bpmn:endEvent id="EndEvent_0oatj6u">
+	//             <bpmn:incoming>SequenceFlow_006q38h</bpmn:incoming>
+	//         </bpmn:endEvent>
+	//     </bpmn:process>
+	//     <bpmn:message id="e_test_id" name="test_id"/><bpmndi:BPMNDiagram id="BPMNDiagram_1">
+	//         <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="timeAndReceive">
+	//             <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+	//                 <dc:Bounds x="173" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="IntermediateCatchEvent_0ztbgip_di" bpmnElement="IntermediateThrowEvent_10mhx3e">
+	//                 <dc:Bounds x="259" y="102" width="36" height="36"/>
+	//                 <bpmndi:BPMNLabel>
+	//                     <dc:Bounds x="249" y="145" width="57" height="14"/>
+	//                 </bpmndi:BPMNLabel>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="ReceiveTask_08kr9nv_di" bpmnElement="Task_1uyyxb0">
+	//                 <dc:Bounds x="345" y="80" width="100" height="80"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="EndEvent_0oatj6u_di" bpmnElement="EndEvent_0oatj6u">
+	//                 <dc:Bounds x="495" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_1nh3k2a_di" bpmnElement="SequenceFlow_1nh3k2a">
+	//                 <di:waypoint x="209" y="120"/>
+	//                 <di:waypoint x="259" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0d8iosp_di" bpmnElement="SequenceFlow_0d8iosp">
+	//                 <di:waypoint x="295" y="120"/>
+	//                 <di:waypoint x="345" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_006q38h_di" bpmnElement="SequenceFlow_006q38h">
+	//                 <di:waypoint x="445" y="120"/>
+	//                 <di:waypoint x="495" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//         </bpmndi:BPMNPlane>
+	//     </bpmndi:BPMNDiagram>
+	// </bpmn:definitions>
+}
