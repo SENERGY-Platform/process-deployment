@@ -20,17 +20,28 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/api"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/connectionlog"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
+	"github.com/SENERGY-Platform/process-deployment/lib/db"
+	"github.com/SENERGY-Platform/process-deployment/lib/devicerepository"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
+	"github.com/SENERGY-Platform/process-deployment/lib/processrepository"
+	"github.com/SENERGY-Platform/process-deployment/lib/semanticrepository"
 )
 
-func New(
+func StartDefault(ctx context.Context, config config.Config) error {
+	return Start(ctx, config, kafka.Factory, db.Factory, connectionlog.Factory, semanticrepository.Factory, devicerepository.Factory, processrepository.Factory)
+}
+
+func Start(
 	ctx context.Context,
 	config config.Config,
 	sourcing interfaces.SourcingFactory,
 	database interfaces.DatabaseFactory,
 	connectionlog interfaces.ConnectionlogFactory,
 	semanticRepository interfaces.SemanticRepositoryFactory,
+	deviceRepository interfaces.DeviceRepositoryFactory,
 	processRepository interfaces.ProcessRepositoryFactory) error {
 
 	db, err := database.New(ctx, config)
@@ -45,9 +56,16 @@ func New(
 	if err != nil {
 		return err
 	}
+	deviceRepo, err := deviceRepository.New(ctx, config)
+	if err != nil {
+		return err
+	}
 	processRepo, err := processRepository.New(ctx, config)
+	if err != nil {
+		return err
+	}
 
-	controller, err := ctrl.New(ctx, config, sourcing, db, connlog, repo, processRepo)
+	controller, err := ctrl.New(ctx, config, sourcing, db, connlog, repo, deviceRepo, processRepo)
 	if err != nil {
 		return err
 	}

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package connectionlog
+package interfaces
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-type ConnectionLogFactory struct{}
-
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
-	//TODO
-	panic("implement me")
+type SemanticRepositoryFactory interface {
+	New(ctx context.Context, config config.Config) (SemanticRepository, error)
 }
 
-var Factory = &ConnectionLogFactory{}
+type SemanticRepository interface {
+	GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error)
+}

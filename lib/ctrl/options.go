@@ -16,19 +16,22 @@
 
 package ctrl
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+)
 
-func (this *Ctrl) SetDeploymentOptions(deployment *model.Deployment) (err error) {
+func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *model.Deployment) (err error) {
 	for _, element := range deployment.Elements {
 		if element.Task != nil {
-			options, err := this.GetOptions([]model.DeviceDescription{element.Task.DeviceDescription})
+			options, err := this.GetOptions(token, []model.DeviceDescription{element.Task.DeviceDescription})
 			if err != nil {
 				return err
 			}
 			element.Task.DeviceOptions = options
 		}
 		if element.MultiTask != nil {
-			options, err := this.GetOptions([]model.DeviceDescription{element.MultiTask.DeviceDescription})
+			options, err := this.GetOptions(token, []model.DeviceDescription{element.MultiTask.DeviceDescription})
 			if err != nil {
 				return err
 			}
@@ -37,14 +40,14 @@ func (this *Ctrl) SetDeploymentOptions(deployment *model.Deployment) (err error)
 	}
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			options, err := this.GetOptions(lane.Lane.DeviceDescriptions)
+			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions)
 			if err != nil {
 				return err
 			}
 			lane.Lane.DeviceOptions = options
 		}
 		if lane.MultiLane != nil {
-			options, err := this.GetOptions(lane.MultiLane.DeviceDescriptions)
+			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions)
 			if err != nil {
 				return err
 			}
@@ -54,6 +57,6 @@ func (this *Ctrl) SetDeploymentOptions(deployment *model.Deployment) (err error)
 	return nil
 }
 
-func (this *Ctrl) GetOptions(descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
-	return this.semanticRepo.GetDeploymentOptions(descriptions)
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
+	return this.semanticRepo.GetDeploymentOptions(token, descriptions)
 }

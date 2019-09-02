@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectionlog
+package devicerepository
 
 import (
 	"context"
@@ -22,11 +22,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 )
 
-type ConnectionLogFactory struct{}
+type DeviceRepoFactory struct{}
 
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
+func (this *DeviceRepoFactory) New(ctx context.Context, config config.Config) (interfaces.DeviceRepository, error) {
 	//TODO
 	panic("implement me")
 }
 
-var Factory = &ConnectionLogFactory{}
+var Factory = &DeviceRepoFactory{}

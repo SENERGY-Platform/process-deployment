@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package connectionlog
+package config
 
 import (
-	"context"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	uuid "github.com/satori/go.uuid"
 )
 
-type ConnectionLogFactory struct{}
-
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
-	//TODO
-	panic("implement me")
+//to replace when testing
+var NewId = func() string {
+	return uuid.NewV4().String()
 }
-
-var Factory = &ConnectionLogFactory{}

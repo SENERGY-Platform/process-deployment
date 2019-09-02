@@ -15,3 +15,12 @@
  */
 
 package ctrl
+
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+)
+
+func (this *Ctrl) DeploymentToDependencies(deployment model.Deployment) (model.Dependencies, error) {
+	//TODO
+	panic("not implemented")
+}

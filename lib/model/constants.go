@@ -17,3 +17,5 @@
 package model
 
 const CAMUNDA_VARIABLES_PAYLOAD = "payload"
+const CAMUNDA_VARIABLES_OVERWRITE = "overwrite"
+const CAMUNDE_VARIABLES_OVERWRITE_COLLECTION = "collection"

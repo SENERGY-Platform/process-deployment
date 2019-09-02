@@ -14,19 +14,35 @@
  * limitations under the License.
  */
 
-package connectionlog
+package stringify
 
 import (
-	"context"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/beevik/etree"
 )
 
-type ConnectionLogFactory struct{}
+func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (xml string, err error) {
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(deployment.XmlRaw)
+	if err != nil {
+		return
+	}
 
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
-	//TODO
-	panic("implement me")
+	for _, element := range deployment.Elements {
+		err = Element(doc, element, selectionAsRef, deviceRepo)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	for _, lane := range deployment.Lanes {
+		err = LaneElement(doc, lane, selectionAsRef)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	xml, err = doc.WriteToString()
+	return
 }
-
-var Factory = &ConnectionLogFactory{}

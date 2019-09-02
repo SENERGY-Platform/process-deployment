@@ -14,19 +14,35 @@
  * limitations under the License.
  */
 
-package connectionlog
+package mock
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"sync"
 )
 
-type ConnectionLogFactory struct{}
-
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
-	//TODO
-	panic("implement me")
+type DeviceRepoMock struct {
+	mux       sync.Mutex
+	protocols map[string]devicemodel.Protocol
 }
 
-var Factory = &ConnectionLogFactory{}
+var DeviceRepository = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}}
+
+func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.DeviceRepository, error) {
+	return this, nil
+}
+
+func (this *DeviceRepoMock) GetProtocol(id string) (devicemodel.Protocol, error) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	return this.protocols[id], nil
+}
+
+func (this *DeviceRepoMock) SetProtocol(id string, protocol devicemodel.Protocol) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.protocols[id] = protocol
+}

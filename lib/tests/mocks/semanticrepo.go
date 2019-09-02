@@ -21,6 +21,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"sync"
 )
 
@@ -35,7 +36,7 @@ func (this *SemanticRepoMock) New(ctx context.Context, config config.Config) (in
 	return this, nil
 }
 
-func (this *SemanticRepoMock) GetDeploymentOptions(descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
+func (this *SemanticRepoMock) GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	return this.options, nil

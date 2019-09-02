@@ -30,12 +30,12 @@ type Command struct {
 	Aspect      *devicemodel.Aspect      `json:"aspect,omitempty"`
 
 	//deployment time
-	DeviceId   string               `json:"device_id,omitempty"`
-	Device     devicemodel.Device   `json:"device,omitempty"`
-	ServiceId  string               `json:"service_id,omitempty"`
-	Service    devicemodel.Service  `json:"service,omitempty"`
-	Protocol   devicemodel.Protocol `json:"protocol,omitempty"`
-	ProtocolId string               `json:"protocol_id,omitempty"`
+	DeviceId   string                `json:"device_id,omitempty"`
+	Device     *devicemodel.Device   `json:"device,omitempty"`
+	ServiceId  string                `json:"service_id,omitempty"`
+	Service    *devicemodel.Service  `json:"service,omitempty"`
+	Protocol   *devicemodel.Protocol `json:"protocol,omitempty"`
+	ProtocolId string                `json:"protocol_id,omitempty"`
 
 	//runtime
 	Input  interface{} `json:"input,omitempty"`
@@ -44,4 +44,13 @@ type Command struct {
 
 type Documentation struct {
 	Order int64 `json:"order"`
+}
+
+type Overwrite struct {
+	DeviceId   string                `json:"device_id,omitempty"`
+	Device     *devicemodel.Device   `json:"device,omitempty"`
+	ServiceId  string                `json:"service_id,omitempty"`
+	Service    *devicemodel.Service  `json:"service,omitempty"`
+	Protocol   *devicemodel.Protocol `json:"protocol,omitempty"`
+	ProtocolId string                `json:"protocol_id,omitempty"`
 }

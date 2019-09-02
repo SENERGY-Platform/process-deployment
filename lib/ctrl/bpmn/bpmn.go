@@ -19,7 +19,10 @@ package bpmn
 import (
 	"errors"
 	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/parsing"
+	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/stringify"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/beevik/etree"
 	"log"
@@ -57,6 +60,43 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 	return
 }
 
-func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool) (err error) {
-	panic("not implemented") //TODO
+func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+	setMsgEventIds(deployment)
+
+	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo)
+	return
+}
+
+func setMsgEventIds(deployment *model.Deployment) {
+	for _, element := range deployment.Elements {
+		if element.MsgEvent != nil {
+			element.MsgEvent.EventId = config.NewId()
+		}
+		if element.ReceiveTaskEvent != nil {
+			element.ReceiveTaskEvent.EventId = config.NewId()
+		}
+	}
+	for _, lane := range deployment.Lanes {
+		if lane.MultiLane != nil {
+			for _, element := range lane.MultiLane.Elements {
+				if element.MsgEvent != nil {
+					element.MsgEvent.EventId = config.NewId()
+				}
+				if element.ReceiveTaskEvent != nil {
+					element.ReceiveTaskEvent.EventId = config.NewId()
+				}
+			}
+		}
+		if lane.Lane != nil {
+			for _, element := range lane.Lane.Elements {
+				if element.MsgEvent != nil {
+					element.MsgEvent.EventId = config.NewId()
+				}
+				if element.ReceiveTaskEvent != nil {
+					element.ReceiveTaskEvent.EventId = config.NewId()
+				}
+			}
+		}
+	}
+	return
 }

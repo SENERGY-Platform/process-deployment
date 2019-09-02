@@ -15,3 +15,18 @@
  */
 
 package semanticrepository
+
+import (
+	"context"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+)
+
+type SemanticRepoFactory struct{}
+
+func (this *SemanticRepoFactory) New(ctx context.Context, config config.Config) (interfaces.SemanticRepository, error) {
+	//TODO
+	panic("implement me")
+}
+
+var Factory = &SemanticRepoFactory{}

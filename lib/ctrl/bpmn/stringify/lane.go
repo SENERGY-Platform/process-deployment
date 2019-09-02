@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package connectionlog
+package stringify
 
 import (
-	"context"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/beevik/etree"
 )
 
-type ConnectionLogFactory struct{}
-
-func (this *ConnectionLogFactory) New(ctx context.Context, config config.Config) (interfaces.Connectionlog, error) {
+func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool) error {
 	//TODO
-	panic("implement me")
+	panic("not implemented")
 }
-
-var Factory = &ConnectionLogFactory{}

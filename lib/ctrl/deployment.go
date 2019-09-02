@@ -19,12 +19,14 @@ package ctrl
 import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn"
+	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/stringify"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
 
-func (this *Ctrl) PrepareDeployment(id string) (result model.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id string) (result model.Deployment, err error, code int) {
 	xml, exists, err := this.GetBpmn(id)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
@@ -36,23 +38,29 @@ func (this *Ctrl) PrepareDeployment(id string) (result model.Deployment, err err
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
-	err = this.SetDeploymentOptions(&result)
+	err = this.SetDeploymentOptions(token, &result)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) Deploy(deployment model.Deployment) (result model.Deployment, err error, code int) {
-	//TODO
+func (this *Ctrl) Deploy(token jwt_http_router.Jwt, deployment model.Deployment) (result model.Deployment, err error, code int) {
 	deployment.Id = uuid.NewV4().String()
 	if err := deployment.Validate(false); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
 
-	//TODO: ensure selected devices and services exist and have the given content and are executable for the requesting user (if not using id ref)
+	//ensure selected devices and services exist and have the given content and are executable for the requesting user (if not using id ref)
+	err, code = this.CheckDeploymentSelection(token, deployment)
+	if err != nil {
+		return deployment, err, code
+	}
 
-	//TODO: use bpmn sub lib
+	deployment.Xml, err = stringify.Deployment(deployment, this.config.DeploymentAsRef, this.deviceRepo)
+	if err != nil {
+		return deployment, err, http.StatusInternalServerError
+	}
 
 	if err := deployment.Validate(true); err != nil {
 		return deployment, err, http.StatusInternalServerError
@@ -60,5 +68,11 @@ func (this *Ctrl) Deploy(deployment model.Deployment) (result model.Deployment, 
 
 	//TODO: use cqrs to deploy (maybe move validation to producing cqrs function)
 
+	panic("not implemented")
+}
+
+//checks for each selected device access and correctness
+func (this *Ctrl) CheckDeploymentSelection(jwt jwt_http_router.Jwt, deployment model.Deployment) (err error, code int) {
+	//TODO
 	panic("not implemented")
 }

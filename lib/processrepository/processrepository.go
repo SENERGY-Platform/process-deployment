@@ -15,3 +15,18 @@
  */
 
 package processrepository
+
+import (
+	"context"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+)
+
+type ProcessRepoFactory struct{}
+
+func (this *ProcessRepoFactory) New(ctx context.Context, config config.Config) (interfaces.ProcessRepository, error) {
+	//TODO
+	panic("implement me")
+}
+
+var Factory = &ProcessRepoFactory{}
