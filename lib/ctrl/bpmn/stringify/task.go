@@ -56,7 +56,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	} else {
 		command.Device = &task.Selection.SelectedDevice
 		command.Service = &task.Selection.SelectedService
-		protocol, err := deviceRepo.GetProtocol(task.Selection.SelectedService.ProtocolId)
+		protocol, err, _ := deviceRepo.GetProtocol(task.Selection.SelectedService.ProtocolId)
 		if err != nil {
 			return err
 		}
@@ -105,7 +105,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Devi
 	} else {
 		command.Device = &device
 		command.Service = &task.SelectedService
-		protocol, err := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
+		protocol, err, _ := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
 		if err != nil {
 			return err
 		}
@@ -216,7 +216,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemo
 	for _, device := range devices {
 		overwrite := model.Overwrite{}
 		if selectAsRef {
-			protocol, err := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
+			protocol, err, _ := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
 			if err != nil {
 				return err
 			}
@@ -256,7 +256,7 @@ func createOverwriteVariableScript(selections []model.Selection, selectAsRef boo
 	for _, selection := range selections {
 		overwrite := model.Overwrite{}
 		if selectAsRef {
-			protocol, err := deviceRepo.GetProtocol(selection.SelectedService.ProtocolId)
+			protocol, err, _ := deviceRepo.GetProtocol(selection.SelectedService.ProtocolId)
 			if err != nil {
 				return "", err
 			}

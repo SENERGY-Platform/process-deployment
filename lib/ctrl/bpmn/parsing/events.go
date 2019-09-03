@@ -26,13 +26,16 @@ import (
 	"runtime/debug"
 )
 
-func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, order int64, err error) {
+func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order int64, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
+	if event.SelectAttrValue("messageRef", "") != "" {
+		return false, result, 0, nil
+	}
 	id := event.SelectAttr("id").Value
 	label := event.SelectAttrValue("name", id)
 	documentation := model.Documentation{}
@@ -40,7 +43,7 @@ func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, order int64, e
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
 		if err != nil {
-			return result, 0, err
+			return false, result, 0, err
 		}
 	}
 	result = model.MsgEvent{
@@ -48,7 +51,7 @@ func BpmnToMsgEvent(event *etree.Element) (result model.MsgEvent, order int64, e
 		BpmnElementId: id,
 	}
 
-	return result, documentation.Order, nil
+	return true, result, documentation.Order, nil
 }
 
 func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (result model.TimeEvent, order int64, err error) {

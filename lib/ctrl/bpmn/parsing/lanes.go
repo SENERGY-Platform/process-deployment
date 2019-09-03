@@ -161,23 +161,23 @@ func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubEleme
 	}
 
 	if event := doc.FindElement("//bpmn:receiveTask[@id='" + id + "']"); event != nil {
-		msgEvent, order, err := BpmnToMsgEvent(event)
+		ok, msgEvent, order, err := BpmnToMsgEvent(event)
 		if err != nil {
 			return result, false, err
 		}
 		result.Order = order
 		result.ReceiveTaskEvent = &msgEvent
-		return result, true, nil
+		return result, ok, nil
 	}
 
 	if event := doc.FindElement("//*[@id='" + id + "']//bpmn:messageEventDefinition"); event != nil {
-		msgEvent, order, err := BpmnToMsgEvent(event.Parent())
+		ok, msgEvent, order, err := BpmnToMsgEvent(event.Parent())
 		if err != nil {
 			return result, false, err
 		}
 		result.Order = order
 		result.MsgEvent = &msgEvent
-		return result, true, nil
+		return result, ok, nil
 	}
 
 	if event := doc.FindElement("//*[@id='" + id + "']//bpmn:timerEventDefinition"); event != nil {

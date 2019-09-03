@@ -66,7 +66,7 @@ func ExampleLaneBpmnToDeployment() {
 }
 
 func ExampleTimeAndReceiverBpmnToDeployment() {
-	file, err := ioutil.ReadFile("../../tests/resources/timeAndReceive.bpmn")
+	file, err := ioutil.ReadFile("../../tests/resources/time_and_receive.bpmn")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -343,7 +343,7 @@ func ExampleSimpleBpmnDeploymentToXml() {
 }
 
 func ExampleTimeAndReceiveBpmnDeploymentToXml() {
-	file, err := ioutil.ReadFile("../../tests/resources/timeAndReceive.json")
+	file, err := ioutil.ReadFile("../../tests/resources/time_and_receive.json")
 	if err != nil {
 		fmt.Println(err)
 		return
