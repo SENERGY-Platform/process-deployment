@@ -46,6 +46,25 @@ func ExampleSimpleBpmnToDeployment() {
 	//<nil> {"id":"","xml_raw":"","xml":"","name":"simple","elements":[{"order":1,"task":{"label":"taskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_0wjr1fj","input":"000","device_options":null,"selection":{"selected_device":{"id":"","local_id":"","name":"","device_type_id":""},"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""}},"parameter":{"inputs":"\"ff0\""}}},{"order":2,"multi_task":{"label":"multiTaskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_096xjeg","input":"000","device_options":null,"selections":null,"parameter":{"inputs":"\"fff\""}}},{"order":3,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_0905jg5","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}],"lanes":null}
 }
 
+func ExampleIgnoredPredefinedEventBpmnToDeployment() {
+	file, err := ioutil.ReadFile("../../tests/resources/ignore_msg_event.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result.XmlRaw = ""
+	temp, err := json.Marshal(result)
+	fmt.Println(err, string(temp))
+
+	//output:
+	//<nil> {"id":"","xml_raw":"","xml":"","name":"ignore_msg_event","elements":[{"order":0,"msg_event":{"label":"IntermediateThrowEvent_1277ux9","bpmn_element_id":"IntermediateThrowEvent_1277ux9","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}],"lanes":null}
+}
+
 func ExampleLaneBpmnToDeployment() {
 	file, err := ioutil.ReadFile("../../tests/resources/lanes.bpmn")
 	if err != nil {

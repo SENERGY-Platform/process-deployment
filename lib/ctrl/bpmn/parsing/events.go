@@ -36,6 +36,10 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 	if event.SelectAttrValue("messageRef", "") != "" {
 		return false, result, 0, nil
 	}
+	if msgEvent := event.FindElement(".//bpmn:messageEventDefinition"); msgEvent != nil && msgEvent.SelectAttrValue("messageRef", "") != "" {
+		return false, result, 0, nil
+	}
+
 	id := event.SelectAttr("id").Value
 	label := event.SelectAttrValue("name", id)
 	documentation := model.Documentation{}
