@@ -36,6 +36,7 @@ type ConfigStruct struct {
 	Debug            bool   `json:"debug"`
 	ConnectivityTest bool   `json:"connectivity_test"`
 	DeploymentAsRef  bool   `json:"deployment_as_ref"`
+	DeploymentTopic  string `json:"deployment_topic"`
 }
 
 type Config = *ConfigStruct

@@ -19,6 +19,7 @@ package interfaces
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 )
 
 type DatabaseFactory interface {
@@ -26,4 +27,6 @@ type DatabaseFactory interface {
 }
 
 type Database interface {
+	CheckDeploymentAccess(user string, deploymentId string) (error, int)
+	GetDeployment(user string, deploymentId string) (model.Deployment, error, int)
 }

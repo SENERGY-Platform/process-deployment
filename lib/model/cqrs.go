@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-package ctrl
+package model
+
+type DeploymentCommand struct {
+	Command    string     `json:"command"`
+	Id         string     `json:"id"`
+	Owner      string     `json:"owner"`
+	Deployment Deployment `json:"deployment"`
+}

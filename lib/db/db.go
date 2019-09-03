@@ -20,6 +20,7 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -53,4 +54,12 @@ func (f FactoryType) New(ctx context.Context, config config.Config) (result inte
 		}
 	}
 	return db, nil
+}
+
+func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (error, int) {
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
+	panic("implement me")
 }

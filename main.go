@@ -41,7 +41,8 @@ func main() {
 
 	err = lib.StartDefault(ctx, config)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		cancel()
 	}
 
 	go func() {

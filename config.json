@@ -5,5 +5,6 @@
   "debug": false,
   "log_level": "call",
   "api_port": "8080",
-  "connectivity_test": true
+  "connectivity_test": true,
+  "deployment_topic": "deployments"
 }

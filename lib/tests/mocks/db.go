@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package mock
+package mocks
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 )
 
 type DatabaseMock struct {
@@ -29,4 +30,12 @@ var Database = &DatabaseMock{}
 
 func (this *DatabaseMock) New(ctx context.Context, config config.Config) (interfaces.Database, error) {
 	return this, nil
+}
+
+func (this *DatabaseMock) CheckDeploymentAccess(user string, deploymentId string) (error, int) {
+	return nil, 200
+}
+
+func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
+	panic("implement me")
 }

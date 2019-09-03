@@ -14,35 +14,76 @@
  * limitations under the License.
  */
 
-package mock
+package mocks
 
 import (
 	"context"
+	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SmartEnergyPlatform/jwt-http-router"
+	"net/http"
 	"sync"
 )
 
 type DeviceRepoMock struct {
 	mux       sync.Mutex
 	protocols map[string]devicemodel.Protocol
+	devices   map[string]devicemodel.Device
+	services  map[string]devicemodel.Service
 }
 
-var DeviceRepository = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}}
+var DeviceRepository = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
 
 func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.DeviceRepository, error) {
 	return this, nil
 }
 
-func (this *DeviceRepoMock) GetProtocol(id string) (devicemodel.Protocol, error) {
+func (this *DeviceRepoMock) GetProtocol(id string) (devicemodel.Protocol, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	return this.protocols[id], nil
+	if result, ok := this.protocols[id]; ok {
+		return result, nil, 200
+	} else {
+		return result, errors.New("protocol " + id + " not found"), http.StatusNotFound
+	}
 }
 
 func (this *DeviceRepoMock) SetProtocol(id string, protocol devicemodel.Protocol) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.protocols[id] = protocol
+}
+
+func (this *DeviceRepoMock) GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	if result, ok := this.devices[id]; ok {
+		return result, nil, 200
+	} else {
+		return result, errors.New("device " + id + " not found"), http.StatusNotFound
+	}
+}
+
+func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.devices[id] = device
+}
+
+func (this *DeviceRepoMock) GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	if result, ok := this.services[id]; ok {
+		return result, nil, 200
+	} else {
+		return result, errors.New("service " + id + " not found"), http.StatusNotFound
+	}
+}
+
+func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.services[id] = service
 }
