@@ -31,6 +31,7 @@ type ConfigStruct struct {
 	LogLevel                    string `json:"log_level"`
 	ApiPort                     string `json:"api_port"`
 	ZookeeperUrl                string `json:"zookeeper_url"`
+	DeviceRepoUrl               string `json:"device_repo_url"`
 	MongoUrl                    string `json:"mongo_url"`
 	MongoTable                  string `json:"mongo_table"`
 	MongoDeploymentCollection   string `json:"mongo_deployment_collection"`

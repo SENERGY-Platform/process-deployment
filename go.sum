@@ -12,6 +12,7 @@ github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141
 github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141950/go.mod h1:lhkwWgr1zO7KzTXQ8G/3iMlxNayTP4WHtLbNM9OIvNA=
 github.com/SENERGY-Platform/formatter-lib v0.0.0-20190425141726-82f4aabae873/go.mod h1:R3JIeZAtwnRoa7irZ5mvxX/MFsEe3qOR+Y2n7lbDXbc=
 github.com/SENERGY-Platform/iot-device-repository v0.0.0-20190411071940-270889a26f60/go.mod h1:Q9UpdQRtLVnrOjigNClwpw8Jsqv8PRK671bpIxEjiMw=
+github.com/SENERGY-Platform/iot-device-repository v0.0.0-20190620144749-fa673f457d06 h1:GMx2sL4Nx4t4FW/xs6xhO0paRhsEJ3rSOnQ+h2qaDkQ=
 github.com/SENERGY-Platform/iot-device-repository v0.0.0-20190620144749-fa673f457d06/go.mod h1:Q9UpdQRtLVnrOjigNClwpw8Jsqv8PRK671bpIxEjiMw=
 github.com/SENERGY-Platform/process-deployment v0.0.0-20190104095338-2c4a5bd3e3df h1:v8TcApmtfjN9uKhj1EnHa24mlnKP0QsHd8CQfhhBGxU=
 github.com/SENERGY-Platform/process-model-repository v0.0.0-20190813135900-cd1b69b9c2c5 h1:d3YNGs/D+colkA8pu8KaBrKrd/ThZTFkr/wrrH66pG4=
@@ -37,9 +38,11 @@ github.com/cbroglie/mustache v1.0.1 h1:ivMg8MguXq/rrz2eu3tw6g3b16+PQhoTn6EZAhst2
 github.com/cbroglie/mustache v1.0.1/go.mod h1:R/RUa+SobQ14qkP4jtx5Vke5sDytONDQXNLPY/PO69g=
 github.com/cenkalti/backoff v2.0.0+incompatible h1:5IIPUHhlnUZbcHQsQou5k1Tn58nJkeJL9U+ig5CHJbY=
 github.com/cenkalti/backoff v2.0.0+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
+github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/containerd/continuity v0.0.0-20180612233548-246e49050efd h1:AqPnRJG7BcXlRtISATdp/XsD4cwZK6MdeMxFQ2hGFdw=
 github.com/containerd/continuity v0.0.0-20180612233548-246e49050efd/go.mod h1:GL3xCUCBDV3CZiTSEKksMWbLE66hEyuu9qyDOOqM47Y=
+github.com/coocood/freecache v1.1.0 h1:ENiHOsWdj1BrrlPwblhbn4GdAsMymK3pZORJ+bJGAjA=
 github.com/coocood/freecache v1.1.0/go.mod h1:ePwxCDzOYvARfHdr1pByNct1at3CoKnsipOHwKlNbzI=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

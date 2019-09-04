@@ -9,5 +9,6 @@
   "deployment_topic": "deployments",
   "mongo_table": "processdeployment",
   "mongo_deployment_collection": "deployments",
-  "mongo_dependencies_collection": "dependencies"
+  "mongo_dependencies_collection": "dependencies",
+  "device_repo_url": "http://device-repo:8080"
 }

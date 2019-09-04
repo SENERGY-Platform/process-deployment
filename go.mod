@@ -2,6 +2,7 @@ module github.com/SENERGY-Platform/process-deployment
 
 require (
 	github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141950 // indirect
+	github.com/SENERGY-Platform/iot-device-repository v0.0.0-20190620144749-fa673f457d06
 	github.com/SENERGY-Platform/process-model-repository v0.0.0-20190813135900-cd1b69b9c2c5
 	github.com/SmartEnergyPlatform/amqp-wrapper-lib v0.0.0-20181018071408-32e07d9d89bb
 	github.com/SmartEnergyPlatform/iot-device-repository v0.0.0-20181018081528-7297409a5f9f
@@ -9,6 +10,7 @@ require (
 	github.com/SmartEnergyPlatform/util v0.0.0-20181018070938-b26ca656886c
 	github.com/beevik/etree v1.1.0
 	github.com/cbroglie/mustache v1.0.1
+	github.com/coocood/freecache v1.1.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.7.0 // indirect
