@@ -57,7 +57,7 @@ func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
 }
 
 func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id string) (result model.Deployment, err error, code int) {
-	xml, exists, err := this.GetBpmn(id)
+	xml, exists, err := this.processRepo.GetBpmn(id)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
