@@ -17,9 +17,13 @@
 package db
 
 import (
+	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"net/http"
 	"runtime/debug"
 )
 
@@ -61,18 +65,35 @@ func (this *Mongo) deploymentsCollection() *mongo.Collection {
 	return this.client.Database(this.config.MongoTable).Collection(this.config.MongoDeploymentCollection)
 }
 
-func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (error, int) {
-	panic("implement me") //TODO
+func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err error, code int) {
+	_, err, code = this.GetDeployment(user, deploymentId)
+	return
 }
 
-func (this *Mongo) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
-	panic("implement me") //TODO
+func (this *Mongo) GetDeployment(user string, deploymentId string) (result model.Deployment, err error, code int) {
+	ctx, _ := getTimeoutContext()
+	wrapper := model.DeploymentCommand{}
+	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
+	if err == mongo.ErrNoDocuments {
+		return result, errors.New("not found"), http.StatusNotFound
+	}
+	if err != nil {
+		return result, err, http.StatusInternalServerError
+	}
+	if wrapper.Owner != user {
+		return model.Deployment{}, errors.New("access denied"), http.StatusForbidden
+	}
+	return wrapper.Deployment, nil, 200
 }
 
 func (this *Mongo) DeleteDeployment(id string) error {
-	panic("implement me") //TODO
+	ctx, _ := getTimeoutContext()
+	_, err := this.deploymentsCollection().DeleteOne(ctx, bson.M{deploymentIdKey: id})
+	return err
 }
 
 func (this *Mongo) SetDeployment(id string, owner string, deployment model.Deployment) error {
-	panic("implement me") //TODO
+	ctx, _ := getTimeoutContext()
+	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, model.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}, options.Replace().SetUpsert(true))
+	return err
 }

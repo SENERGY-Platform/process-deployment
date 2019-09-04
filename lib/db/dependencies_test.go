@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 )
 
-func ExampleSaveDependencies() {
+func ExampleDependencies() {
 	config, err := config.LoadConfig("../../config.json")
 	if err != nil {
 		debug.PrintStack()
