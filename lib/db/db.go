@@ -20,9 +20,9 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"runtime/debug"
 )
 
 type FactoryType struct{}
@@ -39,6 +39,7 @@ var CreateCollections = []func(db *Mongo, config config.Config) error{}
 func (f FactoryType) New(ctx context.Context, config config.Config) (result interfaces.Database, err error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(config.MongoUrl))
 	if err != nil {
+		debug.PrintStack()
 		return nil, err
 	}
 	go func() {
@@ -54,40 +55,4 @@ func (f FactoryType) New(ctx context.Context, config config.Config) (result inte
 		}
 	}
 	return db, nil
-}
-
-func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (error, int) {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) DeleteDeployment(id string) error {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) SetDeployment(id string, owner string, deployment model.Deployment) error {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) GetDependencies(user string, deploymentId string) (model.Dependencies, error, int) {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) SetDependencies(dependencies model.Dependencies) error {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) DeleteDependencies(id string) error {
-	panic("implement me") //TODO
-}
-
-func (this *Mongo) GetDependenciesList(user string, limit int, offset int) ([]model.Dependencies, error, int) {
-	panic("implement me")
-}
-
-func (this *Mongo) GetSelectedDependencies(user string, ids []string) ([]model.Dependencies, error, int) {
-	panic("implement me")
 }

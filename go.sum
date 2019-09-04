@@ -7,6 +7,7 @@ github.com/Microsoft/go-winio v0.4.8/go.mod h1:VhR8bwka0BXejwEJY73c50VrPtXAaKcyv
 github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 h1:TngWCqHvy9oXAN6lEVMRuU21PR1EtLVZJmdB18Gu3Rw=
 github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5/go.mod h1:lmUJ/7eu/Q8D7ML55dXQrVaamCz2vxCfdQBasLZfHKk=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
+github.com/SENERGY-Platform/device-repository v0.0.0-20190611154958-00ffa1f376dc h1:nOatmhJRn+bwaU2jrqs8ggmpz0NOry5CtxiAE7d8TXs=
 github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141950 h1:vEdbs97PjqQr5d1vooDOddNy8UfCEQugYYECykOEeKs=
 github.com/SENERGY-Platform/external-task-worker v0.0.0-20190627125413-01099c141950/go.mod h1:lhkwWgr1zO7KzTXQ8G/3iMlxNayTP4WHtLbNM9OIvNA=
 github.com/SENERGY-Platform/formatter-lib v0.0.0-20190425141726-82f4aabae873/go.mod h1:R3JIeZAtwnRoa7irZ5mvxX/MFsEe3qOR+Y2n7lbDXbc=

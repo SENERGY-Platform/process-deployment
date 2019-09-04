@@ -28,15 +28,18 @@ import (
 )
 
 type ConfigStruct struct {
-	LogLevel         string `json:"log_level"`
-	ApiPort          string `json:"api_port"`
-	ZookeeperUrl     string `json:"zookeeper_url"`
-	MongoUrl         string `json:"mongo_url"`
-	ConsumerGroup    string `json:"consumer_group"`
-	Debug            bool   `json:"debug"`
-	ConnectivityTest bool   `json:"connectivity_test"`
-	DeploymentAsRef  bool   `json:"deployment_as_ref"`
-	DeploymentTopic  string `json:"deployment_topic"`
+	LogLevel                    string `json:"log_level"`
+	ApiPort                     string `json:"api_port"`
+	ZookeeperUrl                string `json:"zookeeper_url"`
+	MongoUrl                    string `json:"mongo_url"`
+	MongoTable                  string `json:"mongo_table"`
+	MongoDeploymentCollection   string `json:"mongo_deployment_collection"`
+	MongoDependenciesCollection string `json:"mongo_dependencies_collection"`
+	ConsumerGroup               string `json:"consumer_group"`
+	Debug                       bool   `json:"debug"`
+	ConnectivityTest            bool   `json:"connectivity_test"`
+	DeploymentAsRef             bool   `json:"deployment_as_ref"`
+	DeploymentTopic             string `json:"deployment_topic"`
 }
 
 type Config = *ConfigStruct
