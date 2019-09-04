@@ -85,6 +85,38 @@ func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (mod
 	return dependencies, nil, 200
 }
 
+func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int) (result []model.Dependencies, err error, code int) {
+	count := 0
+	for _, dependencie := range this.dependencies {
+		if dependencie.Owner == user {
+			if count >= (limit + offset) {
+				return result, nil, 200
+			}
+			if count >= offset {
+				result = append(result, dependencie)
+			}
+			count = count + 1
+		}
+	}
+	return result, nil, 200
+}
+
+func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (result []model.Dependencies, err error, code int) {
+	for _, id := range ids {
+		dependency, ok := this.dependencies[id]
+		if !ok {
+			return result, errors.New("unknown id"), http.StatusNotFound
+		}
+		result = append(result, dependency)
+	}
+	for _, dependency := range result {
+		if dependency.Owner != user {
+			return result, errors.New("user dosnt have access to given id"), http.StatusForbidden
+		}
+	}
+	return result, nil, 200
+}
+
 func (this *DatabaseMock) SetDependencies(dependencies model.Dependencies) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()

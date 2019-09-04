@@ -6,9 +6,6 @@ type Dependencies struct {
 	Owner        string             `json:"owner" bson:"owner"`
 	Devices      []DeviceDependency `json:"devices" bson:"devices"`
 	Events       []EventDependency  `json:"events" bson:"events"`
-
-	//from connectionlog
-	Online bool `json:"online" bson:"-"`
 }
 
 type DeviceDependency struct {

@@ -18,7 +18,21 @@ package ctrl
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"sort"
 )
+
+func (this *Ctrl) GetDependencies(jwt jwt_http_router.Jwt, id string) (model.Dependencies, error, int) {
+	return this.db.GetDependencies(jwt.UserId, id)
+}
+
+func (this *Ctrl) GetDependenciesList(jwt jwt_http_router.Jwt, limit int, offset int) ([]model.Dependencies, error, int) {
+	return this.db.GetDependenciesList(jwt.UserId, limit, offset)
+}
+
+func (this *Ctrl) GetSelectedDependencies(jwt jwt_http_router.Jwt, ids []string) ([]model.Dependencies, error, int) {
+	return this.db.GetSelectedDependencies(jwt.UserId, ids)
+}
 
 func (this *Ctrl) SaveDependencies(command model.DeploymentCommand) error {
 	dependencies, err := this.deploymentToDependencies(command.Deployment)
@@ -185,6 +199,8 @@ func (this *Ctrl) deploymentToDependencies(deployment model.Deployment) (result 
 		}
 	}
 	result.Devices = reduceDeviceDependencies(result.Devices)
+	sort.Sort(DeviceDependenciesByDeviceId(result.Devices))
+	sort.Sort(EventDependenciesByEventId(result.Events))
 	return result, nil
 }
 
@@ -196,11 +212,31 @@ func reduceDeviceDependencies(dependencies []model.DeviceDependency) (result []m
 		resources[device.DeviceId] = append(resources[device.DeviceId], device.BpmnResources...)
 	}
 	for id, name := range name {
+		resourceList := resources[id]
+		sort.Sort(BpmnResourcesById(resourceList))
 		result = append(result, model.DeviceDependency{
 			DeviceId:      id,
 			Name:          name,
-			BpmnResources: resources[id],
+			BpmnResources: resourceList,
 		})
 	}
 	return
 }
+
+type DeviceDependenciesByDeviceId []model.DeviceDependency
+
+func (a DeviceDependenciesByDeviceId) Len() int           { return len(a) }
+func (a DeviceDependenciesByDeviceId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a DeviceDependenciesByDeviceId) Less(i, j int) bool { return a[i].DeviceId < a[j].DeviceId }
+
+type EventDependenciesByEventId []model.EventDependency
+
+func (a EventDependenciesByEventId) Len() int           { return len(a) }
+func (a EventDependenciesByEventId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a EventDependenciesByEventId) Less(i, j int) bool { return a[i].EventId < a[j].EventId }
+
+type BpmnResourcesById []model.BpmnResource
+
+func (a BpmnResourcesById) Len() int           { return len(a) }
+func (a BpmnResourcesById) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a BpmnResourcesById) Less(i, j int) bool { return a[i].Id < a[j].Id }

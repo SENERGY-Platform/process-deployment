@@ -55,7 +55,7 @@ func ExampleCtrl_PrepareDeployment() {
 
 	//time.Sleep(1 * time.Second)
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Connectionlog, mock.SemanticRepository, mock.DeviceRepository, mock.ProcessRepository)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.SemanticRepository, mock.DeviceRepository, mock.ProcessRepository)
 	if err != nil {
 		fmt.Println(err)
 		return

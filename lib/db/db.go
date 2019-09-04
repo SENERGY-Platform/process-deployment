@@ -83,3 +83,11 @@ func (this *Mongo) SetDependencies(dependencies model.Dependencies) error {
 func (this *Mongo) DeleteDependencies(id string) error {
 	panic("implement me") //TODO
 }
+
+func (this *Mongo) GetDependenciesList(user string, limit int, offset int) ([]model.Dependencies, error, int) {
+	panic("implement me")
+}
+
+func (this *Mongo) GetSelectedDependencies(user string, ids []string) ([]model.Dependencies, error, int) {
+	panic("implement me")
+}

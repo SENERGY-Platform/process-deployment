@@ -32,6 +32,8 @@ type Database interface {
 	DeleteDeployment(id string) error
 	SetDeployment(id string, owner string, deployment model.Deployment) error
 	GetDependencies(user string, deploymentId string) (model.Dependencies, error, int)
+	GetDependenciesList(user string, limit int, offset int) ([]model.Dependencies, error, int)
+	GetSelectedDependencies(user string, ids []string) ([]model.Dependencies, error, int)
 	SetDependencies(dependencies model.Dependencies) error
 	DeleteDependencies(id string) error
 }
