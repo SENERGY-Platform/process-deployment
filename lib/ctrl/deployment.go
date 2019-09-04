@@ -26,7 +26,35 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
+	"sort"
 )
+
+func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
+	switch cmd.Command {
+	case "PUT":
+		err := this.SaveDependencies(cmd)
+		if err != nil {
+			return err
+		}
+		err = this.SaveDeployment(cmd)
+		if err != nil {
+			return err
+		}
+		return nil
+	case "DELETE":
+		err := this.DeleteDependencies(cmd)
+		if err != nil {
+			return err
+		}
+		err = this.DeleteDeployment(cmd)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.New("unable to handle command: " + cmd.Command)
+	}
+}
 
 func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id string) (result model.Deployment, err error, code int) {
 	xml, exists, err := this.GetBpmn(id)
@@ -45,6 +73,11 @@ func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id str
 		return result, err, http.StatusInternalServerError
 	}
 	return result, nil, http.StatusOK
+}
+
+func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result model.Deployment, err error, code int) {
+	result, err, code = this.db.GetDeployment(jwt.UserId, id)
+	return
 }
 
 func (this *Ctrl) CreateDeployment(jwt jwt_http_router.Jwt, deployment model.Deployment) (result model.Deployment, err error, code int) {
@@ -78,9 +111,12 @@ func (this *Ctrl) RemoveDeployment(jwt jwt_http_router.Jwt, id string) (err erro
 	return nil, 200
 }
 
-func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result model.Deployment, err error, code int) {
-	result, err, code = this.db.GetDeployment(jwt.UserId, id)
-	return
+func (this *Ctrl) DeleteDeployment(command model.DeploymentCommand) error {
+	return this.db.DeleteDeployment(command.Id)
+}
+
+func (this *Ctrl) SaveDeployment(command model.DeploymentCommand) error {
+	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment)
 }
 
 func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deployment) (result model.Deployment, err error, code int) {
@@ -100,6 +136,9 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deploy
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
+
+	sort.Sort(bpmn.LaneByOrder(deployment.Lanes))
+	sort.Sort(bpmn.ElementByOrder(deployment.Elements))
 
 	if err = this.publishDeployment(jwt.UserId, deployment); err != nil {
 		return deployment, err, http.StatusInternalServerError

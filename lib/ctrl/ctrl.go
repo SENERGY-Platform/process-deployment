@@ -18,8 +18,11 @@ package ctrl
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"runtime/debug"
 )
 
 type Ctrl struct {
@@ -45,5 +48,14 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 	if err != nil {
 		return result, err
 	}
-	return result, nil
+	err = sourcing.NewConsumer(ctx, config, config.DeploymentTopic, func(delivery []byte) error {
+		deployment := model.DeploymentCommand{}
+		err := json.Unmarshal(delivery, &deployment)
+		if err != nil {
+			debug.PrintStack()
+			return err
+		}
+		return result.HandleDeployment(deployment)
+	})
+	return result, err
 }

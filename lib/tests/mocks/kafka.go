@@ -20,6 +20,8 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"log"
+	"runtime/debug"
 	"sync"
 )
 
@@ -66,7 +68,11 @@ func (this *Producer) Produce(key string, message []byte) error {
 	defer this.Kafka.mux.Unlock()
 	this.Kafka.Produced[this.Topic] = append(this.Kafka.Produced[this.Topic], string(message))
 	for _, l := range this.Kafka.listeners[this.Topic] {
-		l(message)
+		err := l(message)
+		if err != nil {
+			log.Println(err)
+			debug.PrintStack()
+		}
 	}
 	return nil
 }

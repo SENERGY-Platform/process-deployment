@@ -29,4 +29,9 @@ type DatabaseFactory interface {
 type Database interface {
 	CheckDeploymentAccess(user string, deploymentId string) (error, int)
 	GetDeployment(user string, deploymentId string) (model.Deployment, error, int)
+	DeleteDeployment(id string) error
+	SetDeployment(id string, owner string, deployment model.Deployment) error
+	GetDependencies(user string, deploymentId string) (model.Dependencies, error, int)
+	SetDependencies(dependencies model.Dependencies) error
+	DeleteDependencies(id string) error
 }

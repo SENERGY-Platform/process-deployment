@@ -18,15 +18,24 @@ package mocks
 
 import (
 	"context"
+	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"net/http"
+	"sync"
 )
 
 type DatabaseMock struct {
+	deployments  map[string]model.DeploymentCommand
+	dependencies map[string]model.Dependencies
+	mux          sync.Mutex
 }
 
-var Database = &DatabaseMock{}
+var Database = &DatabaseMock{
+	deployments:  map[string]model.DeploymentCommand{},
+	dependencies: map[string]model.Dependencies{},
+}
 
 func (this *DatabaseMock) New(ctx context.Context, config config.Config) (interfaces.Database, error) {
 	return this, nil
@@ -37,5 +46,55 @@ func (this *DatabaseMock) CheckDeploymentAccess(user string, deploymentId string
 }
 
 func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
-	panic("implement me")
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	deployment, ok := this.deployments[deploymentId]
+	if !ok {
+		return model.Deployment{}, errors.New("deployment not found"), http.StatusNotFound
+	}
+	if deployment.Owner != user {
+		return model.Deployment{}, errors.New("access denied"), http.StatusForbidden
+	}
+	return deployment.Deployment, nil, 200
+}
+
+func (this *DatabaseMock) DeleteDeployment(id string) error {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	delete(this.deployments, id)
+	return nil
+}
+
+func (this *DatabaseMock) SetDeployment(id string, owner string, deployment model.Deployment) error {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.deployments[id] = model.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}
+	return nil
+}
+
+func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (model.Dependencies, error, int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	dependencies, ok := this.dependencies[deploymentId]
+	if !ok {
+		return model.Dependencies{}, errors.New("dependencies not found"), http.StatusNotFound
+	}
+	if dependencies.Owner != user {
+		return model.Dependencies{}, errors.New("access denied"), http.StatusForbidden
+	}
+	return dependencies, nil, 200
+}
+
+func (this *DatabaseMock) SetDependencies(dependencies model.Dependencies) error {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.dependencies[dependencies.DeploymentId] = dependencies
+	return nil
+}
+
+func (this *DatabaseMock) DeleteDependencies(id string) error {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	delete(this.dependencies, id)
+	return nil
 }

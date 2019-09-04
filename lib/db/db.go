@@ -61,5 +61,25 @@ func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (erro
 }
 
 func (this *Mongo) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
-	panic("implement me")
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) DeleteDeployment(id string) error {
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) SetDeployment(id string, owner string, deployment model.Deployment) error {
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) GetDependencies(user string, deploymentId string) (model.Dependencies, error, int) {
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) SetDependencies(dependencies model.Dependencies) error {
+	panic("implement me") //TODO
+}
+
+func (this *Mongo) DeleteDependencies(id string) error {
+	panic("implement me") //TODO
 }
