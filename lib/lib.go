@@ -22,14 +22,14 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
+	"github.com/SENERGY-Platform/process-deployment/lib/devicemanager"
 	"github.com/SENERGY-Platform/process-deployment/lib/devicerepository"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
-	"github.com/SENERGY-Platform/process-deployment/lib/semanticrepository"
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
-	return Start(ctx, config, kafka.Factory, db.Factory, semanticrepository.Factory, devicerepository.Factory)
+	return Start(ctx, config, kafka.Factory, db.Factory, devicemanager.Factory, devicerepository.Factory)
 }
 
 func Start(
@@ -37,7 +37,7 @@ func Start(
 	config config.Config,
 	sourcing interfaces.SourcingFactory,
 	database interfaces.DatabaseFactory,
-	semanticRepository interfaces.SemanticRepositoryFactory,
+	semanticRepository interfaces.DeviceManagerFactory,
 	deviceRepository interfaces.DeviceRepositoryFactory) error {
 
 	db, err := database.New(ctx, config)

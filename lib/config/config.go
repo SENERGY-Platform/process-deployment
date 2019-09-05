@@ -32,6 +32,7 @@ type ConfigStruct struct {
 	ApiPort                     string `json:"api_port"`
 	ZookeeperUrl                string `json:"zookeeper_url"`
 	DeviceRepoUrl               string `json:"device_repo_url"`
+	DeviceManagerUrl            string `json:"device_manager_url"`
 	ProcessRepoUrl              string `json:"process_repo_url"`
 	MongoUrl                    string `json:"mongo_url"`
 	MongoTable                  string `json:"mongo_table"`

@@ -25,24 +25,24 @@ import (
 	"sync"
 )
 
-type SemanticRepoMock struct {
+type DeviceManagerMock struct {
 	mux     sync.Mutex
 	options []model.DeviceOption
 }
 
-var SemanticRepository = &SemanticRepoMock{}
+var SemanticRepository = &DeviceManagerMock{}
 
-func (this *SemanticRepoMock) New(ctx context.Context, config config.Config) (interfaces.SemanticRepository, error) {
+func (this *DeviceManagerMock) New(ctx context.Context, config config.Config) (interfaces.DeviceManager, error) {
 	return this, nil
 }
 
-func (this *SemanticRepoMock) GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
+func (this *DeviceManagerMock) GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	return this.options, nil
 }
 
-func (this *SemanticRepoMock) SetOptions(options []model.DeviceOption) {
+func (this *DeviceManagerMock) SetOptions(options []model.DeviceOption) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.options = options

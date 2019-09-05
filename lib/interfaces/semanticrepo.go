@@ -23,10 +23,10 @@ import (
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-type SemanticRepositoryFactory interface {
-	New(ctx context.Context, config config.Config) (SemanticRepository, error)
+type DeviceManagerFactory interface {
+	New(ctx context.Context, config config.Config) (DeviceManager, error)
 }
 
-type SemanticRepository interface {
+type DeviceManager interface {
 	GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error)
 }
