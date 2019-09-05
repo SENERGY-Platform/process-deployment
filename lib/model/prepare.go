@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package interfaces
+package model
 
-import (
-	"context"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-)
-
-type ProcessRepositoryFactory interface {
-	New(ctx context.Context, config config.Config) (ProcessRepository, error)
-}
-
-type ProcessRepository interface {
-	GetBpmn(id string) (xml string, exists bool, err error)
+type PrepareRequest struct {
+	Xml string `json:"xml"`
+	Svg string `json:"svg"`
 }

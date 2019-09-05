@@ -56,14 +56,7 @@ func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
 	}
 }
 
-func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id string) (result model.Deployment, err error, code int) {
-	xml, exists, err := this.processRepo.GetBpmn(id)
-	if err != nil {
-		return result, err, http.StatusInternalServerError
-	}
-	if !exists {
-		return result, errors.New("process modell not found"), http.StatusNotFound
-	}
+func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml string, svg string) (result model.Deployment, err error, code int) {
 	result, err = bpmn.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
@@ -72,6 +65,7 @@ func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, id str
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
+	result.Svg = svg
 	return result, nil, http.StatusOK
 }
 

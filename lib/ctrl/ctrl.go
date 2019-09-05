@@ -29,17 +29,15 @@ type Ctrl struct {
 	config              config.Config
 	db                  interfaces.Database
 	semanticRepo        interfaces.SemanticRepository
-	processRepo         interfaces.ProcessRepository
 	deviceRepo          interfaces.DeviceRepository
 	deploymentPublisher interfaces.Producer
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, repo interfaces.SemanticRepository, deviceRepo interfaces.DeviceRepository, processRepo interfaces.ProcessRepository) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, repo interfaces.SemanticRepository, deviceRepo interfaces.DeviceRepository) (result *Ctrl, err error) {
 	result = &Ctrl{
 		config:       config,
 		db:           db,
 		semanticRepo: repo,
-		processRepo:  processRepo,
 		deviceRepo:   deviceRepo,
 	}
 	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)

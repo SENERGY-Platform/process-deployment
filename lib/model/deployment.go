@@ -4,6 +4,7 @@ type Deployment struct {
 	Id       string        `json:"id"`
 	XmlRaw   string        `json:"xml_raw"`
 	Xml      string        `json:"xml"`
+	Svg      string        `json:"svg"`
 	Name     string        `json:"name"`
 	Elements []Element     `json:"elements"`
 	Lanes    []LaneElement `json:"lanes"`

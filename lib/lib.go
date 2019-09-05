@@ -25,12 +25,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/devicerepository"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
-	"github.com/SENERGY-Platform/process-deployment/lib/processrepository"
 	"github.com/SENERGY-Platform/process-deployment/lib/semanticrepository"
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
-	return Start(ctx, config, kafka.Factory, db.Factory, semanticrepository.Factory, devicerepository.Factory, processrepository.Factory)
+	return Start(ctx, config, kafka.Factory, db.Factory, semanticrepository.Factory, devicerepository.Factory)
 }
 
 func Start(
@@ -39,8 +38,7 @@ func Start(
 	sourcing interfaces.SourcingFactory,
 	database interfaces.DatabaseFactory,
 	semanticRepository interfaces.SemanticRepositoryFactory,
-	deviceRepository interfaces.DeviceRepositoryFactory,
-	processRepository interfaces.ProcessRepositoryFactory) error {
+	deviceRepository interfaces.DeviceRepositoryFactory) error {
 
 	db, err := database.New(ctx, config)
 	if err != nil {
@@ -54,12 +52,8 @@ func Start(
 	if err != nil {
 		return err
 	}
-	processRepo, err := processRepository.New(ctx, config)
-	if err != nil {
-		return err
-	}
 
-	controller, err := ctrl.New(ctx, config, sourcing, db, repo, deviceRepo, processRepo)
+	controller, err := ctrl.New(ctx, config, sourcing, db, repo, deviceRepo)
 	if err != nil {
 		return err
 	}

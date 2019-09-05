@@ -30,9 +30,14 @@ func init() {
 }
 
 func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
-	router.GET("/prepared-deployments/:process_model_id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		id := params.ByName("process_model_id")
-		result, err, code := ctrl.PrepareDeployment(jwt.Impersonate, id)
+	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+		msg := model.PrepareRequest{}
+		err := json.NewDecoder(request.Body).Decode(&msg)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.PrepareDeployment(jwt.Impersonate, msg.Xml, msg.Svg)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
