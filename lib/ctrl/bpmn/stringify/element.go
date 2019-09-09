@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 )
 
-func Element(doc *etree.Document, element model.Element, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func Element(doc *etree.Document, element model.Element, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())

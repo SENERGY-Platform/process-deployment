@@ -28,17 +28,15 @@ import (
 type Ctrl struct {
 	config              config.Config
 	db                  interfaces.Database
-	semanticRepo        interfaces.DeviceManager
-	deviceRepo          interfaces.DeviceRepository
+	devices             interfaces.Devices
 	deploymentPublisher interfaces.Producer
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, repo interfaces.DeviceManager, deviceRepo interfaces.DeviceRepository) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices) (result *Ctrl, err error) {
 	result = &Ctrl{
-		config:       config,
-		db:           db,
-		semanticRepo: repo,
-		deviceRepo:   deviceRepo,
+		config:  config,
+		db:      db,
+		devices: devices,
 	}
 	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)
 	if err != nil {

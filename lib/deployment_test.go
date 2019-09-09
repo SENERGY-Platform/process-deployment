@@ -65,7 +65,7 @@ func ExampleCtrl_Deployment() {
 	//defer cancel()
 	//defer log.Println("stop")
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.SemanticRepository, mocks.DeviceRepository)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -157,8 +157,8 @@ func ExampleCtrl_Deployment() {
 }
 
 func prepareMockRepos() {
-	mocks.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-	mocks.SemanticRepository.SetOptions([]model.DeviceOption{
+	mocks.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+	mocks.Devices.SetOptions([]model.DeviceOption{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -170,23 +170,23 @@ func prepareMockRepos() {
 			},
 		},
 	})
-	mocks.DeviceRepository.SetDevice("device_id_1", devicemodel.Device{
+	mocks.Devices.SetDevice("device_id_1", devicemodel.Device{
 		Id:      "device_id_1",
 		LocalId: "d1url",
 		Name:    "d1",
 	})
-	mocks.DeviceRepository.SetDevice("device_id_2", devicemodel.Device{
+	mocks.Devices.SetDevice("device_id_2", devicemodel.Device{
 		Id:      "device_id_2",
 		LocalId: "d2url",
 		Name:    "d2",
 	})
-	mocks.DeviceRepository.SetService("service_id_1", devicemodel.Service{
+	mocks.Devices.SetService("service_id_1", devicemodel.Service{
 		Id:         "service_id_1",
 		LocalId:    "s1url",
 		Name:       "s1",
 		ProtocolId: "pid",
 	})
-	mocks.DeviceRepository.SetService("service_id_2", devicemodel.Service{
+	mocks.Devices.SetService("service_id_2", devicemodel.Service{
 		Id:         "service_id_2",
 		LocalId:    "s2url",
 		Name:       "s2",

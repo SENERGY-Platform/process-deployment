@@ -57,6 +57,7 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
-	return this.semanticRepo.GetDeploymentOptions(token, descriptions)
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.DeviceOption, err error) {
+	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
+	return
 }

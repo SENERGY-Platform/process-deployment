@@ -60,7 +60,7 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 	return
 }
 
-func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	setMsgEventIds(deployment)
 
 	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo)

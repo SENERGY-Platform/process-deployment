@@ -30,7 +30,7 @@ import (
 	"text/template"
 )
 
-func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -79,7 +79,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	return nil
 }
 
-func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Device, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -128,7 +128,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Devi
 	return nil
 }
 
-func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -180,7 +180,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	return nil
 }
 
-func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemodel.Device, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -251,7 +251,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemo
 	return nil
 }
 
-func createOverwriteVariableScript(selections []model.Selection, selectAsRef bool, deviceRepo interfaces.DeviceRepository) (script string, err error) {
+func createOverwriteVariableScript(selections []model.Selection, selectAsRef bool, deviceRepo interfaces.Devices) (script string, err error) {
 	overwrites := []model.Overwrite{}
 	for _, selection := range selections {
 		overwrite := model.Overwrite{}

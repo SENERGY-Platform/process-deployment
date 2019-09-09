@@ -14,36 +14,23 @@
  * limitations under the License.
  */
 
-package mocks
+package interfaces
 
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
-	"sync"
 )
 
-type DeviceManagerMock struct {
-	mux     sync.Mutex
-	options []model.DeviceOption
+type DevicesFactory interface {
+	New(ctx context.Context, config config.Config) (Devices, error)
 }
 
-var SemanticRepository = &DeviceManagerMock{}
-
-func (this *DeviceManagerMock) New(ctx context.Context, config config.Config) (interfaces.DeviceManager, error) {
-	return this, nil
-}
-
-func (this *DeviceManagerMock) GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	return this.options, nil
-}
-
-func (this *DeviceManagerMock) SetOptions(options []model.DeviceOption) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	this.options = options
+type Devices interface {
+	GetProtocol(id string) (devicemodel.Protocol, error, int)
+	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
+	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
+	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error, int)
 }

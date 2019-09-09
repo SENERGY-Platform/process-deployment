@@ -14,61 +14,49 @@
  * limitations under the License.
  */
 
-package devicemanager
+package devices
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
+	"net/url"
 	"runtime/debug"
 	"time"
 )
 
-type DeviceManagerFactory struct{}
+type SemanticRepoFactory struct{}
 
-type DeviceManager struct {
-	config config.Config
-}
-
-var Factory = &DeviceManagerFactory{}
-
-func (this *DeviceManagerFactory) New(ctx context.Context, config config.Config) (interfaces.DeviceManager, error) {
-	return &DeviceManager{config: config}, nil
-}
-
-func (this *DeviceManager) GetDeploymentOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.DeviceOption, err error) {
+func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []devicemodel.DeviceType, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
 	payload, err := json.Marshal(descriptions)
 
 	req, err := http.NewRequest(
-		"POST",
-		this.config.DeviceManagerUrl+"/device-options",
-		bytes.NewBuffer(payload),
+		"GET",
+		this.config.SemanticRepoUrl+"/device-types?filter="+url.QueryEscape(string(payload)),
+		nil,
 	)
 	if err != nil {
 		debug.PrintStack()
-		return result, err
+		return result, err, http.StatusInternalServerError
 	}
 	req.Header.Set("Authorization", string(token))
 
 	resp, err := client.Do(req)
 	if err != nil {
 		debug.PrintStack()
-		return result, err
+		return result, err, http.StatusInternalServerError
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
 		debug.PrintStack()
-		return result, errors.New("unexpected statuscode")
+		return result, errors.New("unexpected statuscode"), resp.StatusCode
 	}
 	err = json.NewDecoder(resp.Body).Decode(&result)
-	return result, err
+	return result, err, resp.StatusCode
 }

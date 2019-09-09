@@ -56,7 +56,7 @@ func ExampleCtrl_PrepareDeployment() {
 
 	//time.Sleep(1 * time.Second)
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.SemanticRepository, mock.DeviceRepository)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -70,7 +70,7 @@ func ExampleCtrl_PrepareDeployment() {
 		return
 	}
 
-	mock.SemanticRepository.SetOptions([]model.DeviceOption{
+	mock.Devices.SetOptions([]model.DeviceOption{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",

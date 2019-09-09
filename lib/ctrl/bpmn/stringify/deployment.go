@@ -22,7 +22,7 @@ import (
 	"github.com/beevik/etree"
 )
 
-func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (xml string, err error) {
+func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (xml string, err error) {
 	doc := etree.NewDocument()
 	err = doc.ReadFromString(deployment.XmlRaw)
 	if err != nil {

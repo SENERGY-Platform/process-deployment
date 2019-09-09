@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package devicerepository
+package devices
 
 import (
 	"context"

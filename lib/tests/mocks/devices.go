@@ -21,6 +21,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
@@ -32,11 +33,12 @@ type DeviceRepoMock struct {
 	protocols map[string]devicemodel.Protocol
 	devices   map[string]devicemodel.Device
 	services  map[string]devicemodel.Service
+	options   []model.DeviceOption
 }
 
-var DeviceRepository = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
+var Devices = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
 
-func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.DeviceRepository, error) {
+func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {
 	return this, nil
 }
 
@@ -86,4 +88,16 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.services[id] = service
+}
+
+func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error, int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	return this.options, nil, 200
+}
+
+func (this *DeviceRepoMock) SetOptions(options []model.DeviceOption) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	this.options = options
 }

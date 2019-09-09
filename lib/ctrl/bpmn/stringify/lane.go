@@ -26,7 +26,7 @@ import (
 	"runtime/debug"
 )
 
-func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -42,7 +42,7 @@ func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef boo
 	return nil
 }
 
-func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -72,7 +72,7 @@ func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo
 	return nil
 }
 
-func MultiLane(doc *etree.Document, lane *model.MultiLane, selectionAsRef bool, deviceRepo interfaces.DeviceRepository) (err error) {
+func MultiLane(doc *etree.Document, lane *model.MultiLane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())

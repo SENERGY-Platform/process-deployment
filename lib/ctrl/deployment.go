@@ -126,7 +126,7 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deploy
 
 	err = this.setDeploymentEventIds(&deployment)
 
-	deployment.Xml, err = stringify.Deployment(deployment, this.config.DeploymentAsRef, this.deviceRepo)
+	deployment.Xml, err = stringify.Deployment(deployment, this.config.DeploymentAsRef, this.devices)
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
@@ -336,7 +336,7 @@ func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *m
 	if result, ok = (*cache)[id]; ok {
 		return result, nil, 200
 	}
-	result, err, code = this.deviceRepo.GetDevice(token, id)
+	result, err, code = this.devices.GetDevice(token, id)
 	if err != nil {
 		return
 	}
@@ -349,7 +349,7 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	if result, ok = (*cache)[id]; ok {
 		return result, nil, 200
 	}
-	result, err, code = this.deviceRepo.GetService(token, id)
+	result, err, code = this.devices.GetService(token, id)
 	if err != nil {
 		return
 	}

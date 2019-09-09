@@ -131,9 +131,9 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 		return
 	}
 
-	mock.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, true, mock.DeviceRepository)
+	err = UseDeploymentSelections(&deployment, true, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -260,9 +260,9 @@ func ExampleSimpleBpmnDeploymentToXml() {
 		return
 	}
 
-	mock.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.DeviceRepository)
+	err = UseDeploymentSelections(&deployment, false, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -389,9 +389,9 @@ func ExampleTimeAndReceiveBpmnDeploymentToXml() {
 		return
 	}
 
-	mock.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.DeviceRepository)
+	err = UseDeploymentSelections(&deployment, false, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -491,9 +491,9 @@ func ExampleLanesBpmnDeploymentToXml() {
 		return
 	}
 
-	mock.DeviceRepository.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.DeviceRepository)
+	err = UseDeploymentSelections(&deployment, false, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
