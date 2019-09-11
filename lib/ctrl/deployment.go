@@ -250,22 +250,22 @@ func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.Jwt
 
 	for _, element := range deployment.Elements {
 		if element.Task != nil {
-			element.Task.Selection.SelectedDevice, err, code = this.getCachedDevice(token, &deviceCache, element.Task.Selection.SelectedDevice.Id)
+			element.Task.Selection.Device, err, code = this.getCachedDevice(token, &deviceCache, element.Task.Selection.Device.Id)
 			if err != nil {
 				return err, code
 			}
-			element.Task.Selection.SelectedService, err, code = this.getCachedService(token, &serviceCache, element.Task.Selection.SelectedService.Id)
+			element.Task.Selection.Service, err, code = this.getCachedService(token, &serviceCache, element.Task.Selection.Service.Id)
 			if err != nil {
 				return err, code
 			}
 		}
 		if element.MultiTask != nil {
 			for index, selection := range element.MultiTask.Selections {
-				selection.SelectedDevice, err, code = this.getCachedDevice(token, &deviceCache, selection.SelectedDevice.Id)
+				selection.Device, err, code = this.getCachedDevice(token, &deviceCache, selection.Device.Id)
 				if err != nil {
 					return err, code
 				}
-				selection.SelectedService, err, code = this.getCachedService(token, &serviceCache, selection.SelectedService.Id)
+				selection.Service, err, code = this.getCachedService(token, &serviceCache, selection.Service.Id)
 				if err != nil {
 					return err, code
 				}

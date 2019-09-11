@@ -15,12 +15,11 @@
         },
         "bpmn_element_id": "Task_0wjr1fj",
         "input": "000",
-        "device_options": null,
         "selection": {
-          "selected_device": {
+          "device": {
             "id": "device_id_1"
           },
-          "selected_service": {
+          "service": {
             "id": "service_id_1",
             "protocol_id": "pid"
           }
@@ -42,22 +41,21 @@
         },
         "bpmn_element_id": "Task_096xjeg",
         "input": "000",
-        "device_options": null,
         "selections": [
           {
-            "selected_device": {
+            "device": {
               "id": "device_id_1"
             },
-            "selected_service": {
+            "service": {
               "id": "service_id_1",
               "protocol_id": "pid"
             }
           },
           {
-            "selected_device": {
+            "device": {
               "id": "device_id_2"
             },
-            "selected_service": {
+            "service": {
               "id": "service_id_2",
               "protocol_id": "pid"
             }

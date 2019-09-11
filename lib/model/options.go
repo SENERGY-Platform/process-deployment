@@ -2,14 +2,14 @@ package model
 
 import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 
-type DeviceOption struct {
-	Device         devicemodel.Device    `json:"device"`
-	ServiceOptions []devicemodel.Service `json:"service_options"`
+type Selectable struct {
+	Device   devicemodel.Device    `json:"device"`
+	Services []devicemodel.Service `json:"services"`
 }
 
 type Selection struct {
-	SelectedDevice  devicemodel.Device  `json:"selected_device"`
-	SelectedService devicemodel.Service `json:"selected_service"`
+	Device  devicemodel.Device  `json:"device"`
+	Service devicemodel.Service `json:"service"`
 }
 
 type DeviceDescription struct {

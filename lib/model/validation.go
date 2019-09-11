@@ -139,10 +139,10 @@ func (this *MsgEvent) Validate(strict bool) error {
 }
 
 func (this Selection) Validate(strict bool) error {
-	if this.SelectedDevice.Id == "" {
+	if this.Device.Id == "" {
 		return errors.New("missing device selection")
 	}
-	if this.SelectedService.Id == "" {
+	if this.Service.Id == "" {
 		return errors.New("missing service selection")
 	}
 	return nil

@@ -28,14 +28,14 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 			if err != nil {
 				return err
 			}
-			element.Task.DeviceOptions = options
+			element.Task.Selectables = options
 		}
 		if element.MultiTask != nil {
 			options, err := this.GetOptions(token, []model.DeviceDescription{element.MultiTask.DeviceDescription})
 			if err != nil {
 				return err
 			}
-			element.MultiTask.DeviceOptions = options
+			element.MultiTask.Selectables = options
 		}
 	}
 	for _, lane := range deployment.Lanes {
@@ -44,20 +44,20 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 			if err != nil {
 				return err
 			}
-			lane.Lane.DeviceOptions = options
+			lane.Lane.Selectables = options
 		}
 		if lane.MultiLane != nil {
 			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions)
 			if err != nil {
 				return err
 			}
-			lane.MultiLane.DeviceOptions = options
+			lane.MultiLane.Selectables = options
 		}
 	}
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.DeviceOption, err error) {
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error) {
 	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
 	return
 }

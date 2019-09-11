@@ -33,7 +33,7 @@ type DeviceRepoMock struct {
 	protocols map[string]devicemodel.Protocol
 	devices   map[string]devicemodel.Device
 	services  map[string]devicemodel.Service
-	options   []model.DeviceOption
+	options   []model.Selectable
 }
 
 var Devices = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
@@ -90,13 +90,13 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.DeviceOption, error, int) {
+func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.Selectable, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	return this.options, nil, 200
 }
 
-func (this *DeviceRepoMock) SetOptions(options []model.DeviceOption) {
+func (this *DeviceRepoMock) SetOptions(options []model.Selectable) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.options = options

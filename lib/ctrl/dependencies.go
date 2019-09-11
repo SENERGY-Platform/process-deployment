@@ -149,8 +149,8 @@ func (this *Ctrl) deploymentToDependencies(deployment model.Deployment) (result 
 	for _, element := range deployment.Elements {
 		if element.Task != nil {
 			result.Devices = append(result.Devices, model.DeviceDependency{
-				DeviceId: element.Task.Selection.SelectedDevice.Id,
-				Name:     element.Task.Selection.SelectedDevice.Name,
+				DeviceId: element.Task.Selection.Device.Id,
+				Name:     element.Task.Selection.Device.Name,
 				BpmnResources: []model.BpmnResource{{
 					Id: element.Task.BpmnElementId,
 				}},
@@ -159,8 +159,8 @@ func (this *Ctrl) deploymentToDependencies(deployment model.Deployment) (result 
 		if element.MultiTask != nil {
 			for _, selection := range element.MultiTask.Selections {
 				result.Devices = append(result.Devices, model.DeviceDependency{
-					DeviceId: selection.SelectedDevice.Id,
-					Name:     selection.SelectedDevice.Name,
+					DeviceId: selection.Device.Id,
+					Name:     selection.Device.Name,
 					BpmnResources: []model.BpmnResource{{
 						Id: element.MultiTask.BpmnElementId,
 					}},

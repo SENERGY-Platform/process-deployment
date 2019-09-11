@@ -50,13 +50,13 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	}
 
 	if selectAsRef {
-		command.DeviceId = task.Selection.SelectedDevice.Id
-		command.ServiceId = task.Selection.SelectedService.Id
-		command.ProtocolId = task.Selection.SelectedService.ProtocolId
+		command.DeviceId = task.Selection.Device.Id
+		command.ServiceId = task.Selection.Service.Id
+		command.ProtocolId = task.Selection.Service.ProtocolId
 	} else {
-		command.Device = &task.Selection.SelectedDevice
-		command.Service = &task.Selection.SelectedService
-		protocol, err, _ := deviceRepo.GetProtocol(task.Selection.SelectedService.ProtocolId)
+		command.Device = &task.Selection.Device
+		command.Service = &task.Selection.Service
+		protocol, err, _ := deviceRepo.GetProtocol(task.Selection.Service.ProtocolId)
 		if err != nil {
 			return err
 		}
@@ -256,17 +256,17 @@ func createOverwriteVariableScript(selections []model.Selection, selectAsRef boo
 	for _, selection := range selections {
 		overwrite := model.Overwrite{}
 		if selectAsRef {
-			protocol, err, _ := deviceRepo.GetProtocol(selection.SelectedService.ProtocolId)
+			protocol, err, _ := deviceRepo.GetProtocol(selection.Service.ProtocolId)
 			if err != nil {
 				return "", err
 			}
-			overwrite.Device = &selection.SelectedDevice
-			overwrite.Service = &selection.SelectedService
+			overwrite.Device = &selection.Device
+			overwrite.Service = &selection.Service
 			overwrite.Protocol = &protocol
 		} else {
-			overwrite.DeviceId = selection.SelectedDevice.Id
-			overwrite.ServiceId = selection.SelectedService.Id
-			overwrite.ProtocolId = selection.SelectedService.ProtocolId
+			overwrite.DeviceId = selection.Device.Id
+			overwrite.ServiceId = selection.Service.Id
+			overwrite.ProtocolId = selection.Service.ProtocolId
 		}
 		overwrites = append(overwrites, overwrite)
 	}

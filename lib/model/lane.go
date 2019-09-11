@@ -26,7 +26,7 @@ type Lane struct {
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options"`
+	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selection devicemodel.Device `json:"selection"`
@@ -42,7 +42,7 @@ type MultiLane struct {
 	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options"`
+	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selections []devicemodel.Device `json:"selections"`

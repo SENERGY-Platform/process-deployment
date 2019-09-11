@@ -24,7 +24,7 @@ type Task struct {
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options"`
+	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selection Selection `json:"selection"`
@@ -41,7 +41,7 @@ type MultiTask struct {
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	DeviceOptions []DeviceOption `json:"device_options"`
+	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selections []Selection `json:"selections"`
