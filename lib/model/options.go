@@ -18,3 +18,9 @@ type DeviceDescription struct {
 	DeviceClass      *devicemodel.DeviceClass `json:"device_class,omitempty"`
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty"`
 }
+
+type DeviceTypesFilter struct {
+	FunctionId       string		`json:"function_id"`
+	DeviceClassId    string 	`json:"device_class_id"`
+	AspectId         string  	`json:"aspect_id"`
+}
