@@ -20,7 +20,18 @@ type DeviceDescription struct {
 }
 
 type DeviceTypesFilter struct {
-	FunctionId       string		`json:"function_id"`
-	DeviceClassId    string 	`json:"device_class_id"`
-	AspectId         string  	`json:"aspect_id"`
+	FunctionId    string `json:"function_id"`
+	DeviceClassId string `json:"device_class_id"`
+	AspectId      string `json:"aspect_id"`
+}
+
+func (description *DeviceDescription) ToFilter() (filter DeviceTypesFilter) {
+	filter.FunctionId = description.Function.Id
+	if description.Aspect != nil {
+		filter.AspectId = description.Aspect.Id
+	}
+	if description.DeviceClass != nil {
+		filter.DeviceClassId = description.DeviceClass.Id
+	}
+	return
 }

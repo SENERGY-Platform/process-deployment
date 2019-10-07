@@ -34,7 +34,7 @@ func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImperson
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
-	payload, err := json.Marshal(descriptions)
+	payload, err := json.Marshal(descriptionsToFilter(descriptions))
 
 	req, err := http.NewRequest(
 		"GET",
@@ -59,4 +59,11 @@ func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImperson
 	}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	return result, err, resp.StatusCode
+}
+
+func descriptionsToFilter(descriptions []model.DeviceDescription) (filter []model.DeviceTypesFilter) {
+	for _, desc := range descriptions {
+		filter = append(filter, desc.ToFilter())
+	}
+	return
 }
