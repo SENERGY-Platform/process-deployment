@@ -3,7 +3,7 @@
   "mongo_url": "mongo",
   "consumer_group": "process-deployment",
   "debug": false,
-  "log_level": "call",
+  "log_level": "CALL",
   "api_port": "8080",
   "connectivity_test": true,
   "deployment_topic": "deployments",
