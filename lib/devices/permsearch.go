@@ -51,7 +51,7 @@ type PermSearchDevice struct {
 }
 
 func (this *Repository) getDevicesOfTypeFromPermsearch(token jwt_http_router.JwtImpersonate, deviceTypeId string) (result []PermSearchDevice, err error, code int) {
-	req, err := http.NewRequest("GET", this.config.PermSearchUrl+"/jwt/select/devices/device-type/"+url.PathEscape(deviceTypeId)+"/x", nil)
+	req, err := http.NewRequest("GET", this.config.PermSearchUrl+"/jwt/select/devices/device_type_id/"+url.PathEscape(deviceTypeId)+"/x", nil)
 	if err != nil {
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
