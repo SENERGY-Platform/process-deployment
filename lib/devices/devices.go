@@ -24,6 +24,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
+	"log"
 )
 
 var L1Expiration = 60         // 60sec
@@ -52,10 +53,16 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 	if err != nil {
 		return result, err, code
 	}
+	if this.config.Debug {
+		log.Println("DEBUG: GetFilteredDevices()::GetFilteredDeviceTypes()", deviceTypes)
+	}
 	for _, dt := range deviceTypes {
 		devices, err, code := this.GetDevicesOfType(token, dt.Id)
 		if err != nil {
 			return result, err, code
+		}
+		if this.config.Debug {
+			log.Println("DEBUG: GetFilteredDevices()::GetDevicesOfType()", dt.Id, devices)
 		}
 		services := []devicemodel.Service{}
 		serviceIndex := map[string]devicemodel.Service{}
@@ -85,6 +92,9 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 				Services: services,
 			})
 		}
+	}
+	if this.config.Debug {
+		log.Println("DEBUG: GetFilteredDevices()", result)
 	}
 	return result, nil, 200
 }
