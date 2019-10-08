@@ -165,3 +165,71 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 		t.Error(string(temp))
 	}
 }
+
+func TestGetFilteredDevices(t *testing.T) {
+
+	mux := sync.Mutex{}
+	calls := []string{}
+
+	mock := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.Lock()
+		defer mux.Unlock()
+		calls = append(calls, r.URL.Path+"?"+r.URL.RawQuery)
+		json.NewEncoder(w).Encode([]model.DeviceType{{Id: "dt1", Name: "dt1name"}})
+	}))
+
+	defer mock.Close()
+
+	c := &config.ConfigStruct{
+		SemanticRepoUrl: mock.URL,
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	temp, err := Factory.New(ctx, c)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	repo := temp.(*Repository)
+
+	_, err, _ = repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+		CharacteristicId: "chid1",
+		Function:         devicemodel.Function{Id: "fid"},
+		DeviceClass:      nil,
+		Aspect:           nil,
+	}})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+		CharacteristicId: "chid1",
+		Function:         devicemodel.Function{Id: "fid"},
+		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
+		Aspect:           &devicemodel.Aspect{Id: "a1"},
+	}})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(dt) != 1 || dt[0].Name != "dt1name" || dt[0].Id != "dt1" {
+		t.Error(dt)
+		return
+	}
+
+	mux.Lock()
+	defer mux.Unlock()
+	if !reflect.DeepEqual(calls, []string{
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"","aspect_id":""}]`),
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"dc1","aspect_id":"a1"}]`),
+	}) {
+		temp, _ := json.Marshal(calls)
+		t.Error(string(temp))
+	}
+}

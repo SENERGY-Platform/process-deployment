@@ -22,7 +22,7 @@ import (
 )
 
 func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *model.Deployment) (err error) {
-	for _, element := range deployment.Elements {
+	for index, element := range deployment.Elements {
 		if element.Task != nil {
 			options, err := this.GetOptions(token, []model.DeviceDescription{element.Task.DeviceDescription})
 			if err != nil {
@@ -37,8 +37,9 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 			}
 			element.MultiTask.Selectables = options
 		}
+		deployment.Elements[index] = element
 	}
-	for _, lane := range deployment.Lanes {
+	for index, lane := range deployment.Lanes {
 		if lane.Lane != nil {
 			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions)
 			if err != nil {
@@ -53,6 +54,7 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 			}
 			lane.MultiLane.Selectables = options
 		}
+		deployment.Lanes[index] = lane
 	}
 	return nil
 }
