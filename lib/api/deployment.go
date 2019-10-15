@@ -22,7 +22,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -50,18 +49,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 
 	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		deployment := model.Deployment{}
-		var err error
-		if config.Debug {
-			msg, err := ioutil.ReadAll(request.Body)
-			if err != nil {
-				http.Error(writer, err.Error(), http.StatusBadRequest)
-				return
-			}
-			log.Println("DEBUG: receive deployment request:", string(msg))
-			err = json.Unmarshal(msg, &deployment)
-		} else {
-			err = json.NewDecoder(request.Body).Decode(&deployment)
-		}
+		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
 			log.Println("ERROR: unable to parse request", err)
 			http.Error(writer, err.Error(), http.StatusBadRequest)
