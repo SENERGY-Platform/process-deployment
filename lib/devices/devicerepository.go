@@ -48,7 +48,7 @@ func (this *Repository) GetService(token jwt_http_router.JwtImpersonate, id stri
 func (this *Repository) get(token string, resource string, id string, result interface{}) (error, int) {
 	temp, err := this.l1.Get([]byte(resource + "." + id))
 	if err == freecache.ErrNotFound && this.config.Debug {
-		log.Println("DEBUG: protocol not in cache", id)
+		log.Println("DEBUG: "+resource+" not in cache", id)
 		err = nil
 	}
 	if err == nil {
