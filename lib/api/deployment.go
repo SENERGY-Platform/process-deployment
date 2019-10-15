@@ -57,12 +57,13 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 				http.Error(writer, err.Error(), http.StatusBadRequest)
 				return
 			}
-			log.Println("DEBUG: receive deployment request:", msg)
+			log.Println("DEBUG: receive deployment request:", string(msg))
 			err = json.Unmarshal(msg, &deployment)
 		} else {
 			err = json.NewDecoder(request.Body).Decode(&deployment)
 		}
 		if err != nil {
+			log.Println("ERROR: unable to parse request", err)
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
