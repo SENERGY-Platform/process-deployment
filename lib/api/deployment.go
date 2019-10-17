@@ -47,6 +47,22 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
+	router.GET("/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+		id := params.ByName("modelId")
+		process, err, code := ctrl.GetProcessModel(jwt.Impersonate, id)
+		if err != nil {
+			http.Error(writer, err.Error(), code)
+			return
+		}
+		result, err, code := ctrl.PrepareDeployment(jwt.Impersonate, process.BpmnXml, process.SvgXml)
+		if err != nil {
+			http.Error(writer, err.Error(), code)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+		json.NewEncoder(writer).Encode(result)
+	})
+
 	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		deployment := model.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)

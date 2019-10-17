@@ -65,7 +65,7 @@ func ExampleCtrl_Deployment() {
 	//defer cancel()
 	//defer log.Println("stop")
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
 	if err != nil {
 		fmt.Println(err)
 		return

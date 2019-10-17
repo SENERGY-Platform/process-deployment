@@ -30,13 +30,15 @@ type Ctrl struct {
 	db                  interfaces.Database
 	devices             interfaces.Devices
 	deploymentPublisher interfaces.Producer
+	processrepo         interfaces.ProcessRepo
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo) (result *Ctrl, err error) {
 	result = &Ctrl{
-		config:  config,
-		db:      db,
-		devices: devices,
+		config:      config,
+		db:          db,
+		devices:     devices,
+		processrepo: processrepo,
 	}
 	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)
 	if err != nil {

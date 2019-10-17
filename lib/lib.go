@@ -25,10 +25,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/devices"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
+	"github.com/SENERGY-Platform/process-deployment/lib/processrepo"
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
-	return Start(ctx, config, kafka.Factory, db.Factory, devices.Factory)
+	return Start(ctx, config, kafka.Factory, db.Factory, devices.Factory, processrepo.Factory)
 }
 
 func Start(
@@ -36,7 +37,8 @@ func Start(
 	config config.Config,
 	sourcing interfaces.SourcingFactory,
 	database interfaces.DatabaseFactory,
-	devices interfaces.DevicesFactory) error {
+	devices interfaces.DevicesFactory,
+	processrepo interfaces.ProcessRepoFactory) error {
 
 	db, err := database.New(ctx, config)
 	if err != nil {
@@ -46,7 +48,11 @@ func Start(
 	if err != nil {
 		return err
 	}
-	controller, err := ctrl.New(ctx, config, sourcing, db, d)
+	p, err := processrepo.New(ctx, config)
+	if err != nil {
+		return err
+	}
+	controller, err := ctrl.New(ctx, config, sourcing, db, d, p)
 	if err != nil {
 		return err
 	}
