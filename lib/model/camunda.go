@@ -40,6 +40,8 @@ type Command struct {
 	//runtime
 	Input  interface{} `json:"input,omitempty"`
 	Output interface{} `json:"output,omitempty"`
+
+	Retries int64 `json:"retries,omitempty"`
 }
 
 type Documentation struct {

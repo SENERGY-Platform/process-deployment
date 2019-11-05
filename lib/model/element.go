@@ -21,6 +21,7 @@ type Task struct {
 	Label             string            `json:"label"`
 	DeviceDescription DeviceDescription `json:"device_description"`
 	BpmnElementId     string            `json:"bpmn_element_id"`
+	Retries           int64             `json:"retries,omitempty"`
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
@@ -38,6 +39,7 @@ type MultiTask struct {
 	Label             string            `json:"label"`
 	DeviceDescription DeviceDescription `json:"device_description"`
 	BpmnElementId     string            `json:"bpmn_element_id"`
+	Retries           int64             `json:"retries,omitempty"`
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service

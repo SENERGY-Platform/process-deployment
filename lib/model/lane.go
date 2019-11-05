@@ -60,7 +60,8 @@ type LaneSubElement struct {
 
 type LaneTask struct {
 	//information direct from model
-	Label string `json:"label" bson:"label"`
+	Label   string `json:"label" bson:"label"`
+	Retries int64  `json:"retries,omitempty"`
 
 	DeviceDescription DeviceDescription `json:"device_description"`
 	Input             interface{}       `json:"input"`

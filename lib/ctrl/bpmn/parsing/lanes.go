@@ -150,6 +150,7 @@ func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubEleme
 			result.Order = simpletask.Order
 			result.LaneTask = &model.LaneTask{
 				Label:             simpletask.Task.Label,
+				Retries:           simpletask.Task.Retries,
 				DeviceDescription: simpletask.Task.DeviceDescription,
 				Input:             simpletask.Task.Input,
 				BpmnElementId:     simpletask.Task.BpmnElementId,

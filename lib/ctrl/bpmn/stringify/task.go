@@ -42,6 +42,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	}()
 
 	command := model.Command{
+		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
 		DeviceClass:      task.DeviceDescription.DeviceClass,
@@ -91,6 +92,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Devi
 	}()
 
 	command := model.Command{
+		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
 		DeviceClass:      task.DeviceDescription.DeviceClass,
@@ -140,6 +142,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	}()
 
 	command := model.Command{
+		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
 		DeviceClass:      task.DeviceDescription.DeviceClass,
@@ -192,6 +195,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemo
 	}()
 
 	command := model.Command{
+		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
 		DeviceClass:      task.DeviceDescription.DeviceClass,
