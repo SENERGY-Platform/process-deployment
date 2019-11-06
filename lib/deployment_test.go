@@ -218,6 +218,8 @@ func subExampleDeploymentCreate(conf config.Config, deploymentJson []byte) error
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		b, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println("ERROR:", resp.StatusCode, string(b))
 		debug.PrintStack()
 		return errors.New("unexpected statuscode")
 	}
