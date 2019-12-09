@@ -91,6 +91,9 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 }
 
 func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.Selectable, error, int) {
+	if len(descriptions) == 0 {
+		return nil, errors.New("missing descriptions"), 500
+	}
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	return this.options, nil, 200

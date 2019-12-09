@@ -40,6 +40,9 @@ func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
 	}
 	for _, lane := range doc.FindElements("//bpmn:lane") {
 		element, err := bpmnToLane(lane)
+		if err == EmptyLane {
+			continue
+		}
 		if err != nil {
 			return result, err
 		}
@@ -47,6 +50,8 @@ func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
 	}
 	return
 }
+
+var EmptyLane = errors.New("empty lane")
 
 func bpmnToLane(lane *etree.Element) (result model.LaneElement, err error) {
 	defer func() {
@@ -67,6 +72,9 @@ func bpmnToLane(lane *etree.Element) (result model.LaneElement, err error) {
 	subElements, err := getLaneSubElements(lane)
 	if err != nil {
 		return result, err
+	}
+	if len(subElements) == 0 {
+		return result, EmptyLane
 	}
 	sort.Sort(LaneElementByOrder(subElements))
 

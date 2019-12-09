@@ -1,5 +1,7 @@
 module github.com/SENERGY-Platform/process-deployment
 
+go 1.13
+
 require (
 	github.com/SENERGY-Platform/iot-device-repository v0.0.0-20190620144749-fa673f457d06
 	github.com/SmartEnergyPlatform/jwt-http-router v0.0.0-20190722084820-0e1fe0dc7a07
