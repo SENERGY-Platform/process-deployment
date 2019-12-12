@@ -12,6 +12,7 @@ type Selection struct {
 	Service devicemodel.Service `json:"service"`
 }
 
+type DeviceDescriptions []DeviceDescription
 type DeviceDescription struct {
 	CharacteristicId string                   `json:"characteristic_id"`
 	Function         devicemodel.Function     `json:"function"`
@@ -20,18 +21,25 @@ type DeviceDescription struct {
 }
 
 type DeviceTypesFilter struct {
-	FunctionId    string `json:"function_id"`
-	DeviceClassId string `json:"device_class_id"`
-	AspectId      string `json:"aspect_id"`
+	FunctionIds   []string `json:"function_ids"`
+	AspectIds     []string `json:"aspect_ids"`
+	DeviceClassId string   `json:"device_class_id"`
 }
 
-func (description *DeviceDescription) ToFilter() (filter DeviceTypesFilter) {
-	filter.FunctionId = description.Function.Id
-	if description.Aspect != nil {
-		filter.AspectId = description.Aspect.Id
-	}
-	if description.DeviceClass != nil {
-		filter.DeviceClassId = description.DeviceClass.Id
+func (this DeviceDescriptions) ToFilter() (result DeviceTypesFilter) {
+	aspectIndex := map[string]bool{}
+	functionIndex := map[string]bool{}
+	for _, description := range this {
+		if _, notDistinct := aspectIndex[description.Aspect.Id]; !notDistinct {
+			result.AspectIds = append(result.AspectIds, description.Aspect.Id)
+			aspectIndex[description.Aspect.Id] = true
+		}
+		if _, notDistinct := functionIndex[description.Function.Id]; !notDistinct {
+			result.FunctionIds = append(result.FunctionIds, description.Function.Id)
+			functionIndex[description.Function.Id] = true
+		}
+		result.DeviceClassId = description.DeviceClass.Id
+
 	}
 	return
 }
