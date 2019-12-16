@@ -30,15 +30,19 @@ func (this DeviceDescriptions) ToFilter() (result DeviceTypesFilter) {
 	aspectIndex := map[string]bool{}
 	functionIndex := map[string]bool{}
 	for _, description := range this {
-		if _, notDistinct := aspectIndex[description.Aspect.Id]; !notDistinct {
-			result.AspectIds = append(result.AspectIds, description.Aspect.Id)
-			aspectIndex[description.Aspect.Id] = true
+		if description.Aspect != nil {
+			if _, notDistinct := aspectIndex[description.Aspect.Id]; !notDistinct {
+				result.AspectIds = append(result.AspectIds, description.Aspect.Id)
+				aspectIndex[description.Aspect.Id] = true
+			}
 		}
 		if _, notDistinct := functionIndex[description.Function.Id]; !notDistinct {
 			result.FunctionIds = append(result.FunctionIds, description.Function.Id)
 			functionIndex[description.Function.Id] = true
 		}
-		result.DeviceClassId = description.DeviceClass.Id
+		if description.DeviceClass != nil {
+			result.DeviceClassId = description.DeviceClass.Id
+		}
 
 	}
 	return

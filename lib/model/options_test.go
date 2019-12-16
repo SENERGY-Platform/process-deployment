@@ -46,3 +46,18 @@ func ExampleToFilter() {
 	//output:
 	//{[f1 f2] [a1 a2] dc3}
 }
+
+func ExampleNilToFilter() {
+	fmt.Println(DeviceDescriptions{
+		{
+			CharacteristicId: "foobar",
+			Function:         devicemodel.Function{Id: "f1"},
+			DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
+			Aspect:           &devicemodel.Aspect{Id: "a1"},
+		},
+		{},
+	}.ToFilter())
+
+	//output:
+	//{[f1 ] [a1] dc1}
+}
