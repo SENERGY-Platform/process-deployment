@@ -46,7 +46,7 @@ func (this *Repository) GetDevicesOfType(token jwt_http_router.JwtImpersonate, d
 type PermSearchDevice struct {
 	Id         string `json:"id"`
 	Name       string `json:"name"`
-	DeviceType string `json:"device-type"`
+	DeviceType string `json:"device_type_id"`
 	LocalId    string `json:"local_id"`
 }
 
