@@ -54,11 +54,7 @@ func ExampleCtrl_PrepareDeploymentById() {
 	config.ApiPort = strconv.Itoa(port)
 
 	ctx, cancel := context.WithCancel(context.Background())
-
 	defer cancel()
-	defer log.Println("stop")
-
-	//time.Sleep(1 * time.Second)
 
 	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
 	if err != nil {
@@ -148,11 +144,7 @@ func ExampleCtrl_PrepareDeployment() {
 	config.ApiPort = strconv.Itoa(port)
 
 	ctx, cancel := context.WithCancel(context.Background())
-
 	defer cancel()
-	defer log.Println("stop")
-
-	//time.Sleep(1 * time.Second)
 
 	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
 	if err != nil {

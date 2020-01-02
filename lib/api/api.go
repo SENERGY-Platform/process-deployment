@@ -45,8 +45,12 @@ func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	go func() {
 		log.Println("Listening on ", server.Addr)
 		if err := server.ListenAndServe(); err != nil {
-			log.Println("ERROR: api server error", err)
-			log.Fatal(err)
+			if err != http.ErrServerClosed {
+				log.Println("ERROR: api server error", err)
+				log.Fatal(err)
+			} else {
+				log.Println("closing api server")
+			}
 		}
 	}()
 	go func() {

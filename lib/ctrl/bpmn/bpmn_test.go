@@ -149,7 +149,7 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 
 	//output:
 	//<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-	//     <bpmn:process id="simple" isExecutable="true">
+	//     <bpmn:process id="simple" isExecutable="true" name="simple">
 	//         <bpmn:startEvent id="StartEvent_1">
 	//             <bpmn:outgoing>SequenceFlow_0ixns30</bpmn:outgoing>
 	//         </bpmn:startEvent>
@@ -278,7 +278,7 @@ func ExampleSimpleBpmnDeploymentToXml() {
 
 	//output:
 	// <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-	//     <bpmn:process id="simple" isExecutable="true">
+	//     <bpmn:process id="simple" isExecutable="true" name="simple">
 	//         <bpmn:startEvent id="StartEvent_1">
 	//             <bpmn:outgoing>SequenceFlow_0ixns30</bpmn:outgoing>
 	//         </bpmn:startEvent>
@@ -407,7 +407,7 @@ func ExampleTimeAndReceiveBpmnDeploymentToXml() {
 
 	//output:
 	//<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-	//     <bpmn:process id="timeAndReceive" isExecutable="true">
+	//     <bpmn:process id="timeAndReceive" isExecutable="true" name="timeAndReceive">
 	//         <bpmn:startEvent id="StartEvent_1">
 	//             <bpmn:outgoing>SequenceFlow_1nh3k2a</bpmn:outgoing>
 	//         </bpmn:startEvent>
@@ -512,7 +512,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 	//     <bpmn:collaboration id="Collaboration_1t682rc">
 	//         <bpmn:participant id="Participant_1a4rg7s" processRef="lanes"/>
 	//     </bpmn:collaboration>
-	//     <bpmn:process id="lanes" isExecutable="true">
+	//     <bpmn:process id="lanes" isExecutable="true" name="lanes">
 	//         <bpmn:laneSet id="LaneSet_1ekoknz">
 	//             <bpmn:lane id="Lane_0v679jg" name="taskLane">
 	//                 <bpmn:documentation>{"order":1}</bpmn:documentation>

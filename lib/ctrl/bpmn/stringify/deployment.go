@@ -29,6 +29,9 @@ func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo int
 		return
 	}
 
+	doc.FindElement("//bpmn:process").CreateAttr("name", deployment.Name)
+	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
+
 	for _, element := range deployment.Elements {
 		err = Element(doc, element, selectionAsRef, deviceRepo)
 		if err != nil {
