@@ -3,10 +3,10 @@
                   xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
                   xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1"
                   targetNamespace="http://bpmn.io/schema/bpmn">
-    <bpmn:collaboration id="Collaboration_1t682rc">
-        <bpmn:participant id="Participant_1a4rg7s" processRef="lanes"/>
+    <bpmn:collaboration id="lanes">
+        <bpmn:participant id="Participant_1a4rg7s" processRef="lanes_pid"/>
     </bpmn:collaboration>
-    <bpmn:process id="lanes" isExecutable="true">
+    <bpmn:process id="lanes_pid" isExecutable="true">
         <bpmn:laneSet id="LaneSet_1ekoknz">
             <bpmn:lane id="Lane_0v679jg" name="taskLane">
                 <bpmn:documentation>{&quot;order&quot;:1}</bpmn:documentation>

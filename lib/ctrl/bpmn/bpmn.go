@@ -44,19 +44,22 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 	if err != nil {
 		return
 	}
-	result.Name = doc.FindElement("//bpmn:process").SelectAttr("id").Value
-	result.Lanes, err = parsing.BpmnToLanes(doc)
-	if err != nil {
-		return
-	}
-	result.Elements, err = parsing.BpmnToElements(doc)
-	if err != nil {
-		return
-	}
 
-	sort.Sort(LaneByOrder(result.Lanes))
-	sort.Sort(ElementByOrder(result.Elements))
-
+	if len(doc.FindElements("//bpmn:collaboration")) > 0 {
+		result.Name = doc.FindElement("//bpmn:collaboration").SelectAttrValue("id", "process-name")
+		result.Lanes, err = parsing.BpmnToLanes(doc)
+		if err != nil {
+			return
+		}
+		sort.Sort(LaneByOrder(result.Lanes))
+	} else {
+		result.Name = doc.FindElement("//bpmn:process").SelectAttr("id").Value
+		result.Elements, err = parsing.BpmnToElements(doc)
+		if err != nil {
+			return
+		}
+		sort.Sort(ElementByOrder(result.Elements))
+	}
 	return
 }
 

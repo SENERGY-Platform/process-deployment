@@ -34,52 +34,80 @@ func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-	if len(doc.FindElements("//bpmn:lane")) == 0 {
-		//process uses no lanes
-		return result, nil
-	}
-	for _, lane := range doc.FindElements("//bpmn:lane") {
-		element, err := bpmnToLane(lane)
-		if err == EmptyLane {
-			continue
+	colab := doc.FindElement("//bpmn:collaboration")
+	participants := colab.FindElements(".//bpmn:participant")
+	for _, participant := range participants {
+		processId := participant.SelectAttrValue("processRef", "")
+		if processId == "" {
+			debug.PrintStack()
+			return result, errors.New("missing participant process ref")
 		}
+		process := doc.FindElement("//bpmn:process[@id='" + processId + "']")
+
+		if len(process.FindElements(".//bpmn:lane")) > 0 {
+			for _, lane := range process.FindElements(".//bpmn:lane") {
+				subElements, err := getLaneSubElements(lane)
+				if err != nil {
+					return result, err
+				}
+				id, label, order, err := getLaneInfo(lane)
+				element, err := createLaneElement(id, label, order, subElements)
+				if err != EmptyLane {
+					if err != nil {
+						return result, err
+					}
+					result = append(result, element)
+				}
+			}
+		} else {
+			subElements, err := getLoneLaneSubElements(process)
+			if err != nil {
+				return result, err
+			}
+			id, label, order, err := getLaneInfo(process)
+			element, err := createLaneElement(id, label, order, subElements)
+			if err != EmptyLane {
+				if err != nil {
+					return result, err
+				}
+				result = append(result, element)
+			}
+		}
+	}
+	return
+}
+
+func getLaneInfo(lane *etree.Element) (id string, label string, order int64, err error) {
+	documentation := model.Documentation{}
+	documentations := lane.FindElements(".//bpmn:documentation")
+	if len(documentations) > 0 {
+		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
 		if err != nil {
-			return result, err
+			return
 		}
-		result = append(result, element)
 	}
+	order = documentation.Order
+	id = lane.SelectAttr("id").Value
+	label = lane.SelectAttrValue("name", id)
 	return
 }
 
 var EmptyLane = errors.New("empty lane")
 
-func bpmnToLane(lane *etree.Element) (result model.LaneElement, err error) {
+func createLaneElement(id string, label string, order int64, subElements []model.LaneSubElement) (result model.LaneElement, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-	documentation := model.Documentation{}
-	documentations := lane.FindElements(".//bpmn:documentation")
-	if len(documentations) > 0 {
-		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
-		if err != nil {
-			return result, err
-		}
-	}
-	result.Order = documentation.Order
-	subElements, err := getLaneSubElements(lane)
-	if err != nil {
-		return result, err
-	}
+
 	if len(subElements) == 0 {
 		return result, EmptyLane
 	}
 	sort.Sort(LaneElementByOrder(subElements))
 
-	id := lane.SelectAttr("id").Value
-	label := lane.SelectAttrValue("name", id)
+	result.Order = order
 	deviceDescriptions := aggregateLaneTaskInfo(subElements)
 
 	isMulti := isMultiTaskLane(subElements)
@@ -129,6 +157,32 @@ func getLaneSubElements(lane *etree.Element) (result []model.LaneSubElement, err
 	root := lane.FindElement("/")
 	for _, ref := range lane.FindElements(".//bpmn:flowNodeRef") {
 		id := ref.Text()
+		subelement, ok, err := getLaneSubElement(root, id)
+		if err != nil {
+			return result, err
+		}
+		if ok {
+			result = append(result, subelement)
+		}
+	}
+	return
+}
+
+//use this function if a collaboration with only one lane is used and no bpmn:flowNodeRef exists
+func getLoneLaneSubElements(process *etree.Element) (result []model.LaneSubElement, err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	root := process.FindElement("/")
+	distinctIds := map[string]bool{}
+	for _, flow := range process.FindElements(".//bpmn:sequenceFlow") {
+		distinctIds[flow.SelectAttrValue("sourceRef", "")] = true
+		distinctIds[flow.SelectAttrValue("targetRef", "")] = true
+	}
+	for id, _ := range distinctIds {
 		subelement, ok, err := getLaneSubElement(root, id)
 		if err != nil {
 			return result, err

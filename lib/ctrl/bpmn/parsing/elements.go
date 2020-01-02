@@ -32,7 +32,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-	if len(doc.FindElements("//bpmn:lane")) > 0 {
+	if len(doc.FindElements("//bpmn:collaboration")) > 0 {
 		//process uses lanes
 		return result, nil
 	}
