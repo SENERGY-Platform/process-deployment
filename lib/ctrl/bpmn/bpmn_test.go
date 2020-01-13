@@ -23,9 +23,29 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	mock "github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
+	"github.com/beevik/etree"
 	"html"
 	"io/ioutil"
+	"testing"
 )
+
+func TestEmptyTimeEvent(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/empty_time_event.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = UseDeploymentSelections(&result, false, mock.Devices)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
 
 func ExampleSimpleBpmnToDeployment() {
 	file, err := ioutil.ReadFile("../../tests/resources/simple.bpmn")
@@ -680,4 +700,78 @@ func ExampleLanesBpmnDeploymentToXml() {
 	//         </bpmndi:BPMNPlane>
 	//     </bpmndi:BPMNDiagram>
 	// </bpmn:definitions>
+}
+
+func TestNotificationsBpmnDeployment(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/notifications.bpmn")
+	if err != nil {
+		t.Error(err)
+	}
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "test_id"
+	}
+
+	deployment, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+	}
+
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+
+	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	if err != nil {
+		t.Error(err)
+	}
+
+	deployment.Id = "deploymentId"
+
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(deployment.Xml)
+	if err != nil {
+		t.Error(err)
+	}
+
+	for _, input := range doc.FindElements("//camunda:inputParameter[@name='deploymentIdentifier']") {
+		if input.Text() != "notification" {
+			continue
+		}
+		parent := input.Parent()
+
+		// Check url
+		urlParameter := parent.FindElement("camunda:inputParameter[@name='url']")
+		if urlParameter.Text() != "url" {
+			t.Error("url not set correctly")
+		}
+
+		// Check method
+		methodParameter := parent.FindElement("camunda:inputParameter[@name='method']")
+		if methodParameter.Text() != "PUT" {
+			t.Error("method not set correctly")
+		}
+
+		// Check payload
+		payloadParameter := parent.FindElement("camunda:inputParameter[@name='payload']")
+		notificationPayload := model.NotificationPayload{}
+		err = json.Unmarshal([]byte(payloadParameter.Text()), &notificationPayload)
+		if err != nil {
+			t.Error(err)
+		}
+		if notificationPayload.UserId != "uid" {
+			t.Error("userId not set correctly")
+		}
+		if notificationPayload.IsRead != false {
+			t.Error("read status not set correctly")
+		}
+
+		// Check header
+		keyElement := parent.FindElement("camunda:inputParameter[@name='headers']/camunda:map/camunda:entry[@key='Content-Type']")
+		if keyElement.Text() != "application/json" {
+			t.Error("Content-Type header not set correctly")
+		}
+	}
 }

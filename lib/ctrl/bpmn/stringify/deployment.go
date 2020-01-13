@@ -17,12 +17,13 @@
 package stringify
 
 import (
+	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/beevik/etree"
 )
 
-func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (xml string, err error) {
+func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices, userId string, notification_url string) (xml string, err error) {
 	doc := etree.NewDocument()
 	err = doc.ReadFromString(deployment.XmlRaw)
 	if err != nil {
@@ -44,6 +45,46 @@ func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo int
 		if err != nil {
 			return "", err
 		}
+	}
+
+	for _, input := range doc.FindElements("//camunda:inputParameter[@name='deploymentIdentifier']") {
+		if input.Text() != "notification" {
+			continue
+		}
+		parent := input.Parent()
+
+		// Set url input
+		urlParameter := parent.CreateElement("camunda:inputParameter")
+		urlParameter.CreateAttr("name", "url")
+		urlParameter.SetText(notification_url)
+
+		// Set method input
+		methodParameter := parent.CreateElement("camunda:inputParameter")
+		methodParameter.CreateAttr("name", "method")
+		methodParameter.SetText("PUT")
+
+		// Set header input
+		headersParameter := parent.CreateElement("camunda:inputParameter")
+		headersParameter.CreateAttr("name", "headers")
+		mapElement := headersParameter.CreateElement("camunda:map")
+		keyElement := mapElement.CreateElement("camunda:entry")
+		keyElement.CreateAttr("key", "Content-Type")
+		keyElement.SetText("application/json")
+
+		// Set payload input
+		payloadParameter := parent.FindElement("camunda:inputParameter[@name='payload']")
+		notificationPayload := model.NotificationPayload{}
+		err = json.Unmarshal([]byte(payloadParameter.Text()), &notificationPayload)
+		if err != nil {
+			return "", err
+		}
+		notificationPayload.UserId = userId
+		notificationPayload.IsRead = false
+		txt, err := json.Marshal(notificationPayload)
+		if err != nil {
+			return "", err
+		}
+		payloadParameter.SetText(string(txt))
 	}
 
 	xml, err = doc.WriteToString()

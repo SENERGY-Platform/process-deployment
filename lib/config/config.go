@@ -44,6 +44,7 @@ type ConfigStruct struct {
 	ConnectivityTest            bool   `json:"connectivity_test"`
 	DeploymentAsRef             bool   `json:"deployment_as_ref"`
 	DeploymentTopic             string `json:"deployment_topic"`
+	NotificationUrl             string `json:"notification_url"`
 }
 
 type Config = *ConfigStruct
