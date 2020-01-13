@@ -74,7 +74,14 @@ func TimeEvent(doc *etree.Document, event *model.TimeEvent) (err error) {
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-
-	doc.FindElement("//*[@id='" + event.BpmnElementId + "']/bpmn:timerEventDefinition/bpmn:" + event.Kind).SetText(event.Time)
+	//<bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+	timeDefinition := doc.FindElement("//*[@id='" + event.BpmnElementId + "']/bpmn:timerEventDefinition")
+	if definitionElement := timeDefinition.FindElement("./bpmn:" + event.Kind); definitionElement != nil {
+		definitionElement.SetText(event.Time)
+	} else {
+		definitionElement = doc.CreateElement("./bpmn:" + event.Kind)
+		definitionElement.SetText(event.Time)
+		timeDefinition.InsertChildAt(0, definitionElement)
+	}
 	return nil
 }

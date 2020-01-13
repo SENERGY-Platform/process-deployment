@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+    <bpmn:process id="The_Notifier" name="The-Notifier" isExecutable="true">
+        <bpmn:startEvent id="StartEvent_1">
+            <bpmn:outgoing>SequenceFlow_0y93565</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0sr5cn9">
+            <bpmn:incoming>SequenceFlow_0lygjvy</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0h2wnvy</bpmn:outgoing>
+            <bpmn:timerEventDefinition/>
+        </bpmn:intermediateCatchEvent>
+        <bpmn:sequenceFlow id="SequenceFlow_0y93565" sourceRef="StartEvent_1" targetRef="Task_130nlzi"/>
+        <bpmn:sequenceFlow id="SequenceFlow_0lygjvy" sourceRef="Task_130nlzi" targetRef="IntermediateThrowEvent_0sr5cn9"/>
+        <bpmn:sequenceFlow id="SequenceFlow_0h2wnvy" sourceRef="IntermediateThrowEvent_0sr5cn9" targetRef="Task_130nlzi"/>
+        <bpmn:serviceTask id="Task_130nlzi" name="send notification">
+            <bpmn:extensionElements>
+                <camunda:connector>
+                    <camunda:inputOutput>
+                        <camunda:inputParameter name="payload">{"message": "u got spam", "title": "and another one"}</camunda:inputParameter>
+                        <camunda:inputParameter name="deploymentIdentifier">notification</camunda:inputParameter>
+                    </camunda:inputOutput>
+                    <camunda:connectorId>http-connector</camunda:connectorId>
+                </camunda:connector>
+            </bpmn:extensionElements>
+            <bpmn:incoming>SequenceFlow_0y93565</bpmn:incoming>
+            <bpmn:incoming>SequenceFlow_0h2wnvy</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_0lygjvy</bpmn:outgoing>
+        </bpmn:serviceTask>
+    </bpmn:process>
+</bpmn:definitions>

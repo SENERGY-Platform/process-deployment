@@ -29,6 +29,24 @@ import (
 	"testing"
 )
 
+func TestEmptyTimeEvent(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/empty_time_event.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = UseDeploymentSelections(&result, false, mock.Devices)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func ExampleSimpleBpmnToDeployment() {
 	file, err := ioutil.ReadFile("../../tests/resources/simple.bpmn")
 	if err != nil {
