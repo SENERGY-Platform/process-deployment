@@ -66,7 +66,8 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	setMsgEventIds(deployment)
 
-	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo)
+	// This function only gets called from tests. That's why it's okay to supply test data here
+	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo, "uid", "url")
 	return
 }
 
