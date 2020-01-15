@@ -66,6 +66,26 @@ func ExampleSimpleBpmnToDeployment() {
 	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"simple","elements":[{"order":1,"task":{"label":"taskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_0wjr1fj","input":"000","selectables":null,"selection":{"device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""}},"parameter":{"inputs":"\"ff0\""}}},{"order":2,"multi_task":{"label":"multiTaskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_096xjeg","input":"000","selectables":null,"selections":null,"parameter":{"inputs":"\"fff\""}}},{"order":3,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_0905jg5","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}],"lanes":null}
 }
 
+func ExampleLineWithOnlyTimer() {
+	file, err := ioutil.ReadFile("../../tests/resources/lane_only_timer.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result.XmlRaw = ""
+	temp, err := json.Marshal(result)
+	fmt.Println(err, string(temp))
+
+	//output:
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Lane_Timer_FJ","elements":null,"lanes":[{"order":0,"lane":{"label":"Lane_Timer_fj","bpmn_element_id":"Lane_Timer_fj","device_descriptions":null,"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"time_event":{"bpmn_element_id":"IntermediateThrowEvent_1opksgz","kind":"timeDuration","time":"","label":"IntermediateThrowEvent_1opksgz"}}]}}]}
+
+}
+
 func ExampleIgnoredPredefinedEventBpmnToDeployment() {
 	file, err := ioutil.ReadFile("../../tests/resources/ignore_msg_event.bpmn")
 	if err != nil {
