@@ -154,6 +154,125 @@ func ExampleCtrl_Deployment() {
 	//{"command":"DELETE","id":"uuid","owner":"","deployment":{"id":"","xml_raw":"","xml":"","svg":"","name":"","elements":null,"lanes":null}}
 }
 
+func ExampleCtrl_DeploymentEmptyLane() {
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "uuid"
+	}
+
+	conf, err := config.LoadConfig("../config.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	conf.Debug = true
+
+	port, err := tests.GetFreePort()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	conf.ApiPort = strconv.Itoa(port)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	time.Sleep(100 * time.Millisecond) //wait for api startup
+
+	prepareMockRepos()
+
+	createSimple, err := ioutil.ReadFile("./tests/resources/lane_only_timer.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("CREATE:")
+	err = subExampleDeploymentCreate(conf, createSimple)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	updateSimpleObj := model.Deployment{}
+	err = json.Unmarshal(createSimple, &updateSimpleObj)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	updateSimpleObj.Id = config.NewId()
+	updateSimpleObj.Name = "somthing else"
+
+	fmt.Println("UPDATE:")
+	err = subExampleDeploymentUpdate(conf, updateSimpleObj)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("LIST:")
+	err = subExampleGetDependenciesList(conf)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = subExampleGetSelectedDependencies(conf, []string{config.NewId()})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = subExampleGetSelectedDependencies(conf, []string{config.NewId(), "expect_error"})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("DELETE:")
+	err = subExampleDeploymentDelete(conf, updateSimpleObj.Id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	deploymentMsgs := mocks.Kafka.GetProduced(conf.DeploymentTopic)
+
+	fmt.Println("DEPLOYMENTS:", len(deploymentMsgs))
+	for _, msg := range deploymentMsgs {
+		fmt.Println(msg)
+	}
+
+	//output:
+	//CREATE:
+	//{uuid connectivity-test [] []} <nil> 200
+	//<nil> 200{"deployment_id":"uuid","owner":"connectivity-test","devices":null,"events":null}
+	//UPDATE:
+	//{uuid connectivity-test [] []} <nil> 200
+	//<nil> 200{"deployment_id":"uuid","owner":"connectivity-test","devices":null,"events":null}
+	//LIST:
+	//<nil> 200[{"deployment_id":"uuid","owner":"connectivity-test","devices":null,"events":null}]
+	//<nil> 200[{"deployment_id":"uuid","owner":"connectivity-test","devices":null,"events":null}]
+	//<nil> 404unknown id
+	//DELETE:
+	//{  [] []} dependencies not found 404
+	//<nil> 404dependencies not found
+	//DEPLOYMENTS: 3
+	//{"command":"PUT","id":"uuid","owner":"connectivity-test","deployment":{"id":"uuid","xml_raw":"\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e\n\u003cbpmn:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://bpmn.io/schema/bpmn\"\u003e\u003cbpmn:collaboration id=\"Lane_Timer_FJ\"\u003e\u003cbpmn:participant id=\"Participant_1nxsivp\" processRef=\"Lane_Timer_fj\" /\u003e\u003c/bpmn:collaboration\u003e\u003cbpmn:process id=\"Lane_Timer_fj\" isExecutable=\"true\"\u003e\u003cbpmn:startEvent id=\"StartEvent_1\"\u003e\u003cbpmn:outgoing\u003eSequenceFlow_1azj5gx\u003c/bpmn:outgoing\u003e\u003c/bpmn:startEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_1azj5gx\" sourceRef=\"StartEvent_1\" targetRef=\"IntermediateThrowEvent_1opksgz\" /\u003e\u003cbpmn:intermediateCatchEvent id=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_1azj5gx\u003c/bpmn:incoming\u003e\u003cbpmn:outgoing\u003eSequenceFlow_0fm9shw\u003c/bpmn:outgoing\u003e\u003cbpmn:timerEventDefinition /\u003e\u003c/bpmn:intermediateCatchEvent\u003e\u003cbpmn:endEvent id=\"EndEvent_1h8yy4g\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_0fm9shw\u003c/bpmn:incoming\u003e\u003c/bpmn:endEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_0fm9shw\" sourceRef=\"IntermediateThrowEvent_1opksgz\" targetRef=\"EndEvent_1h8yy4g\" /\u003e\u003c/bpmn:process\u003e\u003cbpmndi:BPMNDiagram id=\"BPMNDiagram_1\"\u003e\u003cbpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Lane_Timer_FJ\"\u003e\u003cbpmndi:BPMNShape id=\"Participant_1nxsivp_di\" bpmnElement=\"Participant_1nxsivp\" isHorizontal=\"true\"\u003e\u003cdc:Bounds x=\"123\" y=\"80\" width=\"337\" height=\"90\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\"\u003e\u003cdc:Bounds x=\"173\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_1azj5gx_di\" bpmnElement=\"SequenceFlow_1azj5gx\"\u003e\u003cdi:waypoint x=\"209\" y=\"120\" /\u003e\u003cdi:waypoint x=\"262\" y=\"120\" /\u003e\u003c/bpmndi:BPMNEdge\u003e\u003cbpmndi:BPMNShape id=\"IntermediateCatchEvent_1j97xwq_di\" bpmnElement=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cdc:Bounds x=\"262\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"EndEvent_1h8yy4g_di\" bpmnElement=\"EndEvent_1h8yy4g\"\u003e\u003cdc:Bounds x=\"352\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_0fm9shw_di\" bpmnElement=\"SequenceFlow_0fm9shw\"\u003e\u003cdi:waypoint x=\"298\" y=\"120\" /\u003e\u003cdi:waypoint x=\"352\" y=\"120\" /\u003e\u003c/bpmndi:BPMNEdge\u003e\u003c/bpmndi:BPMNPlane\u003e\u003c/bpmndi:BPMNDiagram\u003e\u003c/bpmn:definitions\u003e","xml":"\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e\n\u003cbpmn:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://bpmn.io/schema/bpmn\"\u003e\u003cbpmn:collaboration id=\"Lane_Timer_FJ\"\u003e\u003cbpmn:participant id=\"Participant_1nxsivp\" processRef=\"Lane_Timer_fj\"/\u003e\u003c/bpmn:collaboration\u003e\u003cbpmn:process id=\"Lane_Timer_fj\" isExecutable=\"true\" name=\"Lane_Timer_FJ\"\u003e\u003cbpmn:startEvent id=\"StartEvent_1\"\u003e\u003cbpmn:outgoing\u003eSequenceFlow_1azj5gx\u003c/bpmn:outgoing\u003e\u003c/bpmn:startEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_1azj5gx\" sourceRef=\"StartEvent_1\" targetRef=\"IntermediateThrowEvent_1opksgz\"/\u003e\u003cbpmn:intermediateCatchEvent id=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_1azj5gx\u003c/bpmn:incoming\u003e\u003cbpmn:outgoing\u003eSequenceFlow_0fm9shw\u003c/bpmn:outgoing\u003e\u003cbpmn:timerEventDefinition\u003e\u003c./bpmn:timeDuration\u003ePT1H\u003c/./bpmn:timeDuration\u003e\u003c/bpmn:timerEventDefinition\u003e\u003c/bpmn:intermediateCatchEvent\u003e\u003cbpmn:endEvent id=\"EndEvent_1h8yy4g\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_0fm9shw\u003c/bpmn:incoming\u003e\u003c/bpmn:endEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_0fm9shw\" sourceRef=\"IntermediateThrowEvent_1opksgz\" targetRef=\"EndEvent_1h8yy4g\"/\u003e\u003c/bpmn:process\u003e\u003cbpmndi:BPMNDiagram id=\"BPMNDiagram_1\"\u003e\u003cbpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Lane_Timer_FJ\"\u003e\u003cbpmndi:BPMNShape id=\"Participant_1nxsivp_di\" bpmnElement=\"Participant_1nxsivp\" isHorizontal=\"true\"\u003e\u003cdc:Bounds x=\"123\" y=\"80\" width=\"337\" height=\"90\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\"\u003e\u003cdc:Bounds x=\"173\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_1azj5gx_di\" bpmnElement=\"SequenceFlow_1azj5gx\"\u003e\u003cdi:waypoint x=\"209\" y=\"120\"/\u003e\u003cdi:waypoint x=\"262\" y=\"120\"/\u003e\u003c/bpmndi:BPMNEdge\u003e\u003cbpmndi:BPMNShape id=\"IntermediateCatchEvent_1j97xwq_di\" bpmnElement=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cdc:Bounds x=\"262\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"EndEvent_1h8yy4g_di\" bpmnElement=\"EndEvent_1h8yy4g\"\u003e\u003cdc:Bounds x=\"352\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_0fm9shw_di\" bpmnElement=\"SequenceFlow_0fm9shw\"\u003e\u003cdi:waypoint x=\"298\" y=\"120\"/\u003e\u003cdi:waypoint x=\"352\" y=\"120\"/\u003e\u003c/bpmndi:BPMNEdge\u003e\u003c/bpmndi:BPMNPlane\u003e\u003c/bpmndi:BPMNDiagram\u003e\u003c/bpmn:definitions\u003e","svg":"\u003csvg/\u003e","name":"Lane_Timer_FJ","elements":null,"lanes":[{"order":0,"lane":{"label":"Lane_Timer_fj","bpmn_element_id":"Lane_Timer_fj","device_descriptions":null,"selectables":[],"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"time_event":{"bpmn_element_id":"IntermediateThrowEvent_1opksgz","kind":"timeDuration","time":"PT1H","label":"IntermediateThrowEvent_1opksgz"}}]}}]}}
+	//{"command":"PUT","id":"uuid","owner":"connectivity-test","deployment":{"id":"uuid","xml_raw":"\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e\n\u003cbpmn:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://bpmn.io/schema/bpmn\"\u003e\u003cbpmn:collaboration id=\"Lane_Timer_FJ\"\u003e\u003cbpmn:participant id=\"Participant_1nxsivp\" processRef=\"Lane_Timer_fj\" /\u003e\u003c/bpmn:collaboration\u003e\u003cbpmn:process id=\"Lane_Timer_fj\" isExecutable=\"true\"\u003e\u003cbpmn:startEvent id=\"StartEvent_1\"\u003e\u003cbpmn:outgoing\u003eSequenceFlow_1azj5gx\u003c/bpmn:outgoing\u003e\u003c/bpmn:startEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_1azj5gx\" sourceRef=\"StartEvent_1\" targetRef=\"IntermediateThrowEvent_1opksgz\" /\u003e\u003cbpmn:intermediateCatchEvent id=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_1azj5gx\u003c/bpmn:incoming\u003e\u003cbpmn:outgoing\u003eSequenceFlow_0fm9shw\u003c/bpmn:outgoing\u003e\u003cbpmn:timerEventDefinition /\u003e\u003c/bpmn:intermediateCatchEvent\u003e\u003cbpmn:endEvent id=\"EndEvent_1h8yy4g\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_0fm9shw\u003c/bpmn:incoming\u003e\u003c/bpmn:endEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_0fm9shw\" sourceRef=\"IntermediateThrowEvent_1opksgz\" targetRef=\"EndEvent_1h8yy4g\" /\u003e\u003c/bpmn:process\u003e\u003cbpmndi:BPMNDiagram id=\"BPMNDiagram_1\"\u003e\u003cbpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Lane_Timer_FJ\"\u003e\u003cbpmndi:BPMNShape id=\"Participant_1nxsivp_di\" bpmnElement=\"Participant_1nxsivp\" isHorizontal=\"true\"\u003e\u003cdc:Bounds x=\"123\" y=\"80\" width=\"337\" height=\"90\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\"\u003e\u003cdc:Bounds x=\"173\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_1azj5gx_di\" bpmnElement=\"SequenceFlow_1azj5gx\"\u003e\u003cdi:waypoint x=\"209\" y=\"120\" /\u003e\u003cdi:waypoint x=\"262\" y=\"120\" /\u003e\u003c/bpmndi:BPMNEdge\u003e\u003cbpmndi:BPMNShape id=\"IntermediateCatchEvent_1j97xwq_di\" bpmnElement=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cdc:Bounds x=\"262\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"EndEvent_1h8yy4g_di\" bpmnElement=\"EndEvent_1h8yy4g\"\u003e\u003cdc:Bounds x=\"352\" y=\"102\" width=\"36\" height=\"36\" /\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_0fm9shw_di\" bpmnElement=\"SequenceFlow_0fm9shw\"\u003e\u003cdi:waypoint x=\"298\" y=\"120\" /\u003e\u003cdi:waypoint x=\"352\" y=\"120\" /\u003e\u003c/bpmndi:BPMNEdge\u003e\u003c/bpmndi:BPMNPlane\u003e\u003c/bpmndi:BPMNDiagram\u003e\u003c/bpmn:definitions\u003e","xml":"\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e\n\u003cbpmn:definitions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://bpmn.io/schema/bpmn\"\u003e\u003cbpmn:collaboration id=\"Lane_Timer_FJ\"\u003e\u003cbpmn:participant id=\"Participant_1nxsivp\" processRef=\"Lane_Timer_fj\"/\u003e\u003c/bpmn:collaboration\u003e\u003cbpmn:process id=\"Lane_Timer_fj\" isExecutable=\"true\" name=\"somthing else\"\u003e\u003cbpmn:startEvent id=\"StartEvent_1\"\u003e\u003cbpmn:outgoing\u003eSequenceFlow_1azj5gx\u003c/bpmn:outgoing\u003e\u003c/bpmn:startEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_1azj5gx\" sourceRef=\"StartEvent_1\" targetRef=\"IntermediateThrowEvent_1opksgz\"/\u003e\u003cbpmn:intermediateCatchEvent id=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_1azj5gx\u003c/bpmn:incoming\u003e\u003cbpmn:outgoing\u003eSequenceFlow_0fm9shw\u003c/bpmn:outgoing\u003e\u003cbpmn:timerEventDefinition\u003e\u003c./bpmn:timeDuration\u003ePT1H\u003c/./bpmn:timeDuration\u003e\u003c/bpmn:timerEventDefinition\u003e\u003c/bpmn:intermediateCatchEvent\u003e\u003cbpmn:endEvent id=\"EndEvent_1h8yy4g\"\u003e\u003cbpmn:incoming\u003eSequenceFlow_0fm9shw\u003c/bpmn:incoming\u003e\u003c/bpmn:endEvent\u003e\u003cbpmn:sequenceFlow id=\"SequenceFlow_0fm9shw\" sourceRef=\"IntermediateThrowEvent_1opksgz\" targetRef=\"EndEvent_1h8yy4g\"/\u003e\u003c/bpmn:process\u003e\u003cbpmndi:BPMNDiagram id=\"BPMNDiagram_1\"\u003e\u003cbpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Lane_Timer_FJ\"\u003e\u003cbpmndi:BPMNShape id=\"Participant_1nxsivp_di\" bpmnElement=\"Participant_1nxsivp\" isHorizontal=\"true\"\u003e\u003cdc:Bounds x=\"123\" y=\"80\" width=\"337\" height=\"90\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\"\u003e\u003cdc:Bounds x=\"173\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_1azj5gx_di\" bpmnElement=\"SequenceFlow_1azj5gx\"\u003e\u003cdi:waypoint x=\"209\" y=\"120\"/\u003e\u003cdi:waypoint x=\"262\" y=\"120\"/\u003e\u003c/bpmndi:BPMNEdge\u003e\u003cbpmndi:BPMNShape id=\"IntermediateCatchEvent_1j97xwq_di\" bpmnElement=\"IntermediateThrowEvent_1opksgz\"\u003e\u003cdc:Bounds x=\"262\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNShape id=\"EndEvent_1h8yy4g_di\" bpmnElement=\"EndEvent_1h8yy4g\"\u003e\u003cdc:Bounds x=\"352\" y=\"102\" width=\"36\" height=\"36\"/\u003e\u003c/bpmndi:BPMNShape\u003e\u003cbpmndi:BPMNEdge id=\"SequenceFlow_0fm9shw_di\" bpmnElement=\"SequenceFlow_0fm9shw\"\u003e\u003cdi:waypoint x=\"298\" y=\"120\"/\u003e\u003cdi:waypoint x=\"352\" y=\"120\"/\u003e\u003c/bpmndi:BPMNEdge\u003e\u003c/bpmndi:BPMNPlane\u003e\u003c/bpmndi:BPMNDiagram\u003e\u003c/bpmn:definitions\u003e","svg":"\u003csvg/\u003e","name":"somthing else","elements":null,"lanes":[{"order":0,"lane":{"label":"Lane_Timer_fj","bpmn_element_id":"Lane_Timer_fj","device_descriptions":null,"selectables":[],"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"time_event":{"bpmn_element_id":"IntermediateThrowEvent_1opksgz","kind":"timeDuration","time":"PT1H","label":"IntermediateThrowEvent_1opksgz"}}]}}]}}
+	//{"command":"DELETE","id":"uuid","owner":"","deployment":{"id":"","xml_raw":"","xml":"","svg":"","name":"","elements":null,"lanes":null}}
+
+}
+
 func prepareMockRepos() {
 	mocks.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 	mocks.Devices.SetOptions([]model.Selectable{

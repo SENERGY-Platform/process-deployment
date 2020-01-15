@@ -176,9 +176,11 @@ func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.Jwt
 
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			lane.Lane.Selection, err, code = this.getCachedDevice(token, &deviceCache, lane.Lane.Selection.Id)
-			if err != nil {
-				return err, code
+			if lane.Lane.Selection.Id != "" {
+				lane.Lane.Selection, err, code = this.getCachedDevice(token, &deviceCache, lane.Lane.Selection.Id)
+				if err != nil {
+					return err, code
+				}
 			}
 			for _, element := range lane.Lane.Elements {
 				if element.LaneTask != nil {
