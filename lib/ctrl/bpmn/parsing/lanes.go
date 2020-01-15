@@ -139,12 +139,24 @@ func aggregateLaneTaskInfo(elements []model.LaneSubElement) (result []model.Devi
 }
 
 func isMultiTaskLane(elements []model.LaneSubElement) bool {
+	if !hasTasks(elements) {
+		return false
+	}
 	for _, element := range elements {
 		if element.LaneTask != nil && !element.LaneTask.MultiTask {
 			return false
 		}
 	}
 	return true
+}
+
+func hasTasks(elements []model.LaneSubElement) bool {
+	for _, element := range elements {
+		if element.LaneTask != nil {
+			return true
+		}
+	}
+	return false
 }
 
 func getLaneSubElements(lane *etree.Element) (result []model.LaneSubElement, err error) {
