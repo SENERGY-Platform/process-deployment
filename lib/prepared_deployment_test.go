@@ -440,3 +440,116 @@ func ExampleCtrl_PrepareDeployment3() {
 	//output:
 	//<nil> {"id":"","xml_raw":"","xml":"","svg":"\u003csvg/\u003e","name":"Collaboration_0wfm1tv","elements":null,"lanes":[{"order":0,"lane":{"label":"Process_1","bpmn_element_id":"Process_1","device_descriptions":[{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":[{"device":{"id":"device1","local_id":"","name":"","device_type_id":""},"services":[{"id":"service1","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""}]}],"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lamp brightnessFunction","device_description":{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":0,"bpmn_element_id":"Task_1d0tawd","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{"inputs":"0"}}}]}}]}
 }
+
+func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
+	config, err := config.LoadConfig("../config.json")
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	port, err := tests.GetFreePort()
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+	config.ApiPort = strconv.Itoa(port)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	time.Sleep(100 * time.Millisecond) //wait for api startup
+
+	file, err := ioutil.ReadFile("./tests/resources/lane_only_timer.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	mock.Devices.SetOptions([]model.Selectable{
+		{
+			Device: devicemodel.Device{
+				Id: "device1",
+			},
+			Services: []devicemodel.Service{
+				{
+					Id: "service1",
+				},
+			},
+		},
+	})
+
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	temp, err := json.Marshal(preparereq)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		"http://localhost:"+config.ApiPort+"/prepared-deployments",
+		bytes.NewBuffer(temp),
+	)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+	req.Header.Set("Authorization", TestToken)
+
+	log.Println("request prepared deployment")
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+	defer resp.Body.Close()
+
+	deployment := model.Deployment{}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	err = json.Unmarshal(b, &deployment)
+	if err != nil {
+		fmt.Println(err, string(b))
+		debug.PrintStack()
+		return
+	}
+	deployment.XmlRaw = ""
+	deployment.Xml = ""
+
+	msg, err := json.Marshal(deployment)
+	if err != nil {
+		fmt.Println(err)
+		debug.PrintStack()
+		return
+	}
+
+	fmt.Println(string(msg))
+
+	//output:
+	//{"id":"","xml_raw":"","xml":"","svg":"\u003csvg/\u003e","name":"Lane_Timer_FJ","elements":null,"lanes":[{"order":0,"lane":{"label":"Lane_Timer_fj","bpmn_element_id":"Lane_Timer_fj","device_descriptions":null,"selectables":[],"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"time_event":{"bpmn_element_id":"IntermediateThrowEvent_1opksgz","kind":"timeDuration","time":"","label":"IntermediateThrowEvent_1opksgz"}}]}}]}
+
+}

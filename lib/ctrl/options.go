@@ -60,6 +60,9 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 }
 
 func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error) {
+	if len(descriptions) == 0 {
+		return []model.Selectable{}, nil
+	}
 	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
 	return
 }

@@ -166,7 +166,11 @@ func (this *Lane) Validate(strict bool) error {
 		return errors.New("missing lane bpmn id")
 	}
 	if this.Selection.Id == "" {
-		return errors.New("missing lane device selection")
+		for _, element := range this.Elements {
+			if element.LaneTask != nil {
+				return errors.New("missing lane device selection")
+			}
+		}
 	}
 	for _, element := range this.Elements {
 		if err := element.Validate(strict); err != nil {
