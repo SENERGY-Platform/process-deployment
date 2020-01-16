@@ -65,6 +65,7 @@ func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
 				return result, err
 			}
 			id, label, order, err := getLaneInfo(process)
+			label = participant.SelectAttrValue("name", label)
 			element, err := createLaneElement(id, label, order, subElements)
 			if err != EmptyLane {
 				if err != nil {

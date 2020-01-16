@@ -851,3 +851,23 @@ func ExampleEmptyLaneBpmnDeploymentToXml() {
 	//<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:collaboration id="Lane_Timer_FJ"><bpmn:participant id="Participant_1nxsivp" processRef="Lane_Timer_fj"/></bpmn:collaboration><bpmn:process id="Lane_Timer_fj" isExecutable="true" name="Lane_Timer_FJ"><bpmn:startEvent id="StartEvent_1"><bpmn:outgoing>SequenceFlow_1azj5gx</bpmn:outgoing></bpmn:startEvent><bpmn:sequenceFlow id="SequenceFlow_1azj5gx" sourceRef="StartEvent_1" targetRef="IntermediateThrowEvent_1opksgz"/><bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1opksgz"><bpmn:incoming>SequenceFlow_1azj5gx</bpmn:incoming><bpmn:outgoing>SequenceFlow_0fm9shw</bpmn:outgoing><bpmn:timerEventDefinition><./bpmn:timeDuration>PT1H</./bpmn:timeDuration></bpmn:timerEventDefinition></bpmn:intermediateCatchEvent><bpmn:endEvent id="EndEvent_1h8yy4g"><bpmn:incoming>SequenceFlow_0fm9shw</bpmn:incoming></bpmn:endEvent><bpmn:sequenceFlow id="SequenceFlow_0fm9shw" sourceRef="IntermediateThrowEvent_1opksgz" targetRef="EndEvent_1h8yy4g"/></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Lane_Timer_FJ"><bpmndi:BPMNShape id="Participant_1nxsivp_di" bpmnElement="Participant_1nxsivp" isHorizontal="true"><dc:Bounds x="123" y="80" width="337" height="90"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1"><dc:Bounds x="173" y="102" width="36" height="36"/></bpmndi:BPMNShape><bpmndi:BPMNEdge id="SequenceFlow_1azj5gx_di" bpmnElement="SequenceFlow_1azj5gx"><di:waypoint x="209" y="120"/><di:waypoint x="262" y="120"/></bpmndi:BPMNEdge><bpmndi:BPMNShape id="IntermediateCatchEvent_1j97xwq_di" bpmnElement="IntermediateThrowEvent_1opksgz"><dc:Bounds x="262" y="102" width="36" height="36"/></bpmndi:BPMNShape><bpmndi:BPMNShape id="EndEvent_1h8yy4g_di" bpmnElement="EndEvent_1h8yy4g"><dc:Bounds x="352" y="102" width="36" height="36"/></bpmndi:BPMNShape><bpmndi:BPMNEdge id="SequenceFlow_0fm9shw_di" bpmnElement="SequenceFlow_0fm9shw"><di:waypoint x="298" y="120"/><di:waypoint x="352" y="120"/></bpmndi:BPMNEdge></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
 
 }
+
+func ExampleSingleLaneNameBpmnToDeployment() {
+	file, err := ioutil.ReadFile("../../tests/resources/single_lane_name.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result.XmlRaw = ""
+	temp, err := json.Marshal(result)
+	fmt.Println(err, string(temp))
+
+	//output:
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0wfm1tv","elements":null,"lanes":[{"order":0,"lane":{"label":"TestLaneName","bpmn_element_id":"Process_1","device_descriptions":[{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lamp brightnessFunction","device_description":{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":0,"bpmn_element_id":"Task_1d0tawd","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{"inputs":"0"}}}]}}]}
+
+}
