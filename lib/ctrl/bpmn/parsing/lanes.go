@@ -181,6 +181,10 @@ func getLaneSubElements(lane *etree.Element) (result []model.LaneSubElement, err
 	return
 }
 
+func idIsDescendent(element *etree.Element, id string) bool {
+	return len(element.FindElements(".//*[@id='"+id+"']")) > 0
+}
+
 //use this function if a collaboration with only one lane is used and no bpmn:flowNodeRef exists
 func getLoneLaneSubElements(process *etree.Element) (result []model.LaneSubElement, err error) {
 	defer func() {
@@ -191,9 +195,19 @@ func getLoneLaneSubElements(process *etree.Element) (result []model.LaneSubEleme
 	}()
 	root := process.FindElement("/")
 	distinctIds := map[string]bool{}
-	for _, flow := range process.FindElements(".//bpmn:sequenceFlow") {
-		distinctIds[flow.SelectAttrValue("sourceRef", "")] = true
-		distinctIds[flow.SelectAttrValue("targetRef", "")] = true
+	for _, flowEdge := range process.FindElements(".//bpmn:sequenceFlow") {
+		distinctIds[flowEdge.SelectAttrValue("sourceRef", "")] = true
+		distinctIds[flowEdge.SelectAttrValue("targetRef", "")] = true
+	}
+	for _, flowEdge := range process.FindElements("//bpmn:messageFlow") {
+		sourceId := flowEdge.SelectAttrValue("sourceRef", "")
+		if idIsDescendent(process, sourceId) {
+			distinctIds[sourceId] = true
+		}
+		targetId := flowEdge.SelectAttrValue("targetRef", "")
+		if idIsDescendent(process, targetId) {
+			distinctIds[targetId] = true
+		}
 	}
 	for id, _ := range distinctIds {
 		subelement, ok, err := getLaneSubElement(root, id)
