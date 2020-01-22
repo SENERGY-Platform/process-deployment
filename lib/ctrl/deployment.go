@@ -71,6 +71,13 @@ func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml st
 
 func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result model.Deployment, err error, code int) {
 	result, err, code = this.db.GetDeployment(jwt.UserId, id)
+	if err != nil {
+		return result, err, code
+	}
+	err = this.SetDeploymentOptions(jwt.Impersonate, &result)
+	if err != nil {
+		return result, err, http.StatusInternalServerError
+	}
 	return
 }
 
