@@ -48,6 +48,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 		DeviceClass:      task.DeviceDescription.DeviceClass,
 		Aspect:           task.DeviceDescription.Aspect,
 		Input:            task.Input,
+		Configurables:    task.Configurables,
 	}
 
 	if selectAsRef {
@@ -98,6 +99,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Devi
 		DeviceClass:      task.DeviceDescription.DeviceClass,
 		Aspect:           task.DeviceDescription.Aspect,
 		Input:            task.Input,
+		Configurables:    task.Configurables,
 	}
 
 	if selectAsRef {
@@ -148,6 +150,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 		DeviceClass:      task.DeviceDescription.DeviceClass,
 		Aspect:           task.DeviceDescription.Aspect,
 		Input:            task.Input,
+		Configurables:    task.Configurables,
 	}
 
 	commandStr, err := json.Marshal(command)
@@ -201,6 +204,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemo
 		DeviceClass:      task.DeviceDescription.DeviceClass,
 		Aspect:           task.DeviceDescription.Aspect,
 		Input:            task.Input,
+		Configurables:    task.Configurables,
 	}
 
 	commandStr, err := json.Marshal(command)

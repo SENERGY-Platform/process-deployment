@@ -32,6 +32,8 @@ type Task struct {
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`
+
+	Configurables []Configurable `json:"configurables"`
 }
 
 type MultiTask struct {
@@ -50,4 +52,6 @@ type MultiTask struct {
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`
+
+	Configurables []Configurable `json:"configurables"`
 }

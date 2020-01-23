@@ -73,4 +73,6 @@ type LaneTask struct {
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`
+
+	Configurables []Configurable `json:"configurables"`
 }

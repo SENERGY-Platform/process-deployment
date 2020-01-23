@@ -64,7 +64,7 @@ func ExampleSimpleBpmnToDeployment() {
 	fmt.Println(err, string(temp))
 
 	//output:
-	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"simple","elements":[{"order":1,"task":{"label":"taskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_0wjr1fj","input":"000","selectables":null,"selection":{"device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""}},"parameter":{"inputs":"\"ff0\""}}},{"order":2,"multi_task":{"label":"multiTaskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_096xjeg","input":"000","selectables":null,"selections":null,"parameter":{"inputs":"\"fff\""}}},{"order":3,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_0905jg5","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}],"lanes":null}
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"simple","elements":[{"order":1,"task":{"label":"taskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_0wjr1fj","input":"000","selectables":null,"selection":{"device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""}},"parameter":{"inputs":"\"ff0\""},"configurables":null}},{"order":2,"multi_task":{"label":"multiTaskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_096xjeg","input":"000","selectables":null,"selections":null,"parameter":{"inputs":"\"fff\""},"configurables":null}},{"order":3,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_0905jg5","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}],"lanes":null}
 }
 
 func ExampleLineWithOnlyTimer() {
@@ -122,7 +122,7 @@ func ExampleLaneBpmnToDeployment() {
 	fmt.Println(err, string(temp))
 
 	//output:
-	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"lanes","elements":null,"lanes":[{"order":0,"multi_lane":{"label":"multiTaskLane","bpmn_element_id":"Lane_12774cv","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selections":null,"elements":[{"order":3,"task":{"label":"multi_lane_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_084s3g5","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}},{"order":4,"task":{"label":"multi_lane_2","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_098jmqp","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}}]}},{"order":0,"lane":{"label":"MixedLane","bpmn_element_id":"Lane_0odlj5k","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":5,"task":{"label":"mixed_lane_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_1npvonw","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}},{"order":6,"task":{"label":"mixed_lane_2","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_1mnjsed","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}}]}},{"order":1,"lane":{"label":"taskLane","bpmn_element_id":"Lane_0v679jg","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":1,"task":{"label":"lane_task_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_0nmb2on","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}},{"order":2,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_1tchutl","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}]}}]}
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"lanes","elements":null,"lanes":[{"order":0,"multi_lane":{"label":"multiTaskLane","bpmn_element_id":"Lane_12774cv","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selections":null,"elements":[{"order":3,"task":{"label":"multi_lane_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_084s3g5","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}},{"order":4,"task":{"label":"multi_lane_2","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_098jmqp","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}},{"order":0,"lane":{"label":"MixedLane","bpmn_element_id":"Lane_0odlj5k","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":5,"task":{"label":"mixed_lane_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid1","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_1npvonw","multi_task":true,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}},{"order":6,"task":{"label":"mixed_lane_2","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_1mnjsed","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}},{"order":1,"lane":{"label":"taskLane","bpmn_element_id":"Lane_0v679jg","device_descriptions":[{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":1,"task":{"label":"lane_task_1","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"input":"000","bpmn_element_id":"Task_0nmb2on","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}},{"order":2,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_1tchutl","device":{"id":"","local_id":"","name":"","device_type_id":""},"service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"path":"","value":"","operation":"","event_id":""}}]}}]}
 }
 
 func ExampleTimeAndReceiverBpmnToDeployment() {
@@ -347,6 +347,151 @@ func ExampleSimpleBpmnDeploymentToXml() {
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
 	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_id_1","local_id":"","name":"","device_type_id":""},"service":{"id":"service_id_1","local_id":"","name":"","description":"","aspects":null,"protocol_id":"pid","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
+	//                 </camunda:inputOutput>
+	//             </bpmn:extensionElements>
+	//             <bpmn:incoming>SequenceFlow_0npfu5a</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_1a1qwlk</bpmn:outgoing>
+	//         </bpmn:serviceTask>
+	//         <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0905jg5" name="eventName">
+	//             <bpmn:documentation>{"order": 3}</bpmn:documentation>
+	//             <bpmn:incoming>SequenceFlow_0htq2f6</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_0npfu5a</bpmn:outgoing>
+	//             <bpmn:messageEventDefinition messageRef="e_test_id"/>
+	//         </bpmn:intermediateCatchEvent>
+	//     </bpmn:process>
+	//     <bpmn:message id="e_test_id" name="test_id"/><bpmndi:BPMNDiagram id="BPMNDiagram_1">
+	//         <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="simple">
+	//             <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+	//                 <dc:Bounds x="173" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="EndEvent_0yi4y22_di" bpmnElement="EndEvent_0yi4y22">
+	//                 <dc:Bounds x="645" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="ServiceTask_1x4556d_di" bpmnElement="Task_096xjeg">
+	//                 <dc:Bounds x="259" y="80" width="100" height="80"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="IntermediateCatchEvent_072g4ud_di" bpmnElement="IntermediateThrowEvent_0905jg5">
+	//                 <dc:Bounds x="409" y="102" width="36" height="36"/>
+	//                 <bpmndi:BPMNLabel>
+	//                     <dc:Bounds x="399" y="145" width="57" height="14"/>
+	//                 </bpmndi:BPMNLabel>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="ServiceTask_0ptq5va_di" bpmnElement="Task_0wjr1fj">
+	//                 <dc:Bounds x="495" y="80" width="100" height="80"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0ixns30_di" bpmnElement="SequenceFlow_0ixns30">
+	//                 <di:waypoint x="209" y="120"/>
+	//                 <di:waypoint x="259" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0htq2f6_di" bpmnElement="SequenceFlow_0htq2f6">
+	//                 <di:waypoint x="359" y="120"/>
+	//                 <di:waypoint x="409" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0npfu5a_di" bpmnElement="SequenceFlow_0npfu5a">
+	//                 <di:waypoint x="445" y="120"/>
+	//                 <di:waypoint x="495" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_1a1qwlk_di" bpmnElement="SequenceFlow_1a1qwlk">
+	//                 <di:waypoint x="595" y="120"/>
+	//                 <di:waypoint x="645" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//         </bpmndi:BPMNPlane>
+	//     </bpmndi:BPMNDiagram>
+	// </bpmn:definitions>
+
+}
+
+func ExampleDeploymentWithConfigurablesToXml() {
+	file, err := ioutil.ReadFile("../../tests/resources/simple.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "test_id"
+	}
+
+	deployment := model.Deployment{}
+	err = json.Unmarshal(file, &deployment)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for index, _ := range deployment.Elements {
+		if deployment.Elements[index].Task != nil {
+			deployment.Elements[index].Task.Configurables = []model.Configurable{{
+				CharacteristicId: "foo",
+				Values: []model.ConfigurableCharacteristicValue{
+					{
+						Label:     "bar",
+						Path:      "batz",
+						Value:     42,
+						ValueType: devicemodel.Integer,
+					},
+				},
+			}}
+		}
+	}
+
+	err = deployment.Validate(false)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+
+	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = deployment.Validate(true)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(html.UnescapeString(deployment.Xml))
+
+	//output:
+	// <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+	//     <bpmn:process id="simple" isExecutable="true" name="simple">
+	//         <bpmn:startEvent id="StartEvent_1">
+	//             <bpmn:outgoing>SequenceFlow_0ixns30</bpmn:outgoing>
+	//         </bpmn:startEvent>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0ixns30" sourceRef="StartEvent_1" targetRef="Task_096xjeg"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0htq2f6" sourceRef="Task_096xjeg" targetRef="IntermediateThrowEvent_0905jg5"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0npfu5a" sourceRef="IntermediateThrowEvent_0905jg5" targetRef="Task_0wjr1fj"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_1a1qwlk" sourceRef="Task_0wjr1fj" targetRef="EndEvent_0yi4y22"/>
+	//         <bpmn:endEvent id="EndEvent_0yi4y22">
+	//             <bpmn:incoming>SequenceFlow_1a1qwlk</bpmn:incoming>
+	//         </bpmn:endEvent>
+	//         <bpmn:serviceTask id="Task_096xjeg" name="multiTaskLabel" camunda:type="external" camunda:topic="task">
+	//             <bpmn:documentation>{"order": 2}</bpmn:documentation>
+	//             <bpmn:extensionElements>
+	//                 <camunda:inputOutput>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="inputs">"fff"</camunda:inputParameter>
+	//                 </camunda:inputOutput>
+	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device_id\":\"device_id_1\",\"service_id\":\"service_id_1\",\"protocol_id\":\"pid\"}","{\"device_id\":\"device_id_2\",\"service_id\":\"service_id_2\",\"protocol_id\":\"pid\"}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
+	//             <bpmn:incoming>SequenceFlow_0ixns30</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_0htq2f6</bpmn:outgoing>
+	//             <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="collection" camunda:elementVariable="overwrite"/>
+	//         </bpmn:serviceTask>
+	//         <bpmn:serviceTask id="Task_0wjr1fj" name="taskLabel" camunda:type="external" camunda:topic="task">
+	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
+	//             <bpmn:extensionElements>
+	//                 <camunda:inputOutput>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_id_1","local_id":"","name":"","device_type_id":""},"service":{"id":"service_id_1","local_id":"","name":"","description":"","aspects":null,"protocol_id":"pid","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"configurables":[{"characteristic_id":"foo","values":[{"label":"bar","path":"batz","value":42,"value_type":"https://schema.org/Integer"}]}],"input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -868,7 +1013,7 @@ func ExampleSingleLaneNameBpmnToDeployment() {
 	fmt.Println(err, string(temp))
 
 	//output:
-	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0wfm1tv","elements":null,"lanes":[{"order":0,"lane":{"label":"TestLaneName","bpmn_element_id":"Process_1","device_descriptions":[{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lamp brightnessFunction","device_description":{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":0,"bpmn_element_id":"Task_1d0tawd","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{"inputs":"0"}}}]}}]}
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0wfm1tv","elements":null,"lanes":[{"order":0,"lane":{"label":"TestLaneName","bpmn_element_id":"Process_1","device_descriptions":[{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lamp brightnessFunction","device_description":{"characteristic_id":"urn:infai:ses:characteristic:72b624b5-6edc-4ec4-9ad9-fa00b39915c0","function":{"id":"urn:infai:ses:controlling-function:7adc7f29-5c37-4bfc-8508-6130a143ac66","name":"brightnessFunction","concept_id":"urn:infai:ses:concept:dbe4ad57-aa1d-4d24-9bee-a44a1c670d7f","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":0,"bpmn_element_id":"Task_1d0tawd","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{"inputs":"0"},"configurables":null}}]}}]}
 
 }
 
@@ -890,6 +1035,6 @@ func ExampleMultiplePoolsBpmnToDeployment() {
 
 	//output:
 	//2
-	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0puddqt","elements":null,"lanes":[{"order":0,"lane":{"label":"Smart-Plug-Steuerung","bpmn_element_id":"RW_9","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Beamer anschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1f9iluy","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}}]}},{"order":0,"lane":{"label":"Lampensteuerung","bpmn_element_id":"Process_1qgdhm1","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lampe einschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1n8uaf6","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}},{"order":0,"task":{"label":"Lampe ausschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_103ufqc","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{}}}]}}]}
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0puddqt","elements":null,"lanes":[{"order":0,"lane":{"label":"Smart-Plug-Steuerung","bpmn_element_id":"RW_9","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Beamer anschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1f9iluy","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}},{"order":0,"lane":{"label":"Lampensteuerung","bpmn_element_id":"Process_1qgdhm1","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lampe einschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1n8uaf6","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}},{"order":0,"task":{"label":"Lampe ausschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_103ufqc","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}}]}
 
 }
