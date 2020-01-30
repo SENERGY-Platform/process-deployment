@@ -105,7 +105,7 @@ func (this *Ctrl) RemoveDeployment(jwt jwt_http_router.Jwt, id string) (err erro
 		return err, code
 	}
 
-	err = this.publishDeploymentDelete(id)
+	err = this.publishDeploymentDelete(jwt.UserId, id)
 	if err != nil {
 		return err, http.StatusInternalServerError
 	}
@@ -164,10 +164,11 @@ func (this *Ctrl) publishDeployment(owner string, deployment model.Deployment) e
 	return this.deploymentPublisher.Produce(deployment.Id, msg)
 }
 
-func (this *Ctrl) publishDeploymentDelete(id string) error {
+func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 	cmd := model.DeploymentCommand{
 		Command: "DELETE",
 		Id:      id,
+		Owner:   user,
 	}
 	msg, err := json.Marshal(cmd)
 	if err != nil {
