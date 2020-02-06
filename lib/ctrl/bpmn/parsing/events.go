@@ -56,7 +56,7 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 	}
 
 	if documentation.CharacteristicId != "" {
-		result.TriggerCast = &model.Cast{
+		result.TriggerConversion = &model.Convertion{
 			To: documentation.CharacteristicId,
 		}
 	}

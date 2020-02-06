@@ -81,7 +81,7 @@
         "path": "payload.value",
         "value": "42",
         "operation": "operation",
-        "trigger_cast":{
+        "trigger_conversion":{
           "to":"example_hex"
         },
         "event_id": ""

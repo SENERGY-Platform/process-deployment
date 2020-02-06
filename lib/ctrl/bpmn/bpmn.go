@@ -96,12 +96,12 @@ func ensureValidMsgEvents(deployment *model.Deployment) {
 func ensureValidMsgEvent(event *model.MsgEvent) {
 	if event != nil {
 		event.EventId = config.NewId()
-		if event.TriggerCast != nil {
-			if event.TriggerCast.From == "" {
-				event.TriggerCast.From = "test-ensured"
+		if event.TriggerConversion != nil {
+			if event.TriggerConversion.From == "" {
+				event.TriggerConversion.From = "test-ensured"
 			}
-			if event.TriggerCast.To == "" {
-				event.TriggerCast.To = "test-ensured"
+			if event.TriggerConversion.To == "" {
+				event.TriggerConversion.To = "test-ensured"
 			}
 		}
 	}

@@ -115,8 +115,8 @@ func (this *Ctrl) completeDeploymentEventCasts(deployment *model.Deployment) (er
 }
 
 func (this *Ctrl) completeEventCast(event *model.MsgEvent) (err error) {
-	if event.TriggerCast != nil && event.TriggerCast.To != "" {
-		event.TriggerCast.From, err = getCharacteristicOfPathInService(event.Service, event.Path)
+	if event.TriggerConversion != nil && event.TriggerConversion.To != "" {
+		event.TriggerConversion.From, err = getCharacteristicOfPathInService(event.Service, event.Path)
 	}
 	return
 }
