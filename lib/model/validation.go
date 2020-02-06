@@ -135,6 +135,14 @@ func (this *MsgEvent) Validate(strict bool) error {
 	if this.Operation == "" {
 		return errors.New("missing msg event operation")
 	}
+	if this.TriggerCast != nil && strict {
+		if this.TriggerCast.From == "" {
+			return errors.New("missing msg event cast from")
+		}
+		if this.TriggerCast.To == "" {
+			return errors.New("missing msg event cast to")
+		}
+	}
 	return nil
 }
 
