@@ -29,7 +29,7 @@ type MsgEvent struct {
 	Path              string              `json:"path"`
 	Value             string              `json:"value"`
 	Operation         string              `json:"operation"`
-	TriggerConversion *Convertion         `json:"trigger_conversion,omitempty"`
+	TriggerConversion *Conversion         `json:"trigger_conversion,omitempty"`
 
 	//generated
 	EventId string `json:"event_id"`
@@ -42,7 +42,7 @@ type TimeEvent struct {
 	Label         string `json:"label"`
 }
 
-type Convertion struct {
+type Conversion struct {
 	From string `json:"from"`
 	To   string `json:"to"`
 }
