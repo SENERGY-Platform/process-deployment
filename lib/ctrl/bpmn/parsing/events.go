@@ -42,7 +42,7 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 
 	id := event.SelectAttr("id").Value
 	label := event.SelectAttrValue("name", id)
-	documentation := model.Documentation{}
+	documentation := model.EventDocumentation{}
 	documentations := event.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -53,6 +53,12 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 	result = model.MsgEvent{
 		Label:         label,
 		BpmnElementId: id,
+	}
+
+	if documentation.CharacteristicId != "" {
+		result.TriggerCast = &model.Cast{
+			To: documentation.CharacteristicId,
+		}
 	}
 
 	return true, result, documentation.Order, nil

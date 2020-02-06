@@ -24,11 +24,12 @@ type MsgEvent struct {
 	BpmnElementId string `json:"bpmn_element_id"`
 
 	//from user selection
-	Device    devicemodel.Device  `json:"device"`
-	Service   devicemodel.Service `json:"service"`
-	Path      string              `json:"path"`
-	Value     string              `json:"value"`
-	Operation string              `json:"operation"`
+	Device      devicemodel.Device  `json:"device"`
+	Service     devicemodel.Service `json:"service"`
+	Path        string              `json:"path"`
+	Value       string              `json:"value"`
+	Operation   string              `json:"operation"`
+	TriggerCast *Cast               `json:"trigger_cast,omitempty"`
 
 	//generated
 	EventId string `json:"event_id"`
@@ -39,4 +40,9 @@ type TimeEvent struct {
 	Kind          string `json:"kind"`
 	Time          string `json:"time"`
 	Label         string `json:"label"`
+}
+
+type Cast struct {
+	From string `json:"from"`
+	To   string `json:"to"`
 }
