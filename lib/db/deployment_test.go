@@ -111,20 +111,20 @@ func ExampleDeployments() {
 
 	//output:
 	//GET:
-	//{     [] []} not found 404
-	//{     [] []} not found 404
-	//{     [] []} access denied 403
-	//{id1    name1 [] []} <nil> 200
+	//{     [] [] } not found 404
+	//{     [] [] } not found 404
+	//{     [] [] } access denied 403
+	//{id1    name1 [] [] } <nil> 200
 	//CHECK:
 	//not found 404
 	//not found 404
 	//access denied 403
 	//<nil> 200
 	//DELETE:
-	//{id1    name1 [] []} <nil> 200
+	//{id1    name1 [] [] } <nil> 200
 	//<nil>
-	//{id1    name1 [] []} <nil> 200
+	//{id1    name1 [] [] } <nil> 200
 	//<nil>
-	//{     [] []} not found 404
+	//{     [] [] } not found 404
 
 }
