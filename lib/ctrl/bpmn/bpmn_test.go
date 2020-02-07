@@ -1038,3 +1038,41 @@ func ExampleMultiplePoolsBpmnToDeployment() {
 	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"Collaboration_0puddqt","elements":null,"lanes":[{"order":0,"lane":{"label":"Smart-Plug-Steuerung","bpmn_element_id":"RW_9","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Beamer anschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250","name":"SmartPlug","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1f9iluy","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}},{"order":0,"lane":{"label":"Lampensteuerung","bpmn_element_id":"Process_1qgdhm1","device_descriptions":[{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}}],"selectables":null,"selection":{"id":"","local_id":"","name":"","device_type_id":""},"elements":[{"order":0,"task":{"label":"Lampe einschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9","name":"setOnStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_1n8uaf6","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}},{"order":0,"task":{"label":"Lampe ausschalten","device_description":{"characteristic_id":"","function":{"id":"urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd","name":"setOffStateFunction","concept_id":"","rdf_type":"https://senergy.infai.org/ontology/ControllingFunction"},"device_class":{"id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86","name":"Lamp","rdf_type":"https://senergy.infai.org/ontology/DeviceClass"}},"input":null,"bpmn_element_id":"Task_103ufqc","multi_task":false,"selected_service":{"id":"","local_id":"","name":"","description":"","aspects":null,"protocol_id":"","inputs":null,"outputs":null,"functions":null,"rdf_type":""},"parameter":{},"configurables":null}}]}}]}
 
 }
+
+func TestDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/description.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Description != "desc" {
+		t.Fatal("error in description")
+	}
+
+	fmt.Println(result.Description)
+}
+
+func TestNoDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/noDescription.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Description != "" {
+		t.Fatal("error in description")
+	}
+
+	fmt.Println(result.Description)
+}

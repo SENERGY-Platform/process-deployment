@@ -8,6 +8,7 @@ type Deployment struct {
 	Name     string        `json:"name"`
 	Elements []Element     `json:"elements"`
 	Lanes    []LaneElement `json:"lanes"`
+	Description string     `json:"description"`
 }
 
 type Element struct {

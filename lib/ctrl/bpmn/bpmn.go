@@ -45,6 +45,8 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 		return
 	}
 
+	result.Description = doc.FindElement("//bpmn:process").SelectAttrValue("description", "")
+
 	if len(doc.FindElements("//bpmn:collaboration")) > 0 {
 		result.Name = doc.FindElement("//bpmn:collaboration").SelectAttrValue("id", "process-name")
 		result.Lanes, err = parsing.BpmnToLanes(doc)
