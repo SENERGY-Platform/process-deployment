@@ -45,9 +45,8 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 		return
 	}
 
-	result.Description = doc.FindElement("//bpmn:process").SelectAttrValue("description", "")
-
 	if len(doc.FindElements("//bpmn:collaboration")) > 0 {
+		result.Description = doc.FindElement("//bpmn:collaboration").SelectAttrValue("description", "")
 		result.Name = doc.FindElement("//bpmn:collaboration").SelectAttrValue("id", "process-name")
 		result.Lanes, err = parsing.BpmnToLanes(doc)
 		if err != nil {
@@ -55,6 +54,7 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 		}
 		sort.Sort(LaneByOrder(result.Lanes))
 	} else {
+		result.Description = doc.FindElement("//bpmn:process").SelectAttrValue("description", "")
 		result.Name = doc.FindElement("//bpmn:process").SelectAttr("id").Value
 		result.Elements, err = parsing.BpmnToElements(doc)
 		if err != nil {

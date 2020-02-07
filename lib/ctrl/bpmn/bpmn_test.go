@@ -1039,8 +1039,8 @@ func ExampleMultiplePoolsBpmnToDeployment() {
 
 }
 
-func TestDescription(t *testing.T) {
-	file, err := ioutil.ReadFile("../../tests/resources/description.bpmn")
+func TestProcessDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/description/process_description.bpmn")
 	if err != nil {
 		t.Error(err)
 		return
@@ -1058,8 +1058,46 @@ func TestDescription(t *testing.T) {
 	fmt.Println(result.Description)
 }
 
-func TestNoDescription(t *testing.T) {
-	file, err := ioutil.ReadFile("../../tests/resources/noDescription.bpmn")
+func TestCollaborationDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/description/collaboration_description.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Description != "desc test" {
+		t.Fatal("error in description")
+	}
+
+	fmt.Println(result.Description)
+}
+
+func TestProcessNoDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/description/process_noDescription.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Description != "" {
+		t.Fatal("error in description")
+	}
+
+	fmt.Println(result.Description)
+}
+
+func TestCollaborationNoDescription(t *testing.T) {
+	file, err := ioutil.ReadFile("../../tests/resources/description/collaboration_noDescription.bpmn")
 	if err != nil {
 		t.Error(err)
 		return
