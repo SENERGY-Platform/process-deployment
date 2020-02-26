@@ -56,8 +56,8 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 		command.ServiceId = task.Selection.Service.Id
 		command.ProtocolId = task.Selection.Service.ProtocolId
 	} else {
-		command.Device = &task.Selection.Device
-		command.Service = &task.Selection.Service
+		command.Device = task.Selection.Device
+		command.Service = task.Selection.Service
 		protocol, err, _ := deviceRepo.GetProtocol(task.Selection.Service.ProtocolId)
 		if err != nil {
 			return err
@@ -81,7 +81,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	return nil
 }
 
-func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -107,8 +107,8 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device devicemodel.Devi
 		command.ServiceId = task.SelectedService.Id
 		command.ProtocolId = task.SelectedService.ProtocolId
 	} else {
-		command.Device = &device
-		command.Service = &task.SelectedService
+		command.Device = device
+		command.Service = task.SelectedService
 		protocol, err, _ := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
 		if err != nil {
 			return err
@@ -186,7 +186,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	return nil
 }
 
-func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -228,8 +228,8 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []devicemo
 			if err != nil {
 				return err
 			}
-			overwrite.Device = &device
-			overwrite.Service = &task.SelectedService
+			overwrite.Device = device
+			overwrite.Service = task.SelectedService
 			overwrite.Protocol = &protocol
 		} else {
 			overwrite.DeviceId = device.Id
@@ -268,8 +268,8 @@ func createOverwriteVariableScript(selections []model.Selection, selectAsRef boo
 			if err != nil {
 				return "", err
 			}
-			overwrite.Device = &selection.Device
-			overwrite.Service = &selection.Service
+			overwrite.Device = selection.Device
+			overwrite.Service = selection.Service
 			overwrite.Protocol = &protocol
 		} else {
 			overwrite.DeviceId = selection.Device.Id

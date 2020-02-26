@@ -8,8 +8,8 @@ type Selectable struct {
 }
 
 type Selection struct {
-	Device  devicemodel.Device  `json:"device"`
-	Service devicemodel.Service `json:"service"`
+	Device  *devicemodel.Device  `json:"device"`
+	Service *devicemodel.Service `json:"service"`
 }
 
 type DeviceDescriptions []DeviceDescription

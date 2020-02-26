@@ -184,7 +184,7 @@ func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.Jwt
 
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			if lane.Lane.Selection.Id != "" {
+			if lane.Lane.Selection != nil && lane.Lane.Selection.Id != "" {
 				lane.Lane.Selection, err, code = this.getCachedDevice(token, &deviceCache, lane.Lane.Selection.Id)
 				if err != nil {
 					return err, code
@@ -341,28 +341,26 @@ func (this *Ctrl) setDeploymentEventIds(deployment *model.Deployment) error {
 	return nil
 }
 
-func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Device, id string) (result devicemodel.Device, err error, code int) {
-	var ok bool
-	if result, ok = (*cache)[id]; ok {
-		return result, nil, 200
+func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
+	if result, ok := (*cache)[id]; ok {
+		return &result, nil, 200
 	}
-	result, err, code = this.devices.GetDevice(token, id)
+	result, err, code := this.devices.GetDevice(token, id)
 	if err != nil {
-		return
+		return &result, err, code
 	}
 	(*cache)[id] = result
-	return result, nil, 200
+	return &result, nil, 200
 }
 
-func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Service, id string) (result devicemodel.Service, err error, code int) {
-	var ok bool
-	if result, ok = (*cache)[id]; ok {
-		return result, nil, 200
+func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
+	if result, ok := (*cache)[id]; ok {
+		return &result, nil, 200
 	}
-	result, err, code = this.devices.GetService(token, id)
+	result, err, code := this.devices.GetService(token, id)
 	if err != nil {
-		return
+		return &result, err, code
 	}
 	(*cache)[id] = result
-	return result, nil, 200
+	return &result, nil, 200
 }

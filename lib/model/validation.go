@@ -120,11 +120,17 @@ func (this *MsgEvent) Validate(strict bool) error {
 	if this.BpmnElementId == "" {
 		return errors.New("missing msg event bpmn id")
 	}
-	if this.Device.Id == "" {
+	if this.Device == nil {
 		return errors.New("missing msg event device selection")
 	}
-	if this.Service.Id == "" {
+	if this.Service == nil {
 		return errors.New("missing msg event service selection")
+	}
+	if this.Device.Id == "" {
+		return errors.New("missing msg event device id in selection")
+	}
+	if this.Service.Id == "" {
+		return errors.New("missing msg event service id in selection")
 	}
 	if strict && this.EventId == "" {
 		return errors.New("missing msg event id")
@@ -139,11 +145,17 @@ func (this *MsgEvent) Validate(strict bool) error {
 }
 
 func (this Selection) Validate(strict bool) error {
-	if this.Device.Id == "" {
+	if this.Device == nil {
 		return errors.New("missing device selection")
 	}
-	if this.Service.Id == "" {
+	if this.Service == nil {
 		return errors.New("missing service selection")
+	}
+	if this.Device.Id == "" {
+		return errors.New("missing device id in selection")
+	}
+	if this.Service.Id == "" {
+		return errors.New("missing service id in selection")
 	}
 	return nil
 }
@@ -165,7 +177,7 @@ func (this *Lane) Validate(strict bool) error {
 	if this.BpmnElementId == "" {
 		return errors.New("missing lane bpmn id")
 	}
-	if this.Selection.Id == "" {
+	if this.Selection == nil || this.Selection.Id == "" {
 		for _, element := range this.Elements {
 			if element.LaneTask != nil {
 				return errors.New("missing lane device selection")
@@ -226,7 +238,7 @@ func (this *LaneTask) Validate(strict bool) error {
 	if this.BpmnElementId == "" {
 		return errors.New("missing task bpmn id")
 	}
-	if this.SelectedService.Id == "" {
+	if this.SelectedService == nil || this.SelectedService.Id == "" {
 		return errors.New("missing lane task service selection id")
 	}
 	return nil

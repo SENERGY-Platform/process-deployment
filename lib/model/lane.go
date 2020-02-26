@@ -29,7 +29,7 @@ type Lane struct {
 	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
-	Selection devicemodel.Device `json:"selection"`
+	Selection *devicemodel.Device `json:"selection"`
 
 	Elements []LaneSubElement `json:"elements"`
 }
@@ -45,7 +45,7 @@ type MultiLane struct {
 	Selectables []Selectable `json:"selectables"`
 
 	//information from user to deploy
-	Selections []devicemodel.Device `json:"selections"`
+	Selections []*devicemodel.Device `json:"selections"`
 
 	Elements []LaneSubElement `json:"elements"`
 }
@@ -69,7 +69,7 @@ type LaneTask struct {
 	BpmnElementId string `json:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task"`
 
-	SelectedService devicemodel.Service `json:"selected_service" bson:"selected_service"`
+	SelectedService *devicemodel.Service `json:"selected_service" bson:"selected_service"`
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`

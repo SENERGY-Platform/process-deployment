@@ -50,7 +50,7 @@ func (this *Ctrl) DeleteDependencies(command model.DeploymentCommand) error {
 func (this *Ctrl) deploymentToDependencies(deployment model.Deployment) (result model.Dependencies, err error) {
 	result.DeploymentId = deployment.Id
 	for _, lane := range deployment.Lanes {
-		if lane.Lane != nil && lane.Lane.Selection.Id != "" {
+		if lane.Lane != nil && lane.Lane.Selection != nil && lane.Lane.Selection.Id != "" {
 			dependencie := model.DeviceDependency{
 				DeviceId: lane.Lane.Selection.Id,
 				Name:     lane.Lane.Selection.Name,
