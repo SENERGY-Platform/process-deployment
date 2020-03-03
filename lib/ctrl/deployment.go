@@ -131,7 +131,10 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deploy
 		return deployment, err, code
 	}
 
-	err = this.setDeploymentEventIds(&deployment)
+	err = this.completeEvents(&deployment)
+	if err != nil {
+		return deployment, err, http.StatusInternalServerError
+	}
 
 	deployment.Xml, err = stringify.Deployment(deployment, this.config.DeploymentAsRef, this.devices, jwt.UserId, this.config.NotificationUrl)
 	if err != nil {
@@ -304,41 +307,6 @@ func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.Jwt
 		}
 	}
 	return nil, 200
-}
-
-func (this *Ctrl) setDeploymentEventIds(deployment *model.Deployment) error {
-	for _, lane := range deployment.Lanes {
-		if lane.Lane != nil {
-			for _, element := range lane.Lane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
-			}
-		}
-		if lane.MultiLane != nil {
-			for _, element := range lane.MultiLane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
-			}
-		}
-	}
-
-	for _, element := range deployment.Elements {
-		if element.MsgEvent != nil {
-			element.MsgEvent.EventId = config.NewId()
-		}
-		if element.ReceiveTaskEvent != nil {
-			element.ReceiveTaskEvent.EventId = config.NewId()
-		}
-	}
-	return nil
 }
 
 func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {

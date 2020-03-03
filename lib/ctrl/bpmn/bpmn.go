@@ -66,41 +66,44 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 }
 
 func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
-	setMsgEventIds(deployment)
+	ensureValidMsgEvents(deployment)
 
 	// This function only gets called from tests. That's why it's okay to supply test data here
 	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo, "uid", "url")
 	return
 }
 
-func setMsgEventIds(deployment *model.Deployment) {
+func ensureValidMsgEvents(deployment *model.Deployment) {
 	for _, element := range deployment.Elements {
-		if element.MsgEvent != nil {
-			element.MsgEvent.EventId = config.NewId()
-		}
-		if element.ReceiveTaskEvent != nil {
-			element.ReceiveTaskEvent.EventId = config.NewId()
-		}
+		ensureValidMsgEvent(element.MsgEvent)
+		ensureValidMsgEvent(element.ReceiveTaskEvent)
 	}
 	for _, lane := range deployment.Lanes {
 		if lane.MultiLane != nil {
 			for _, element := range lane.MultiLane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
+				ensureValidMsgEvent(element.MsgEvent)
+				ensureValidMsgEvent(element.ReceiveTaskEvent)
 			}
 		}
 		if lane.Lane != nil {
 			for _, element := range lane.Lane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
+				ensureValidMsgEvent(element.MsgEvent)
+				ensureValidMsgEvent(element.ReceiveTaskEvent)
+			}
+		}
+	}
+	return
+}
+
+func ensureValidMsgEvent(event *model.MsgEvent) {
+	if event != nil {
+		event.EventId = config.NewId()
+		if event.TriggerConversion != nil {
+			if event.TriggerConversion.From == "" {
+				event.TriggerConversion.From = "test-ensured"
+			}
+			if event.TriggerConversion.To == "" {
+				event.TriggerConversion.To = "test-ensured"
 			}
 		}
 	}

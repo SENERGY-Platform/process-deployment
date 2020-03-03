@@ -30,6 +30,153 @@ import (
 	"testing"
 )
 
+func ExampleEventCastBpmnToDeployment() {
+	file, err := ioutil.ReadFile("../../tests/resources/event_cast.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result, err := PrepareDeployment(string(file))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	result.XmlRaw = ""
+	temp, err := json.Marshal(result)
+	fmt.Println(err, string(temp))
+
+	//output:
+	//<nil> {"id":"","xml_raw":"","xml":"","svg":"","name":"simple","elements":[{"order":1,"task":{"label":"taskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_0wjr1fj","input":"000","selectables":null,"selection":{"device":null,"service":null},"parameter":{"inputs":"\"ff0\""},"configurables":null}},{"order":2,"multi_task":{"label":"multiTaskLabel","device_description":{"characteristic_id":"example_hex","function":{"id":"fid2","name":"","concept_id":"","rdf_type":""}},"bpmn_element_id":"Task_096xjeg","input":"000","selectables":null,"selections":null,"parameter":{"inputs":"\"fff\""},"configurables":null}},{"order":3,"msg_event":{"label":"eventName","bpmn_element_id":"IntermediateThrowEvent_0905jg5","device":null,"service":null,"path":"","value":"","operation":"","trigger_conversion":{"from":"","to":"example_hex"},"event_id":""}}],"lanes":null}
+}
+
+func ExampleEventCastBpmnDeploymentToXmlWithRefs() {
+	file, err := ioutil.ReadFile("../../tests/resources/event_cast.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "test_id"
+	}
+
+	deployment := model.Deployment{}
+	err = json.Unmarshal(file, &deployment)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = deployment.Validate(false)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
+
+	err = UseDeploymentSelections(&deployment, true, mock.Devices)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = deployment.Validate(true)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(html.UnescapeString(deployment.Xml))
+
+	//output:
+	// <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+	//     <bpmn:process id="simple" isExecutable="true" name="simple">
+	//         <bpmn:startEvent id="StartEvent_1">
+	//             <bpmn:outgoing>SequenceFlow_0ixns30</bpmn:outgoing>
+	//         </bpmn:startEvent>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0ixns30" sourceRef="StartEvent_1" targetRef="Task_096xjeg"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0htq2f6" sourceRef="Task_096xjeg" targetRef="IntermediateThrowEvent_0905jg5"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_0npfu5a" sourceRef="IntermediateThrowEvent_0905jg5" targetRef="Task_0wjr1fj"/>
+	//         <bpmn:sequenceFlow id="SequenceFlow_1a1qwlk" sourceRef="Task_0wjr1fj" targetRef="EndEvent_0yi4y22"/>
+	//         <bpmn:endEvent id="EndEvent_0yi4y22">
+	//             <bpmn:incoming>SequenceFlow_1a1qwlk</bpmn:incoming>
+	//         </bpmn:endEvent>
+	//         <bpmn:serviceTask id="Task_096xjeg" name="multiTaskLabel" camunda:type="external" camunda:topic="task">
+	//             <bpmn:documentation>{"order": 2}</bpmn:documentation>
+	//             <bpmn:extensionElements>
+	//                 <camunda:inputOutput>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="inputs">"fff"</camunda:inputParameter>
+	//                 </camunda:inputOutput>
+	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device\":{\"id\":\"device_id_1\"},\"service\":{\"id\":\"service_id_1\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}","{\"device\":{\"id\":\"device_id_2\"},\"service\":{\"id\":\"service_id_2\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
+	//             <bpmn:incoming>SequenceFlow_0ixns30</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_0htq2f6</bpmn:outgoing>
+	//             <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="collection" camunda:elementVariable="overwrite"/>
+	//         </bpmn:serviceTask>
+	//         <bpmn:serviceTask id="Task_0wjr1fj" name="taskLabel" camunda:type="external" camunda:topic="task">
+	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
+	//             <bpmn:extensionElements>
+	//                 <camunda:inputOutput>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_id_1","service_id":"service_id_1","protocol_id":"pid","input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
+	//                 </camunda:inputOutput>
+	//             </bpmn:extensionElements>
+	//             <bpmn:incoming>SequenceFlow_0npfu5a</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_1a1qwlk</bpmn:outgoing>
+	//         </bpmn:serviceTask>
+	//         <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0905jg5" name="eventName">
+	//             <bpmn:documentation>{"order": 3}</bpmn:documentation>
+	//             <bpmn:incoming>SequenceFlow_0htq2f6</bpmn:incoming>
+	//             <bpmn:outgoing>SequenceFlow_0npfu5a</bpmn:outgoing>
+	//             <bpmn:messageEventDefinition messageRef="e_test_id"/>
+	//         </bpmn:intermediateCatchEvent>
+	//     </bpmn:process>
+	//     <bpmn:message id="e_test_id" name="test_id"/><bpmndi:BPMNDiagram id="BPMNDiagram_1">
+	//         <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="simple">
+	//             <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+	//                 <dc:Bounds x="173" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="EndEvent_0yi4y22_di" bpmnElement="EndEvent_0yi4y22">
+	//                 <dc:Bounds x="645" y="102" width="36" height="36"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="ServiceTask_1x4556d_di" bpmnElement="Task_096xjeg">
+	//                 <dc:Bounds x="259" y="80" width="100" height="80"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="IntermediateCatchEvent_072g4ud_di" bpmnElement="IntermediateThrowEvent_0905jg5">
+	//                 <dc:Bounds x="409" y="102" width="36" height="36"/>
+	//                 <bpmndi:BPMNLabel>
+	//                     <dc:Bounds x="399" y="145" width="57" height="14"/>
+	//                 </bpmndi:BPMNLabel>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNShape id="ServiceTask_0ptq5va_di" bpmnElement="Task_0wjr1fj">
+	//                 <dc:Bounds x="495" y="80" width="100" height="80"/>
+	//             </bpmndi:BPMNShape>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0ixns30_di" bpmnElement="SequenceFlow_0ixns30">
+	//                 <di:waypoint x="209" y="120"/>
+	//                 <di:waypoint x="259" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0htq2f6_di" bpmnElement="SequenceFlow_0htq2f6">
+	//                 <di:waypoint x="359" y="120"/>
+	//                 <di:waypoint x="409" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_0npfu5a_di" bpmnElement="SequenceFlow_0npfu5a">
+	//                 <di:waypoint x="445" y="120"/>
+	//                 <di:waypoint x="495" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//             <bpmndi:BPMNEdge id="SequenceFlow_1a1qwlk_di" bpmnElement="SequenceFlow_1a1qwlk">
+	//                 <di:waypoint x="595" y="120"/>
+	//                 <di:waypoint x="645" y="120"/>
+	//             </bpmndi:BPMNEdge>
+	//         </bpmndi:BPMNPlane>
+	//     </bpmndi:BPMNDiagram>
+	// </bpmn:definitions>
+}
+
 func TestEmptyTimeEvent(t *testing.T) {
 	file, err := ioutil.ReadFile("../../tests/resources/empty_time_event.bpmn")
 	if err != nil {

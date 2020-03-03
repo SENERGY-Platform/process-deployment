@@ -50,6 +50,11 @@ type Documentation struct {
 	Order int64 `json:"order"`
 }
 
+type EventDocumentation struct {
+	Order            int64  `json:"order"`
+	CharacteristicId string `json:"characteristic_id,omitempty"`
+}
+
 type Overwrite struct {
 	DeviceId   string                `json:"device_id,omitempty"`
 	Device     *devicemodel.Device   `json:"device,omitempty"`

@@ -141,6 +141,14 @@ func (this *MsgEvent) Validate(strict bool) error {
 	if this.Operation == "" {
 		return errors.New("missing msg event operation")
 	}
+	if this.TriggerConversion != nil && strict {
+		if this.TriggerConversion.From == "" {
+			return errors.New("missing msg event cast from")
+		}
+		if this.TriggerConversion.To == "" {
+			return errors.New("missing msg event cast to")
+		}
+	}
 	return nil
 }
 
