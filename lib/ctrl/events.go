@@ -123,6 +123,10 @@ func (this *Ctrl) completeEventCast(event *model.MsgEvent) (err error) {
 
 func getCharacteristicOfPathInService(service *devicemodel.Service, path string) (string, error) {
 	pathSegments := strings.Split(path, ".")
+	if len(pathSegments) <= 1 || pathSegments[0] != "value" {
+		return "", errors.New("expect 'value' as prefix of msg_vent path")
+	}
+	pathSegments = pathSegments[1:]
 	for _, output := range service.Outputs {
 		if output.ContentVariable.Name == pathSegments[0] {
 			return getCharacteristicOfPathInVariable(output.ContentVariable, pathSegments)

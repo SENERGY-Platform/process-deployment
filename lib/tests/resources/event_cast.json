@@ -78,7 +78,7 @@
           "id": "service_id_3",
           "protocol_id": "pid"
         },
-        "path": "payload.value",
+        "path": "value.payload.value",
         "value": "42",
         "operation": "operation",
         "trigger_conversion":{

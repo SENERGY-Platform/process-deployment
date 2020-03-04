@@ -34,7 +34,7 @@ func Example_getCharacteristicOfPathInService() {
 					Type: devicemodel.Structure,
 					SubContentVariables: []devicemodel.ContentVariable{
 						{
-							Name:             "value",
+							Name:             "kelvin",
 							Type:             devicemodel.String,
 							CharacteristicId: "example_hex",
 						},
@@ -43,7 +43,33 @@ func Example_getCharacteristicOfPathInService() {
 			},
 		},
 	}
-	path := "payload.value"
+	path := "value.payload.kelvin"
+
+	result, err := getCharacteristicOfPathInService(&service, path)
+
+	fmt.Println(err, result)
+
+	//output:
+	//<nil> example_hex
+}
+
+func Example_getCharacteristicOfPathInService2() {
+	service := devicemodel.Service{
+		Id:         "service_id_3",
+		LocalId:    "s3url",
+		Name:       "s3",
+		ProtocolId: "pid",
+		Outputs: []devicemodel.Content{
+			{
+				ContentVariable: devicemodel.ContentVariable{
+					Name:             "kelvin",
+					Type:             devicemodel.String,
+					CharacteristicId: "example_hex",
+				},
+			},
+		},
+	}
+	path := "value.kelvin"
 
 	result, err := getCharacteristicOfPathInService(&service, path)
 
