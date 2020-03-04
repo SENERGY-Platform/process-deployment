@@ -128,7 +128,7 @@ func getCharacteristicOfPathInService(service *devicemodel.Service, path string)
 			return getCharacteristicOfPathInVariable(output.ContentVariable, pathSegments)
 		}
 	}
-	return "", nil
+	return "", errors.New("no characteristic found for " + path + " in " + service.Id)
 }
 
 func getCharacteristicOfPathInVariable(variable devicemodel.ContentVariable, path []string) (string, error) {
