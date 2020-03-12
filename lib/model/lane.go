@@ -75,4 +75,6 @@ type LaneTask struct {
 	Parameter map[string]string `json:"parameter"`
 
 	Configurables []Configurable `json:"configurables"`
+
+	ContentVariableHints []string `json:"content_variable_hints,omitempty"`
 }

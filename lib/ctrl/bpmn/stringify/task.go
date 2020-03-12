@@ -93,13 +93,14 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Dev
 	}()
 
 	command := model.Command{
-		Retries:          task.Retries,
-		Function:         task.DeviceDescription.Function,
-		CharacteristicId: task.DeviceDescription.CharacteristicId,
-		DeviceClass:      task.DeviceDescription.DeviceClass,
-		Aspect:           task.DeviceDescription.Aspect,
-		Input:            task.Input,
-		Configurables:    task.Configurables,
+		Retries:              task.Retries,
+		Function:             task.DeviceDescription.Function,
+		CharacteristicId:     task.DeviceDescription.CharacteristicId,
+		DeviceClass:          task.DeviceDescription.DeviceClass,
+		Aspect:               task.DeviceDescription.Aspect,
+		Input:                task.Input,
+		Configurables:        task.Configurables,
+		ContentVariableHints: task.ContentVariableHints,
 	}
 
 	if selectAsRef {
@@ -144,13 +145,14 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	}()
 
 	command := model.Command{
-		Retries:          task.Retries,
-		Function:         task.DeviceDescription.Function,
-		CharacteristicId: task.DeviceDescription.CharacteristicId,
-		DeviceClass:      task.DeviceDescription.DeviceClass,
-		Aspect:           task.DeviceDescription.Aspect,
-		Input:            task.Input,
-		Configurables:    task.Configurables,
+		Retries:              task.Retries,
+		Function:             task.DeviceDescription.Function,
+		CharacteristicId:     task.DeviceDescription.CharacteristicId,
+		DeviceClass:          task.DeviceDescription.DeviceClass,
+		Aspect:               task.DeviceDescription.Aspect,
+		Input:                task.Input,
+		Configurables:        task.Configurables,
+		ContentVariableHints: task.ContentVariableHints,
 	}
 
 	commandStr, err := json.Marshal(command)
@@ -198,13 +200,14 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 	}()
 
 	command := model.Command{
-		Retries:          task.Retries,
-		Function:         task.DeviceDescription.Function,
-		CharacteristicId: task.DeviceDescription.CharacteristicId,
-		DeviceClass:      task.DeviceDescription.DeviceClass,
-		Aspect:           task.DeviceDescription.Aspect,
-		Input:            task.Input,
-		Configurables:    task.Configurables,
+		Retries:              task.Retries,
+		Function:             task.DeviceDescription.Function,
+		CharacteristicId:     task.DeviceDescription.CharacteristicId,
+		DeviceClass:          task.DeviceDescription.DeviceClass,
+		Aspect:               task.DeviceDescription.Aspect,
+		Input:                task.Input,
+		Configurables:        task.Configurables,
+		ContentVariableHints: task.ContentVariableHints,
 	}
 
 	commandStr, err := json.Marshal(command)

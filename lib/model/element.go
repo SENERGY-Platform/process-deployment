@@ -34,6 +34,8 @@ type Task struct {
 	Parameter map[string]string `json:"parameter"`
 
 	Configurables []Configurable `json:"configurables"`
+
+	ContentVariableHints []string `json:"content_variable_hints,omitempty"`
 }
 
 type MultiTask struct {
@@ -54,4 +56,6 @@ type MultiTask struct {
 	Parameter map[string]string `json:"parameter"`
 
 	Configurables []Configurable `json:"configurables"`
+
+	ContentVariableHints []string `json:"content_variable_hints,omitempty"`
 }

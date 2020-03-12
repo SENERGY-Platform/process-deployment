@@ -37,7 +37,8 @@ type Command struct {
 	Protocol   *devicemodel.Protocol `json:"protocol,omitempty"`
 	ProtocolId string                `json:"protocol_id,omitempty"`
 
-	Configurables []Configurable `json:"configurables,omitempty"`
+	Configurables        []Configurable `json:"configurables,omitempty"`
+	ContentVariableHints []string       `json:"content_variable_hints,omitempty"`
 
 	//runtime
 	Input  interface{} `json:"input,omitempty"`
