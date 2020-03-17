@@ -22,15 +22,24 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/ory/dockertest"
-	"log"
 	"runtime/debug"
+	"strings"
+	"testing"
 )
 
-func ExampleDeployments() {
+func TestDeployments(t *testing.T) {
+	if testing.Short() {
+		t.Skip("short tests only without docker")
+	}
+	buffer := &strings.Builder{}
+	testprint := func(args ...interface{}) {
+		fmt.Fprintln(buffer, args...)
+	}
+
 	config, err := config.LoadConfig("../../config.json")
 	if err != nil {
 		debug.PrintStack()
-		log.Println(err)
+		testprint(err)
 		return
 	}
 	config.Debug = true
@@ -38,13 +47,13 @@ func ExampleDeployments() {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		debug.PrintStack()
-		log.Println(err)
+		testprint(err)
 		return
 	}
 	closer, port, _, err := MongoTestServer(pool)
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 	defer closer()
@@ -56,7 +65,7 @@ func ExampleDeployments() {
 	db, err := Factory.New(ctx, config)
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -66,7 +75,7 @@ func ExampleDeployments() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -76,7 +85,7 @@ func ExampleDeployments() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -86,45 +95,46 @@ func ExampleDeployments() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
-	fmt.Println("GET:")
-	fmt.Println(db.GetDeployment("nope", "nope"))
-	fmt.Println(db.GetDeployment("user1", "nope"))
-	fmt.Println(db.GetDeployment("nope", "id1"))
-	fmt.Println(db.GetDeployment("user1", "id1"))
+	testprint("GET:")
+	testprint(db.GetDeployment("nope", "nope"))
+	testprint(db.GetDeployment("user1", "nope"))
+	testprint(db.GetDeployment("nope", "id1"))
+	testprint(db.GetDeployment("user1", "id1"))
 
-	fmt.Println("CHECK:")
-	fmt.Println(db.CheckDeploymentAccess("nope", "nope"))
-	fmt.Println(db.CheckDeploymentAccess("user1", "nope"))
-	fmt.Println(db.CheckDeploymentAccess("nope", "id1"))
-	fmt.Println(db.CheckDeploymentAccess("user1", "id1"))
+	testprint("CHECK:")
+	testprint(db.CheckDeploymentAccess("nope", "nope"))
+	testprint(db.CheckDeploymentAccess("user1", "nope"))
+	testprint(db.CheckDeploymentAccess("nope", "id1"))
+	testprint(db.CheckDeploymentAccess("user1", "id1"))
 
-	fmt.Println("DELETE:")
-	fmt.Println(db.GetDeployment("user1", "id1"))
-	fmt.Println(db.DeleteDeployment("nope"))
-	fmt.Println(db.GetDeployment("user1", "id1"))
-	fmt.Println(db.DeleteDeployment("id1"))
-	fmt.Println(db.GetDeployment("user1", "id1"))
+	testprint("DELETE:")
+	testprint(db.GetDeployment("user1", "id1"))
+	testprint(db.DeleteDeployment("nope"))
+	testprint(db.GetDeployment("user1", "id1"))
+	testprint(db.DeleteDeployment("id1"))
+	testprint(db.GetDeployment("user1", "id1"))
 
-	//output:
-	//GET:
-	//{     [] [] } not found 404
-	//{     [] [] } not found 404
-	//{     [] [] } access denied 403
-	//{id1    name1 [] [] } <nil> 200
-	//CHECK:
-	//not found 404
-	//not found 404
-	//access denied 403
-	//<nil> 200
-	//DELETE:
-	//{id1    name1 [] [] } <nil> 200
-	//<nil>
-	//{id1    name1 [] [] } <nil> 200
-	//<nil>
-	//{     [] [] } not found 404
-
+	expected := `
+	GET:
+	{     [] [] } not found 404
+	{     [] [] } not found 404
+	{     [] [] } access denied 403
+	{id1    name1 [] [] } <nil> 200
+	CHECK:
+	not found 404
+	not found 404
+	access denied 403
+	<nil> 200
+	DELETE:
+	{id1    name1 [] [] } <nil> 200
+	<nil>
+	{id1    name1 [] [] } <nil> 200
+	<nil>
+	{     [] [] } not found 404
+	`
+	compareExampleStr(t, buffer.String(), expected)
 }

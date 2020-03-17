@@ -22,15 +22,25 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/ory/dockertest"
-	"log"
 	"runtime/debug"
+	"strings"
+	"testing"
 )
 
-func ExampleDependencies() {
+func TestDependencies(t *testing.T) {
+	if testing.Short() {
+		t.Skip("short tests only without docker")
+	}
+	buffer := &strings.Builder{}
+	testprint := func(args ...interface{}) {
+		fmt.Fprintln(buffer, args...)
+	}
+
+	testprint("")
 	config, err := config.LoadConfig("../../config.json")
 	if err != nil {
 		debug.PrintStack()
-		log.Println(err)
+		testprint(err)
 		return
 	}
 	config.Debug = true
@@ -38,13 +48,13 @@ func ExampleDependencies() {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		debug.PrintStack()
-		log.Println(err)
+		testprint(err)
 		return
 	}
 	closer, port, _, err := MongoTestServer(pool)
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 	defer closer()
@@ -56,7 +66,7 @@ func ExampleDependencies() {
 	db, err := Factory.New(ctx, config)
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -72,7 +82,7 @@ func ExampleDependencies() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -88,7 +98,7 @@ func ExampleDependencies() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
@@ -104,54 +114,56 @@ func ExampleDependencies() {
 	})
 	if err != nil {
 		debug.PrintStack()
-		fmt.Println(err)
+		testprint(err)
 		return
 	}
 
-	fmt.Println("GET:")
-	fmt.Println(db.GetDependencies("nope", "nope"))
-	fmt.Println(db.GetDependencies("user1", "nope"))
-	fmt.Println(db.GetDependencies("nope", "id1"))
-	fmt.Println(db.GetDependencies("user1", "id1"))
+	testprint("GET:")
+	testprint(db.GetDependencies("nope", "nope"))
+	testprint(db.GetDependencies("user1", "nope"))
+	testprint(db.GetDependencies("nope", "id1"))
+	testprint(db.GetDependencies("user1", "id1"))
 
-	fmt.Println("LIST:")
-	fmt.Println(db.GetDependenciesList("nope", 100, 0))
-	fmt.Println(db.GetDependenciesList("user1", 100, 0))
+	testprint("LIST:")
+	testprint(db.GetDependenciesList("nope", 100, 0))
+	testprint(db.GetDependenciesList("user1", 100, 0))
 
-	fmt.Println("SELECT:")
-	fmt.Println(db.GetSelectedDependencies("nope", []string{"nope"}))
-	fmt.Println(db.GetSelectedDependencies("nope", []string{"nope", "id1"}))
-	fmt.Println(db.GetSelectedDependencies("nope", []string{"id2", "id1"}))
-	fmt.Println(db.GetSelectedDependencies("user1", []string{"nope", "id1"}))
-	fmt.Println(db.GetSelectedDependencies("user1", []string{"id2", "id1"}))
+	testprint("SELECT:")
+	testprint(db.GetSelectedDependencies("nope", []string{"nope"}))
+	testprint(db.GetSelectedDependencies("nope", []string{"nope", "id1"}))
+	testprint(db.GetSelectedDependencies("nope", []string{"id2", "id1"}))
+	testprint(db.GetSelectedDependencies("user1", []string{"nope", "id1"}))
+	testprint(db.GetSelectedDependencies("user1", []string{"id2", "id1"}))
 
-	fmt.Println("DELETE:")
-	fmt.Println(db.GetDependencies("user1", "id1"))
-	fmt.Println(db.DeleteDependencies("nope"))
-	fmt.Println(db.GetDependencies("user1", "id1"))
-	fmt.Println(db.DeleteDependencies("id1"))
-	fmt.Println(db.GetDependencies("user1", "id1"))
+	testprint("DELETE:")
+	testprint(db.GetDependencies("user1", "id1"))
+	testprint(db.DeleteDependencies("nope"))
+	testprint(db.GetDependencies("user1", "id1"))
+	testprint(db.DeleteDependencies("id1"))
+	testprint(db.GetDependencies("user1", "id1"))
 
-	//output:
-	//GET:
-	//{  [] []} not found 404
-	//{  [] []} not found 404
-	//{  [] []} access denied 403
-	//{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
-	//LIST:
-	//[] <nil> 200
-	//[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} {id2 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
-	//SELECT:
-	//[] <nil> 200
-	//[] <nil> 200
-	//[] <nil> 200
-	//[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
-	//[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} {id2 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
-	//DELETE:
-	//{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
-	//<nil>
-	//{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
-	//<nil>
-	//{  [] []} not found 404
+	expected := `
+	GET:
+	{  [] []} not found 404
+	{  [] []} not found 404
+	{  [] []} access denied 403
+	{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
+	LIST:
+	[] <nil> 200
+	[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} {id2 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
+	SELECT:
+	[] <nil> 200
+	[] <nil> 200
+	[] <nil> 200
+	[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
+	[{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} {id2 user1 [{d1 d1 [{r1 } {r2 }]}] []}] <nil> 200
+	DELETE:
+	{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
+	<nil>
+	{id1 user1 [{d1 d1 [{r1 } {r2 }]}] []} <nil> 200
+	<nil>
+	{  [] []} not found 404
+	`
 
+	compareExampleStr(t, buffer.String(), expected)
 }

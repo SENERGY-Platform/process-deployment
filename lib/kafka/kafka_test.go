@@ -18,7 +18,6 @@ package kafka
 
 import (
 	"context"
-	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/ory/dockertest"
 	"github.com/ory/dockertest/docker"
@@ -26,29 +25,34 @@ import (
 	"github.com/wvanbergen/kazoo-go"
 	"log"
 	"net"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+	"testing"
 	"time"
 )
 
-func ExampleKafka() {
+func TestKafka(t *testing.T) {
+	if testing.Short() {
+		t.Skip("short tests only without docker")
+	}
 	config, err := config.LoadConfig("../../config.json")
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 	config.Debug = true
 
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
 	closeZk, _, zkIp, err := Zookeeper(pool)
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 	defer closeZk()
@@ -57,7 +61,7 @@ func ExampleKafka() {
 	//kafka
 	closeKafka, err := Kafka(pool, config.ZookeeperUrl)
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 	defer closeKafka()
@@ -79,39 +83,40 @@ func ExampleKafka() {
 	})
 
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
 	producer, err := Factory.NewProducer(ctx, config, "test")
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
 	wait.Add(1)
 	err = producer.Produce("key", []byte("foo"))
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
 	wait.Add(1)
 	err = producer.Produce("key", []byte("bar"))
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
 	wait.Wait()
 	mux.Lock()
 	defer mux.Unlock()
-	fmt.Println("CONSUMED: ", consumed)
+
+	if !reflect.DeepEqual(consumed, []string{"foo", "bar"}) {
+		t.Error(consumed)
+		return
+	}
 	//wait for finished commits
 	time.Sleep(1 * time.Second)
-
-	//output:
-	//CONSUMED:  [foo bar]
 }
 
 func Kafka(pool *dockertest.Pool, zookeeperUrl string) (closer func(), err error) {

@@ -22,6 +22,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
+	"strings"
+	"testing"
 )
 
 func MongoTestServer(pool *dockertest.Pool) (closer func(), hostPort string, ipAddress string, err error) {
@@ -39,4 +41,19 @@ func MongoTestServer(pool *dockertest.Pool) (closer func(), hostPort string, ipA
 		return err
 	})
 	return func() { repo.Close() }, hostPort, repo.Container.NetworkSettings.IPAddress, err
+}
+
+func compareExampleStr(t *testing.T, actual string, expected string) {
+	actual = strings.TrimSpace(actual)
+	expected = strings.TrimSpace(expected)
+	actualLines := strings.Split(actual, "\n")
+	expectedLines := strings.Split(expected, "\n")
+	if len(actualLines) != len(expectedLines) {
+		t.Fatal("GOT:\n", actual, "\nWANT:\n", expected)
+	}
+	for index, actualLine := range actualLines {
+		if strings.TrimSpace(actualLine) != strings.TrimSpace(expectedLines[index]) {
+			t.Fatal("LINE: ", index, "\nWANT:\n", strings.TrimSpace(actualLine), "\nGOT:\n", strings.TrimSpace(expectedLines[index]))
+		}
+	}
 }
