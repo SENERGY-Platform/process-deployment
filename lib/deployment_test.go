@@ -181,6 +181,123 @@ func ExampleCtrl_Deployment() {
 	//{"command":"DELETE","id":"uuid","owner":"connectivity-test","deployment":{"id":"","xml_raw":"","xml":"","svg":"","name":"","elements":null,"lanes":null}}
 }
 
+func ExampleCtrl_noEngineAccess() {
+
+	temp := config.NewId
+	defer func() {
+		config.NewId = temp
+	}()
+	config.NewId = func() string {
+		return "uuid"
+	}
+
+	conf, err := config.LoadConfig("../config.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	conf.Debug = true
+
+	port, err := tests.GetFreePort()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	conf.ApiPort = strconv.Itoa(port)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	time.Sleep(100 * time.Millisecond) //wait for api startup
+
+	prepareMockRepos()
+
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	//prepare
+	scriptProcess, err := ioutil.ReadFile("./tests/resources/script_test.bpmn")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	preparereq := model.PrepareRequest{Xml: string(scriptProcess), Svg: "<svg/>"}
+	preparedJson, err := json.Marshal(preparereq)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		"http://localhost:"+conf.ApiPort+"/prepared-deployments",
+		bytes.NewBuffer(preparedJson),
+	)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	req.Header.Set("Authorization", TestToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	if resp.StatusCode != 200 {
+		fmt.Println(resp.StatusCode, string(body))
+		return
+	}
+
+	//deploy
+	req, err = http.NewRequest(
+		"POST",
+		"http://localhost:"+conf.ApiPort+"/deployments",
+		bytes.NewBuffer(body),
+	)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	req.Header.Set("Authorization", TestToken)
+
+	resp, err = client.Do(req)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		debug.PrintStack()
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(resp.StatusCode, string(body))
+
+	//output:
+	//400 process tries to access execution engine
+}
+
 func ExampleCtrl_Hints1() {
 
 	temp := config.NewId

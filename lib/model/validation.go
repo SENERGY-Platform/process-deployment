@@ -16,7 +16,14 @@
 
 package model
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"github.com/beevik/etree"
+	"log"
+	"runtime/debug"
+	"strings"
+)
 
 //strict for cqrs; else for user
 func (this Deployment) Validate(strict bool) (err error) {
@@ -28,6 +35,13 @@ func (this Deployment) Validate(strict bool) (err error) {
 	}
 	if this.XmlRaw == "" {
 		return errors.New("missing deployment xml_raw")
+	}
+	engineAccess, err := xmlContainsEngineAccess(this.XmlRaw)
+	if err != nil {
+		return err
+	}
+	if engineAccess {
+		return errors.New("process tries to access execution engine")
 	}
 	if strict && this.Xml == "" {
 		return errors.New("missing deployment xml")
@@ -45,6 +59,33 @@ func (this Deployment) Validate(strict bool) (err error) {
 		}
 	}
 	return nil
+}
+
+func xmlContainsEngineAccess(xml string) (triesAccess bool, err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(xml)
+	if err != nil {
+		return true, err
+	}
+	scripts := []string{}
+	for _, script := range doc.FindElements("//camunda:script") {
+		scripts = append(scripts, script.Text())
+	}
+	for _, script := range doc.FindElements("//bpmn:script") {
+		scripts = append(scripts, script.Text())
+	}
+	for _, script := range scripts {
+		if strings.Contains(script, "execution.") {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (this Element) Validate(strict bool) error {

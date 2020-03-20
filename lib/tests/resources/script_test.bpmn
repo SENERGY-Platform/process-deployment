@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+    <bpmn:process id="script_test" isExecutable="true">
+        <bpmn:startEvent id="StartEvent_1">
+            <bpmn:outgoing>SequenceFlow_0ux94ym</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:sequenceFlow id="SequenceFlow_0ux94ym" sourceRef="StartEvent_1" targetRef="Task_1fujka6"/>
+        <bpmn:endEvent id="EndEvent_1uglhav">
+            <bpmn:incoming>SequenceFlow_04wmg8x</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="SequenceFlow_04wmg8x" sourceRef="Task_1fujka6" targetRef="EndEvent_1uglhav"/>
+        <bpmn:scriptTask id="Task_1fujka6" scriptFormat="groovy">
+            <bpmn:incoming>SequenceFlow_0ux94ym</bpmn:incoming>
+            <bpmn:outgoing>SequenceFlow_04wmg8x</bpmn:outgoing>
+            <bpmn:script>println execution.activityId + " " + execution.eventName + "ed"</bpmn:script>
+        </bpmn:scriptTask>
+    </bpmn:process>
+</bpmn:definitions>
