@@ -66,6 +66,7 @@ func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml st
 		return result, err, http.StatusInternalServerError
 	}
 	result.Svg = svg
+	this.SetExecutableFlag(&result)
 	return result, nil, http.StatusOK
 }
 
@@ -331,4 +332,32 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	}
 	(*cache)[id] = result
 	return &result, nil, 200
+}
+
+func (this *Ctrl) SetExecutableFlag(deployment *model.Deployment) {
+	deployment.Executable = true
+	for _, lane := range deployment.Lanes {
+		this.setExecutableFlagByLane(deployment, lane)
+	}
+	for _, element := range deployment.Elements {
+		this.SetExecutableFlagByElement(deployment, element)
+	}
+}
+
+func (this *Ctrl) setExecutableFlagByLane(deployment *model.Deployment, lane model.LaneElement) {
+	if lane.Lane != nil && len(lane.Lane.Selectables) == 0 {
+		deployment.Executable = false
+	}
+	if lane.MultiLane != nil && len(lane.MultiLane.Selectables) == 0 {
+		deployment.Executable = false
+	}
+}
+
+func (this *Ctrl) SetExecutableFlagByElement(deployment *model.Deployment, element model.Element) {
+	if element.Task != nil && len(element.Task.Selectables) == 0 {
+		deployment.Executable = false
+	}
+	if element.MultiTask != nil && len(element.MultiTask.Selectables) == 0 {
+		deployment.Executable = false
+	}
 }
