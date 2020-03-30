@@ -25,6 +25,7 @@ import (
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
 	"log"
+	"time"
 )
 
 var L1Expiration = 60         // 60sec
@@ -49,6 +50,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 var Factory = &RepositoryFactory{}
 
 func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error, code int) {
+	startGetFilteredDevices := time.Now()
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
 	if err != nil {
 		return result, err, code
@@ -56,6 +58,8 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 	if this.config.Debug {
 		log.Println("DEBUG: GetFilteredDevices()::GetFilteredDeviceTypes()", deviceTypes)
 	}
+	durstartGetFilteredDevicesSemantic := time.Now().Sub(startGetFilteredDevices)
+	log.Println("DEBUG: prepare deployment durstartGetFilteredDevicesSemantic time:", durstartGetFilteredDevicesSemantic, durstartGetFilteredDevicesSemantic.Milliseconds())
 	for _, dt := range deviceTypes {
 		devices, err, code := this.GetDevicesOfType(token, dt.Id)
 		if err != nil {
@@ -96,5 +100,7 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 	if this.config.Debug {
 		log.Println("DEBUG: GetFilteredDevices()", result)
 	}
+	durstartGetFilteredDevices := time.Now().Sub(startGetFilteredDevices)
+	log.Println("DEBUG: prepare deployment GetFilteredDevices time:", durstartGetFilteredDevices, durstartGetFilteredDevices.Milliseconds())
 	return result, nil, 200
 }

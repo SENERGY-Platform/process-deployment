@@ -24,6 +24,7 @@ import (
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"log"
 	"net/http"
+	"time"
 )
 
 func init() {
@@ -54,11 +55,14 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 			http.Error(writer, err.Error(), code)
 			return
 		}
+		start := time.Now()
 		result, err, code := ctrl.PrepareDeployment(jwt.Impersonate, process.BpmnXml, process.SvgXml)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
 		}
+		dur := time.Now().Sub(start)
+		log.Println("DEBUG: prepare deployment complete time:", dur, dur.Milliseconds())
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})

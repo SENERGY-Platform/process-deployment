@@ -158,8 +158,8 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 	mux.Lock()
 	defer mux.Unlock()
 	if !reflect.DeepEqual(calls, []string{
-		"/device-types?filter=" + url.QueryEscape(`{"function_ids":["fid"],"aspect_ids":null,"device_class_id":""}`),
-		"/device-types?filter=" + url.QueryEscape(`{"function_ids":["fid"],"aspect_ids":["a1"],"device_class_id":"dc1"}`),
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"","aspect_id":""}]`),
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"dc1","aspect_id":"a1"}]`),
 	}) {
 		temp, _ := json.Marshal(calls)
 		t.Error(string(temp))
@@ -226,8 +226,8 @@ func TestGetFilteredDevices(t *testing.T) {
 	mux.Lock()
 	defer mux.Unlock()
 	if !reflect.DeepEqual(calls, []string{
-		"/device-types?filter=" + url.QueryEscape(`{"function_ids":["fid"],"aspect_ids":null,"device_class_id":""}`),
-		"/device-types?filter=" + url.QueryEscape(`{"function_ids":["fid"],"aspect_ids":["a1"],"device_class_id":"dc1"}`),
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"","aspect_id":""}]`),
+		"/device-types?filter=" + url.QueryEscape(`[{"function_id":"fid","device_class_id":"dc1","aspect_id":"a1"}]`),
 	}) {
 		temp, _ := json.Marshal(calls)
 		t.Error(string(temp))

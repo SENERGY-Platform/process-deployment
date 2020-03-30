@@ -44,7 +44,7 @@ func ExampleToFilter() {
 	}.ToFilter())
 
 	//output:
-	//{[f1 f2] [a1 a2] dc3}
+	//[{f1 dc1 a1} {f1 dc2 a2} {f2 dc3 a2}]
 }
 
 func ExampleNilToFilter() {
@@ -59,5 +59,5 @@ func ExampleNilToFilter() {
 	}.ToFilter())
 
 	//output:
-	//{[f1 ] [a1] dc1}
+	//[{f1 dc1 a1}]
 }

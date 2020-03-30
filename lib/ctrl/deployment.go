@@ -25,8 +25,10 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"log"
 	"net/http"
 	"sort"
+	"time"
 )
 
 func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
@@ -57,14 +59,20 @@ func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
 }
 
 func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml string, svg string) (result model.Deployment, err error, code int) {
+	startParsing := time.Now()
 	result, err = bpmn.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
+	durParsing := time.Now().Sub(startParsing)
+	log.Println("DEBUG: prepare deployment parsing time:", durParsing, durParsing.Milliseconds())
+	startSelectables := time.Now()
 	err = this.SetDeploymentOptions(token, &result)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
+	durSelectables := time.Now().Sub(startSelectables)
+	log.Println("DEBUG: prepare deployment selectables time:", durSelectables, durSelectables.Milliseconds())
 	result.Svg = svg
 	this.SetExecutableFlag(&result)
 	return result, nil, http.StatusOK

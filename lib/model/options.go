@@ -1,6 +1,9 @@
 package model
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"reflect"
+)
 
 type Selectable struct {
 	Device   devicemodel.Device    `json:"device"`
@@ -20,30 +23,32 @@ type DeviceDescription struct {
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty"`
 }
 
-type DeviceTypesFilter struct {
-	FunctionIds   []string `json:"function_ids"`
-	AspectIds     []string `json:"aspect_ids"`
-	DeviceClassId string   `json:"device_class_id"`
+type DeviceTypesFilter []DeviceTypeFilterElement
+
+type DeviceTypeFilterElement struct {
+	FunctionId    string `json:"function_id"`
+	DeviceClassId string `json:"device_class_id"`
+	AspectId      string `json:"aspect_id"`
 }
 
 func (this DeviceDescriptions) ToFilter() (result DeviceTypesFilter) {
-	aspectIndex := map[string]bool{}
-	functionIndex := map[string]bool{}
-	for _, description := range this {
-		if description.Aspect != nil {
-			if _, notDistinct := aspectIndex[description.Aspect.Id]; !notDistinct {
-				result.AspectIds = append(result.AspectIds, description.Aspect.Id)
-				aspectIndex[description.Aspect.Id] = true
-			}
+	for _, element := range this {
+		newElement := DeviceTypeFilterElement{
+			FunctionId: element.Function.Id,
 		}
-		if _, notDistinct := functionIndex[description.Function.Id]; !notDistinct {
-			result.FunctionIds = append(result.FunctionIds, description.Function.Id)
-			functionIndex[description.Function.Id] = true
+		if element.DeviceClass != nil {
+			newElement.DeviceClassId = element.DeviceClass.Id
 		}
-		if description.DeviceClass != nil {
-			result.DeviceClassId = description.DeviceClass.Id
+		if element.Aspect != nil {
+			newElement.AspectId = element.Aspect.Id
 		}
-
+		if !IsZero(element) {
+			result = append(result, newElement)
+		}
 	}
 	return
+}
+
+func IsZero(x interface{}) bool {
+	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
 }
