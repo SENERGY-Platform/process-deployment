@@ -18,17 +18,15 @@ package stringifier
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 )
 
 type Stringifier struct {
-	conf    config.Config
-	devices interfaces.Devices
+	conf config.Config
 }
 
-func New(conf config.Config, devices interfaces.Devices) *Stringifier {
-	return &Stringifier{conf: conf, devices: devices}
+func New(conf config.Config) *Stringifier {
+	return &Stringifier{conf: conf}
 }
 
 func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (string, error) {
