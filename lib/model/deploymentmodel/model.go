@@ -43,13 +43,13 @@ type Pool struct {
 
 type Lane struct {
 	BaseInfo
-	Elements         []LaneElement    `json:"elements"`
+	Elements         []Element        `json:"elements"`
 	FilterCriteria   []FilterCriteria `json:"filter_criteria"`
 	Selectables      []Selectable     `json:"selectables"`
 	SelectedDeviceId string           `json:"selected_device_id"`
 }
 
-type LaneElement struct {
+type Element struct {
 	BaseInfo
 	TimeEvent    *TimeEvent    `json:"time_event"`
 	Notification *Notification `json:"notification"`

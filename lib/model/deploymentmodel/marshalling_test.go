@@ -40,7 +40,7 @@ func ExampleMarshalling() {
 							BpmnId: "lane_bpmn_id",
 							Order:  13,
 						},
-						Elements: []LaneElement{
+						Elements: []Element{
 							{
 								BaseInfo: BaseInfo{
 									Name:   "task",
