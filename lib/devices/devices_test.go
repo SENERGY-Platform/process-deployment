@@ -19,9 +19,8 @@ package devices
 import (
 	"context"
 	"encoding/json"
-	"github.com/SENERGY-Platform/iot-device-repository/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	model2 "github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"net/http"
 	"net/http/httptest"
@@ -39,7 +38,7 @@ func TestCaching(t *testing.T) {
 		mux.Lock()
 		defer mux.Unlock()
 		calls = append(calls, r.URL.Path)
-		json.NewEncoder(w).Encode(model.Service{Id: "s1", Name: "s1name"})
+		json.NewEncoder(w).Encode(devicemodel.Service{Id: "s1", Name: "s1name"})
 	}))
 
 	defer mock.Close()
@@ -107,7 +106,7 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 		mux.Lock()
 		defer mux.Unlock()
 		calls = append(calls, r.URL.Path+"?"+r.URL.RawQuery)
-		json.NewEncoder(w).Encode([]model.DeviceType{{Id: "dt1", Name: "dt1name"}})
+		json.NewEncoder(w).Encode([]devicemodel.DeviceType{{Id: "dt1", Name: "dt1name"}})
 	}))
 
 	defer mock.Close()
@@ -126,11 +125,9 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
-		CharacteristicId: "chid1",
-		Function:         devicemodel.Function{Id: "fid"},
-		DeviceClass:      nil,
-		Aspect:           nil,
+	_, err, _ = repo.GetFilteredDeviceTypes("token", []deploymentmodel.FilterCriteria{{
+		CharacteristicId: strptr("chid1"),
+		FunctionId:       strptr("fid"),
 	}})
 
 	if err != nil {
@@ -138,11 +135,11 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
-		CharacteristicId: "chid1",
-		Function:         devicemodel.Function{Id: "fid"},
-		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
-		Aspect:           &devicemodel.Aspect{Id: "a1"},
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", []deploymentmodel.FilterCriteria{{
+		CharacteristicId: strptr("chid1"),
+		FunctionId:       strptr("fid"),
+		DeviceClassId:    strptr("dc1"),
+		AspectId:         strptr("a1"),
 	}})
 
 	if err != nil {
@@ -175,7 +172,7 @@ func TestGetFilteredDevices(t *testing.T) {
 		mux.Lock()
 		defer mux.Unlock()
 		calls = append(calls, r.URL.Path+"?"+r.URL.RawQuery)
-		json.NewEncoder(w).Encode([]model.DeviceType{{Id: "dt1", Name: "dt1name"}})
+		json.NewEncoder(w).Encode([]devicemodel.DeviceType{{Id: "dt1", Name: "dt1name"}})
 	}))
 
 	defer mock.Close()
@@ -194,11 +191,9 @@ func TestGetFilteredDevices(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
-		CharacteristicId: "chid1",
-		Function:         devicemodel.Function{Id: "fid"},
-		DeviceClass:      nil,
-		Aspect:           nil,
+	_, err, _ = repo.GetFilteredDeviceTypes("token", []deploymentmodel.FilterCriteria{{
+		CharacteristicId: strptr("chid1"),
+		FunctionId:       strptr("fid"),
 	}})
 
 	if err != nil {
@@ -206,11 +201,11 @@ func TestGetFilteredDevices(t *testing.T) {
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
-		CharacteristicId: "chid1",
-		Function:         devicemodel.Function{Id: "fid"},
-		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
-		Aspect:           &devicemodel.Aspect{Id: "a1"},
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", []deploymentmodel.FilterCriteria{{
+		CharacteristicId: strptr("chid1"),
+		FunctionId:       strptr("fid"),
+		DeviceClassId:    strptr("dc1"),
+		AspectId:         strptr("a1"),
 	}})
 
 	if err != nil {
@@ -232,4 +227,8 @@ func TestGetFilteredDevices(t *testing.T) {
 		temp, _ := json.Marshal(calls)
 		t.Error(string(temp))
 	}
+}
+
+func strptr(in string) *string {
+	return &in
 }

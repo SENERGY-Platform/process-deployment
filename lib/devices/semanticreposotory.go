@@ -19,7 +19,7 @@ package devices
 import (
 	"encoding/json"
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
@@ -30,11 +30,11 @@ import (
 
 type SemanticRepoFactory struct{}
 
-func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []devicemodel.DeviceType, err error, code int) {
+func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []devicemodel.DeviceType, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
-	payload, err := json.Marshal(model.DeviceDescriptions(descriptions).ToFilter())
+	payload, err := json.Marshal(criteria)
 
 	req, err := http.NewRequest(
 		"GET",

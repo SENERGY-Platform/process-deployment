@@ -21,7 +21,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 	"sync"
@@ -29,16 +29,16 @@ import (
 
 type ProcessModelRepoMock struct {
 	mux    sync.Mutex
-	models map[string]model.ProcessModel
+	models map[string]processmodel.ProcessModel
 }
 
-var ProcessModelRepo = &ProcessModelRepoMock{models: map[string]model.ProcessModel{}}
+var ProcessModelRepo = &ProcessModelRepoMock{models: map[string]processmodel.ProcessModel{}}
 
 func (this *ProcessModelRepoMock) New(ctx context.Context, config config.Config) (interfaces.ProcessRepo, error) {
 	return this, nil
 }
 
-func (this *ProcessModelRepoMock) GetProcessModel(impersonate jwt_http_router.JwtImpersonate, id string) (result model.ProcessModel, err error, errCode int) {
+func (this *ProcessModelRepoMock) GetProcessModel(impersonate jwt_http_router.JwtImpersonate, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	if result, ok := this.models[id]; ok {
@@ -48,7 +48,7 @@ func (this *ProcessModelRepoMock) GetProcessModel(impersonate jwt_http_router.Jw
 	}
 }
 
-func (this *ProcessModelRepoMock) SetProcessModel(id string, processmodel model.ProcessModel) {
+func (this *ProcessModelRepoMock) SetProcessModel(id string, processmodel processmodel.ProcessModel) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.models[id] = processmodel

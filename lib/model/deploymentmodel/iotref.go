@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-package model
+package deploymentmodel
 
-type NotificationPayload struct {
-	//information direct from model
-	Message string `json:"message"`
-	UserId  string `json:"userId"`
-	Title   string `json:"title"`
-	IsRead  bool   `json:"isRead"`
+type Selectable struct {
+	Device   Device    `json:"device"`
+	Services []Service `json:"services"`
+}
+
+type Device struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Service struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type FilterCriteria struct {
+	CharacteristicId *string `json:"characteristic_id"`
+	FunctionId       *string `json:"function_id"`
+	DeviceClassId    *string `json:"device_class_id"`
+	AspectId         *string `json:"aspect_id"`
 }

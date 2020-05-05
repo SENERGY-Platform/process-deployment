@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -38,12 +38,12 @@ var dependenciesOwnerKey string
 func init() {
 	CreateCollections = append(CreateCollections, func(db *Mongo, config config.Config) error {
 		var err error
-		dependenciesIdKey, err = getBsonFieldName(model.Dependencies{}, dependenciesIdFiledName)
+		dependenciesIdKey, err = getBsonFieldName(dependencymodel.Dependencies{}, dependenciesIdFiledName)
 		if err != nil {
 			debug.PrintStack()
 			return err
 		}
-		dependenciesOwnerKey, err = getBsonFieldName(model.Dependencies{}, dependenciesOwnerFiledName)
+		dependenciesOwnerKey, err = getBsonFieldName(dependencymodel.Dependencies{}, dependenciesOwnerFiledName)
 		if err != nil {
 			debug.PrintStack()
 			return err
@@ -67,13 +67,13 @@ func (this *Mongo) dependenciesCollection() *mongo.Collection {
 	return this.client.Database(this.config.MongoTable).Collection(this.config.MongoDependenciesCollection)
 }
 
-func (this *Mongo) SetDependencies(dependencies model.Dependencies) error {
+func (this *Mongo) SetDependencies(dependencies dependencymodel.Dependencies) error {
 	ctx, _ := getTimeoutContext()
 	_, err := this.dependenciesCollection().ReplaceOne(ctx, bson.M{dependenciesIdKey: dependencies.DeploymentId}, dependencies, options.Replace().SetUpsert(true))
 	return err
 }
 
-func (this *Mongo) GetDependencies(user string, deploymentId string) (result model.Dependencies, err error, code int) {
+func (this *Mongo) GetDependencies(user string, deploymentId string) (result dependencymodel.Dependencies, err error, code int) {
 	ctx, _ := getTimeoutContext()
 	err = this.dependenciesCollection().FindOne(ctx, bson.M{dependenciesIdKey: deploymentId}).Decode(&result)
 	if err == mongo.ErrNoDocuments {
@@ -83,12 +83,12 @@ func (this *Mongo) GetDependencies(user string, deploymentId string) (result mod
 		return result, err, http.StatusInternalServerError
 	}
 	if result.Owner != user {
-		return model.Dependencies{}, errors.New("access denied"), http.StatusForbidden
+		return dependencymodel.Dependencies{}, errors.New("access denied"), http.StatusForbidden
 	}
 	return result, nil, 200
 }
 
-func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (result []model.Dependencies, err error, code int) {
+func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (result []dependencymodel.Dependencies, err error, code int) {
 	opt := options.Find()
 	opt.SetLimit(int64(limit))
 	opt.SetSkip(int64(offset))
@@ -100,7 +100,7 @@ func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (resu
 	}
 	defer cursor.Close(context.Background())
 	for cursor.Next(ctx) {
-		dependency := model.Dependencies{}
+		dependency := dependencymodel.Dependencies{}
 		err = cursor.Decode(&dependency)
 		if err != nil {
 			return nil, err, http.StatusInternalServerError
@@ -114,7 +114,7 @@ func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (resu
 	return result, nil, 200
 }
 
-func (this *Mongo) GetSelectedDependencies(user string, ids []string) (result []model.Dependencies, err error, code int) {
+func (this *Mongo) GetSelectedDependencies(user string, ids []string) (result []dependencymodel.Dependencies, err error, code int) {
 	opt := options.Find()
 	opt.SetSort(bsonx.Doc{{deploymentIdKey, bsonx.Int32(1)}})
 	ctx, _ := getTimeoutContext()
@@ -124,7 +124,7 @@ func (this *Mongo) GetSelectedDependencies(user string, ids []string) (result []
 	}
 	defer cursor.Close(context.Background())
 	for cursor.Next(ctx) {
-		dependency := model.Dependencies{}
+		dependency := dependencymodel.Dependencies{}
 		err = cursor.Decode(&dependency)
 		if err != nil {
 			return nil, err, http.StatusInternalServerError

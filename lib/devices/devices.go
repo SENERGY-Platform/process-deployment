@@ -20,7 +20,7 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
@@ -49,9 +49,9 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error, code int) {
+func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.Selectable, err error, code int) {
 	startGetFilteredDevices := time.Now()
-	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
+	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, criteria)
 	if err != nil {
 		return result, err, code
 	}
@@ -68,17 +68,17 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 		if this.config.Debug {
 			log.Println("DEBUG: GetFilteredDevices()::GetDevicesOfType()", dt.Id, devices)
 		}
-		services := []devicemodel.Service{}
+
 		serviceIndex := map[string]devicemodel.Service{}
 		for _, service := range dt.Services {
-			for _, desc := range descriptions {
+			for _, desc := range criteria {
 				for _, function := range service.Functions {
-					if function.Id == desc.Function.Id {
-						if desc.Aspect == nil {
+					if desc.FunctionId != nil && function.Id == *desc.FunctionId {
+						if desc.AspectId == nil {
 							serviceIndex[service.Id] = service
 						} else {
 							for _, aspect := range service.Aspects {
-								if aspect.Id == desc.Aspect.Id {
+								if aspect.Id == *desc.AspectId {
 									serviceIndex[service.Id] = service
 								}
 							}
@@ -87,12 +87,20 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 				}
 			}
 		}
+
+		services := []deploymentmodel.Service{}
 		for _, service := range serviceIndex {
-			services = append(services, service)
+			services = append(services, deploymentmodel.Service{
+				Id:   service.Id,
+				Name: service.Name,
+			})
 		}
 		for _, device := range devices {
-			result = append(result, model.Selectable{
-				Device:   device,
+			result = append(result, deploymentmodel.Selectable{
+				Device: deploymentmodel.Device{
+					Id:   device.Id,
+					Name: device.Name,
+				},
 				Services: services,
 			})
 		}

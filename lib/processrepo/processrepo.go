@@ -22,7 +22,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 	"net/url"
@@ -44,7 +44,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetProcessModel(token jwt_http_router.JwtImpersonate, id string) (result model.ProcessModel, err error, errCode int) {
+func (this *Repository) GetProcessModel(token jwt_http_router.JwtImpersonate, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}

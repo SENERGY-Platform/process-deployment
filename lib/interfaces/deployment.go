@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package model
+package interfaces
 
-const CAMUNDA_VARIABLES_PAYLOAD = "payload"
-const CAMUNDA_VARIABLES_OVERWRITE = "overwrite"
-const CAMUNDE_VARIABLES_OVERWRITE_COLLECTION = "collection"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+)
+
+type DeploymentParser interface {
+	PrepareDeployment(xml string) (deploymentmodel.Deployment, error)
+}
+
+type DeploymentStringifier interface {
+	Deployment(deployment deploymentmodel.Deployment, userId string) (string, error)
+}

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package model
+package messages
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+import "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 
-type Configurable struct {
-	CharacteristicId string                            `json:"characteristic_id"`
-	Values           []ConfigurableCharacteristicValue `json:"values"`
-}
-
-type ConfigurableCharacteristicValue struct {
-	Label     string           `json:"label"`
-	Path      string           `json:"path"`
-	Value     interface{}      `json:"value"`
-	ValueType devicemodel.Type `json:"value_type"`
+type DeploymentCommand struct {
+	Command    string                     `json:"command"`
+	Id         string                     `json:"id"`
+	Owner      string                     `json:"owner"`
+	Deployment deploymentmodel.Deployment `json:"deployment"`
 }

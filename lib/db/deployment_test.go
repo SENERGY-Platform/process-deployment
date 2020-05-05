@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/ory/dockertest"
 	"runtime/debug"
 	"strings"
@@ -69,7 +69,7 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id1", "user1", model.Deployment{
+	err = db.SetDeployment("id1", "user1", deploymentmodel.Deployment{
 		Id:   "id1",
 		Name: "name1",
 	})
@@ -79,7 +79,7 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id2", "user1", model.Deployment{
+	err = db.SetDeployment("id2", "user1", deploymentmodel.Deployment{
 		Id:   "id2",
 		Name: "name2",
 	})
@@ -89,7 +89,7 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id3", "user2", model.Deployment{
+	err = db.SetDeployment("id3", "user2", deploymentmodel.Deployment{
 		Id:   "id3",
 		Name: "name3",
 	})

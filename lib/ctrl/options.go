@@ -17,52 +17,26 @@
 package ctrl
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *model.Deployment) (err error) {
-	for index, element := range deployment.Elements {
-		if element.Task != nil {
-			options, err := this.GetOptions(token, []model.DeviceDescription{element.Task.DeviceDescription})
+func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
+	for i, pool := range deployment.Pools {
+		for j, lane := range pool.Lanes {
+			deployment.Pools[i].Lanes[j].Selectables, err = this.GetOptions(token, lane.FilterCriteria)
 			if err != nil {
 				return err
 			}
-			element.Task.Selectables = options
 		}
-		if element.MultiTask != nil {
-			options, err := this.GetOptions(token, []model.DeviceDescription{element.MultiTask.DeviceDescription})
-			if err != nil {
-				return err
-			}
-			element.MultiTask.Selectables = options
-		}
-		deployment.Elements[index] = element
-	}
-	for index, lane := range deployment.Lanes {
-		if lane.Lane != nil {
-			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions)
-			if err != nil {
-				return err
-			}
-			lane.Lane.Selectables = options
-		}
-		if lane.MultiLane != nil {
-			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions)
-			if err != nil {
-				return err
-			}
-			lane.MultiLane.Selectables = options
-		}
-		deployment.Lanes[index] = lane
 	}
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error) {
-	if len(descriptions) == 0 {
-		return []model.Selectable{}, nil
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.Selectable, err error) {
+	if len(criteria) == 0 {
+		return []deploymentmodel.Selectable{}, nil
 	}
-	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
+	result, err, _ = this.devices.GetFilteredDevices(token, criteria)
 	return
 }

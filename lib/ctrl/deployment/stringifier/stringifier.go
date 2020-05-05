@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package interfaces
+package stringifier
 
 import (
-	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-type DevicesFactory interface {
-	New(ctx context.Context, config config.Config) (Devices, error)
+type Stringifier struct {
+	conf    config.Config
+	devices interfaces.Devices
 }
 
-type Devices interface {
-	GetProtocol(id string) (devicemodel.Protocol, error, int)
-	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
-	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
-	GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) ([]deploymentmodel.Selectable, error, int)
+func New(conf config.Config, devices interfaces.Devices) *Stringifier {
+	return &Stringifier{conf: conf, devices: devices}
+}
+
+func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (string, error) {
+	panic("implement me")
 }

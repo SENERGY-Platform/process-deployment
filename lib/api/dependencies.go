@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 	"strconv"
@@ -42,7 +42,7 @@ func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config,
 			offset
 	*/
 	router.GET("/dependencies", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		result := []model.Dependencies{}
+		result := []dependencymodel.Dependencies{}
 		var err error
 		var code int
 

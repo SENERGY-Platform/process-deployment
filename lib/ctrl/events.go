@@ -18,13 +18,12 @@ package ctrl
 
 import (
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"strings"
 )
 
-func (this *Ctrl) completeEvents(deployment *model.Deployment) error {
+func (this *Ctrl) completeEvents(deployment *deploymentmodel.Deployment) error {
 	err := this.setDeploymentEventIds(deployment)
 	if err != nil {
 		return err
@@ -36,89 +35,12 @@ func (this *Ctrl) completeEvents(deployment *model.Deployment) error {
 	return nil
 }
 
-func (this *Ctrl) setDeploymentEventIds(deployment *model.Deployment) error {
-	for _, lane := range deployment.Lanes {
-		if lane.Lane != nil {
-			for _, element := range lane.Lane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
-			}
-		}
-		if lane.MultiLane != nil {
-			for _, element := range lane.MultiLane.Elements {
-				if element.MsgEvent != nil {
-					element.MsgEvent.EventId = config.NewId()
-				}
-				if element.ReceiveTaskEvent != nil {
-					element.ReceiveTaskEvent.EventId = config.NewId()
-				}
-			}
-		}
-	}
-
-	for _, element := range deployment.Elements {
-		if element.MsgEvent != nil {
-			element.MsgEvent.EventId = config.NewId()
-		}
-		if element.ReceiveTaskEvent != nil {
-			element.ReceiveTaskEvent.EventId = config.NewId()
-		}
-	}
-	return nil
+func (this *Ctrl) setDeploymentEventIds(deployment *deploymentmodel.Deployment) error {
+	panic("not implemented") //TODO
 }
 
-func (this *Ctrl) completeDeploymentEventCasts(deployment *model.Deployment) (err error) {
-	for _, lane := range deployment.Lanes {
-		if lane.Lane != nil {
-			for _, element := range lane.Lane.Elements {
-				if element.MsgEvent != nil {
-					err = this.completeEventCast(element.MsgEvent)
-				}
-				if element.ReceiveTaskEvent != nil {
-					err = this.completeEventCast(element.ReceiveTaskEvent)
-				}
-				if err != nil {
-					return err
-				}
-			}
-		}
-		if lane.MultiLane != nil {
-			for _, element := range lane.MultiLane.Elements {
-				if element.MsgEvent != nil {
-					err = this.completeEventCast(element.MsgEvent)
-				}
-				if element.ReceiveTaskEvent != nil {
-					err = this.completeEventCast(element.ReceiveTaskEvent)
-				}
-				if err != nil {
-					return err
-				}
-			}
-		}
-	}
-	for _, element := range deployment.Elements {
-		if element.MsgEvent != nil {
-			err = this.completeEventCast(element.MsgEvent)
-		}
-		if element.ReceiveTaskEvent != nil {
-			err = this.completeEventCast(element.ReceiveTaskEvent)
-		}
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (this *Ctrl) completeEventCast(event *model.MsgEvent) (err error) {
-	if event.TriggerConversion != nil && event.TriggerConversion.To != "" {
-		event.TriggerConversion.From, err = getCharacteristicOfPathInService(event.Service, event.Path)
-	}
-	return
+func (this *Ctrl) completeDeploymentEventCasts(deployment *deploymentmodel.Deployment) (err error) {
+	panic("not implemented") //TODO
 }
 
 func getCharacteristicOfPathInService(service *devicemodel.Service, path string) (string, error) {

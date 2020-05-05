@@ -21,7 +21,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
@@ -33,7 +33,7 @@ type DeviceRepoMock struct {
 	protocols map[string]devicemodel.Protocol
 	devices   map[string]devicemodel.Device
 	services  map[string]devicemodel.Service
-	options   []model.Selectable
+	options   []deploymentmodel.Selectable
 }
 
 var Devices = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
@@ -90,8 +90,8 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.Selectable, error, int) {
-	if len(descriptions) == 0 {
+func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) ([]deploymentmodel.Selectable, error, int) {
+	if len(criteria) == 0 {
 		return nil, errors.New("missing descriptions"), 500
 	}
 	this.mux.Lock()
@@ -99,7 +99,7 @@ func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImperson
 	return this.options, nil, 200
 }
 
-func (this *DeviceRepoMock) SetOptions(options []model.Selectable) {
+func (this *DeviceRepoMock) SetOptions(options []deploymentmodel.Selectable) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.options = options
