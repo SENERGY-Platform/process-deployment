@@ -17,11 +17,12 @@
 package deploymentmodel
 
 type Deployment struct {
-	Id         string  `json:"id"`
-	Name       string  `json:"name"`
-	Diagram    Diagram `json:"diagram"`
-	Pools      []Pool  `json:"pools"`
-	Executable bool    `json:"executable"`
+	Id          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Diagram     Diagram `json:"diagram"`
+	Pools       []Pool  `json:"pools"`
+	Executable  bool    `json:"executable"`
 }
 
 type Diagram struct {
