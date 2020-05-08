@@ -56,7 +56,8 @@
               "services":[
                 {
                   "id":"test_service_1",
-                  "name":"test_service_1"
+                  "name":"test_service_1",
+                  "function_id": "urn:infai:ses:measuring-function:bdb6a7c8-4a3d-4fe0-bab3-ce02e09b5869"
                 }
               ]
             }
@@ -111,7 +112,8 @@
               "services":[
                 {
                   "id":"test_service_2",
-                  "name":"test_service_2"
+                  "name":"test_service_2",
+                  "function_id":"urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599"
                 }
               ]
             }
