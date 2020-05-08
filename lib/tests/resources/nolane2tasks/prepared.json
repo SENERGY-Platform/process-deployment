@@ -98,7 +98,7 @@
           "filter_criteria":[
             {
               "characteristic_id":"urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
-              "function_id":"urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599",
+              "function_ids":["urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599"],
               "device_class_id":"urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
               "aspect_id":null
             }
@@ -113,7 +113,7 @@
                 {
                   "id":"test_service_2",
                   "name":"test_service_2",
-                  "function_id":"urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599"
+                  "function_ids":["urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599"]
                 }
               ]
             }
