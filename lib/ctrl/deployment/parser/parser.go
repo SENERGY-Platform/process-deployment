@@ -17,8 +17,13 @@
 package parser
 
 import (
+	"errors"
+	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/beevik/etree"
+	"log"
+	"runtime/debug"
 )
 
 type Parser struct {
@@ -29,6 +34,17 @@ func New(conf config.Config) *Parser {
 	return &Parser{conf: conf}
 }
 
-func (this *Parser) PrepareDeployment(xml string) (deploymentmodel.Deployment, error) {
-	panic("implement me")
+func (this *Parser) PrepareDeployment(xml string) (result deploymentmodel.Deployment, err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(xml)
+	if err != nil {
+		return
+	}
+	return this.getDeployment(doc, deploymentmodel.Diagram{XmlRaw: xml})
 }

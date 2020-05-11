@@ -1,7 +1,7 @@
 {
   "id":"",
-  "name":"Lamp_test_fj",
-  "description": "desc",
+  "name":"ExampleName",
+  "description": "ExampleDesc",
   "diagram":{
     "xml_raw":"",
     "xml_deployed":"",

@@ -86,7 +86,7 @@ func testPrepareDeployment(t *testing.T, exampleName string) {
 		return
 	}
 	deployment.Diagram = deploymentmodel.Diagram{}
-	expectedDeployment, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/prepared.json")
+	expectedDeployment, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/parsed.json")
 	if err != nil {
 		t.Error(err)
 		return
@@ -98,7 +98,9 @@ func testPrepareDeployment(t *testing.T, exampleName string) {
 		return
 	}
 	if !reflect.DeepEqual(deployment, expected) {
-		t.Error(deployment)
+		deploymentJson, _ := json.Marshal(deployment)
+		expectedJson, _ := json.Marshal(expected)
+		t.Error(string(deploymentJson), "\n", string(expectedJson))
 		return
 	}
 }
