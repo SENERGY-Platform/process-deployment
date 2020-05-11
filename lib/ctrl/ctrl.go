@@ -44,7 +44,7 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		devices:               devices,
 		processrepo:           processrepo,
 		deploymentParser:      parser.New(config),
-		deploymentStringifier: stringifier.New(config, devices),
+		deploymentStringifier: stringifier.New(config),
 	}
 	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)
 	if err != nil {

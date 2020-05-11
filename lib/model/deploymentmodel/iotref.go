@@ -27,9 +27,8 @@ type Device struct {
 }
 
 type Service struct {
-	Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	FunctionIds []string `json:"function_ids"`
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type FilterCriteria struct {

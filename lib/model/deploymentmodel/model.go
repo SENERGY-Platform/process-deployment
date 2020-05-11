@@ -44,10 +44,18 @@ type Pool struct {
 
 type Lane struct {
 	BaseInfo
-	Elements         []Element        `json:"elements"`
-	FilterCriteria   []FilterCriteria `json:"filter_criteria"`
-	Selectables      []Selectable     `json:"selectables"`
-	SelectedDeviceId string           `json:"selected_device_id"`
+	Elements         []Element    `json:"elements"`
+	Selectables      []Selectable `json:"selectables"`
+	SelectedDeviceId string       `json:"selected_device_id"`
+}
+
+func (this Lane) GetFilterCriteria() (result []FilterCriteria) {
+	for _, element := range this.Elements {
+		if element.Task != nil {
+			result = append(result, element.Task.FilterCriteria)
+		}
+	}
+	return
 }
 
 type Element struct {
@@ -69,19 +77,20 @@ type Notification struct {
 }
 
 type MessageEvent struct {
-	DeviceId       string         `json:"device_id"`
-	ServiceId      string         `json:"service_id"`
-	Value          string         `json:"value"`
-	FlowId         string         `json:"flow_id"`
-	EventId        string         `json:"event_id"`
-	FilterCriteria FilterCriteria `json:"filter_criteria"`
+	SelectedDeviceId  string         `json:"selected_device_id"`
+	SelectedServiceId string         `json:"selected_service_id"`
+	Value             string         `json:"value"`
+	FlowId            string         `json:"flow_id"`
+	EventId           string         `json:"event_id"`
+	FilterCriteria    FilterCriteria `json:"filter_criteria"`
+	Selectables       []Selectable   `json:"selectables"`
 }
 
 type Task struct {
 	Retries           int64             `json:"retries"`
-	Input             interface{}       `json:"input"`
 	Parameter         map[string]string `json:"parameter"`
 	Configurables     []Configurable    `json:"configurables"`
+	FilterCriteria    FilterCriteria    `json:"filter_criteria"`
 	SelectedServiceId string            `json:"selected_service_id"`
 }
 

@@ -24,7 +24,7 @@ import (
 func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
 	for i, pool := range deployment.Pools {
 		for j, lane := range pool.Lanes {
-			deployment.Pools[i].Lanes[j].Selectables, err = this.GetOptions(token, lane.FilterCriteria)
+			deployment.Pools[i].Lanes[j].Selectables, err = this.GetOptions(token, lane.GetFilterCriteria())
 			if err != nil {
 				return err
 			}
