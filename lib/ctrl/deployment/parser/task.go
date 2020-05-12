@@ -46,21 +46,21 @@ func (this *Parser) isTask(element *etree.Element) bool {
 	return true
 }
 
-func (this *Parser) getTask(dom *etree.Element) (result deploymentmodel.Element, err error) {
+func (this *Parser) getTask(element *etree.Element) (result deploymentmodel.Element, err error) {
 	cmd := executionmodel.Task{}
-	cmdPayload := dom.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
+	cmdPayload := element.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
 	err = json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
 	if err != nil {
 		return result, err
 	}
 
-	parameter, err := this.getParameter(dom)
+	parameter, err := this.getParameter(element)
 	if err != nil {
 		return result, err
 	}
 
-	id := dom.SelectAttr("id").Value
-	label := dom.SelectAttrValue("name", id)
+	id := element.SelectAttr("id").Value
+	label := element.SelectAttrValue("name", id)
 
 	filterCriteria := deploymentmodel.FilterCriteria{
 		CharacteristicId: &cmd.CharacteristicId,
@@ -77,7 +77,7 @@ func (this *Parser) getTask(dom *etree.Element) (result deploymentmodel.Element,
 		BaseInfo: deploymentmodel.BaseInfo{
 			Name:   label,
 			BpmnId: id,
-			Order:  this.getOrder(dom),
+			Order:  this.getOrder(element),
 		},
 		Task: &deploymentmodel.Task{
 			Retries:        cmd.Retries,

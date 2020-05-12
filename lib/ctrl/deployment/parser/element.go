@@ -25,7 +25,7 @@ var ElementParsers = []ElementParser{}
 
 type ElementParser struct {
 	Is    func(this *Parser, element *etree.Element) bool
-	Parse func(this *Parser, dom *etree.Element) (deploymentmodel.Element, error)
+	Parse func(this *Parser, element *etree.Element) (deploymentmodel.Element, error)
 }
 
 func (this *Parser) getElements(process *etree.Element, ids []string) (result []deploymentmodel.Element, err error) {
