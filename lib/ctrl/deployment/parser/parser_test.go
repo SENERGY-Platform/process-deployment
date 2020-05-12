@@ -55,7 +55,7 @@ func isValidaForParserTest(dir string) bool {
 			files[info.Name()] = true
 		}
 	}
-	return files["raw.bpmn"] && files["prepared.json"]
+	return files["raw.bpmn"] && files["parsed.json"]
 }
 
 func testPrepareDeployment(t *testing.T, exampleName string) {

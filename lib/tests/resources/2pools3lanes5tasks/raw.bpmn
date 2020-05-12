@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
-    <bpmn:collaboration id="Collaboration_0mxvm4b">
-        <bpmn:participant id="Lane-test" name="ColabName" processRef="Process_1"/>
-        <bpmn:participant id="Participant_1713q6j" processRef="Process_0yoxyo9"/>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:senergy="https://senergy.infai.org"
+                  id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+    <bpmn:collaboration id="ColabId" senergy:description="ColabDesc">
+        <bpmn:participant id="Lane-test" name="Pool1" processRef="Process_1"/>
+        <bpmn:participant id="Participant_1713q6j" name="Pool2" processRef="Process_0yoxyo9"/>
         <bpmn:messageFlow id="MessageFlow_18cls8l" sourceRef="Task_0il8t6t" targetRef="Task_0kdvhvm"/>
     </bpmn:collaboration>
     <bpmn:process id="Process_1" isExecutable="true">
@@ -24,7 +28,8 @@
         <bpmn:sequenceFlow id="SequenceFlow_06f99wn" sourceRef="Task_0bwmzex" targetRef="Task_0lyspnf"/>
         <bpmn:sequenceFlow id="SequenceFlow_1r5axm0" sourceRef="Task_0lyspnf" targetRef="Task_0b0luaw"/>
         <bpmn:sequenceFlow id="SequenceFlow_1ouzas0" sourceRef="Task_0b0luaw" targetRef="Task_0il8t6t"/>
-        <bpmn:serviceTask id="Task_0bwmzex" name="Lamp setOnStateFunction" camunda:type="external" camunda:topic="optimistic">
+        <bpmn:serviceTask id="Task_0bwmzex" name="Lamp setOnStateFunction" camunda:type="external"
+                          camunda:topic="optimistic">
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload">{
@@ -42,13 +47,15 @@
                         "aspect": null,
                         "label": "setOnStateFunction",
                         "retries": 0
-                        }</camunda:inputParameter>
+                        }
+                    </camunda:inputParameter>
                 </camunda:inputOutput>
             </bpmn:extensionElements>
             <bpmn:incoming>SequenceFlow_0m9wpea</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_06f99wn</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:serviceTask id="Task_0lyspnf" name="SmartPlug setOnStateFunction" camunda:type="external" camunda:topic="optimistic">
+        <bpmn:serviceTask id="Task_0lyspnf" name="SmartPlug setOnStateFunction" camunda:type="external"
+                          camunda:topic="optimistic">
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload">{
@@ -66,13 +73,15 @@
                         "aspect": null,
                         "label": "setOnStateFunction",
                         "retries": 0
-                        }</camunda:inputParameter>
+                        }
+                    </camunda:inputParameter>
                 </camunda:inputOutput>
             </bpmn:extensionElements>
             <bpmn:incoming>SequenceFlow_06f99wn</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_1r5axm0</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:serviceTask id="Task_0b0luaw" name="Lamp setColorFunction" camunda:type="external" camunda:topic="optimistic">
+        <bpmn:serviceTask id="Task_0b0luaw" name="Lamp setColorFunction" camunda:type="external"
+                          camunda:topic="optimistic">
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload">{
@@ -96,7 +105,8 @@
                         },
                         "characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
                         "retries": 0
-                        }</camunda:inputParameter>
+                        }
+                    </camunda:inputParameter>
                     <camunda:inputParameter name="inputs.b">0</camunda:inputParameter>
                     <camunda:inputParameter name="inputs.g">255</camunda:inputParameter>
                     <camunda:inputParameter name="inputs.r">0</camunda:inputParameter>
@@ -105,7 +115,8 @@
             <bpmn:incoming>SequenceFlow_1r5axm0</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_1ouzas0</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:serviceTask id="Task_0il8t6t" name="SmartPlug setOffStateFunction" camunda:type="external" camunda:topic="optimistic">
+        <bpmn:serviceTask id="Task_0il8t6t" name="SmartPlug setOffStateFunction" camunda:type="external"
+                          camunda:topic="optimistic">
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload">{
@@ -123,23 +134,46 @@
                         "aspect": null,
                         "label": "setOffStateFunction",
                         "retries": 0
-                        }</camunda:inputParameter>
+                        }
+                    </camunda:inputParameter>
                 </camunda:inputOutput>
             </bpmn:extensionElements>
             <bpmn:incoming>SequenceFlow_1ouzas0</bpmn:incoming>
         </bpmn:serviceTask>
     </bpmn:process>
     <bpmn:process id="Process_0yoxyo9">
-        <bpmn:task id="Task_0kdvhvm">
-            <bpmn:outgoing>SequenceFlow_0pq5kwq</bpmn:outgoing>
-        </bpmn:task>
         <bpmn:endEvent id="EndEvent_1m6j0rz">
             <bpmn:incoming>SequenceFlow_0pq5kwq</bpmn:incoming>
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="SequenceFlow_0pq5kwq" sourceRef="Task_0kdvhvm" targetRef="EndEvent_1m6j0rz"/>
+        <bpmn:serviceTask id="Task_0kdvhvm" name="Siren setOffStateFunction" camunda:type="external"
+                          camunda:topic="optimistic">
+            <bpmn:extensionElements>
+                <camunda:inputOutput>
+                    <camunda:inputParameter name="payload">{
+                        "function": {
+                        "id": "urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd",
+                        "name": "setOffStateFunction",
+                        "concept_id": "",
+                        "rdf_type": "https://senergy.infai.org/ontology/ControllingFunction"
+                        },
+                        "device_class": {
+                        "id": "urn:infai:ses:device-class:3e138d25-d5ee-4a89-9a83-630f4308941d",
+                        "name": "Siren",
+                        "rdf_type": "https://senergy.infai.org/ontology/DeviceClass"
+                        },
+                        "aspect": null,
+                        "label": "setOffStateFunction",
+                        "retries": 0
+                        }
+                    </camunda:inputParameter>
+                </camunda:inputOutput>
+            </bpmn:extensionElements>
+            <bpmn:outgoing>SequenceFlow_0pq5kwq</bpmn:outgoing>
+        </bpmn:serviceTask>
     </bpmn:process>
     <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0mxvm4b">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ColabId">
             <bpmndi:BPMNShape id="Participant_0u9dh61_di" bpmnElement="Lane-test" isHorizontal="true">
                 <dc:Bounds x="123" y="82" width="737" height="370"/>
             </bpmndi:BPMNShape>
@@ -187,9 +221,6 @@
             <bpmndi:BPMNShape id="Participant_1713q6j_di" bpmnElement="Participant_1713q6j" isHorizontal="true">
                 <dc:Bounds x="123" y="500" width="600" height="250"/>
             </bpmndi:BPMNShape>
-            <bpmndi:BPMNShape id="Task_0kdvhvm_di" bpmnElement="Task_0kdvhvm">
-                <dc:Bounds x="500" y="590" width="100" height="80"/>
-            </bpmndi:BPMNShape>
             <bpmndi:BPMNEdge id="MessageFlow_18cls8l_di" bpmnElement="MessageFlow_18cls8l">
                 <di:waypoint x="550" y="430"/>
                 <di:waypoint x="550" y="590"/>
@@ -201,6 +232,9 @@
                 <di:waypoint x="600" y="630"/>
                 <di:waypoint x="652" y="630"/>
             </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="ServiceTask_09fj79u_di" bpmnElement="Task_0kdvhvm">
+                <dc:Bounds x="500" y="590" width="100" height="80"/>
+            </bpmndi:BPMNShape>
         </bpmndi:BPMNPlane>
     </bpmndi:BPMNDiagram>
 </bpmn:definitions>

@@ -1,0 +1,158 @@
+{
+  "id": "",
+  "name": "ColabId",
+  "description": "ColabDesc",
+  "diagram": {
+    "xml_raw": "",
+    "xml_deployed": "",
+    "svg": ""
+  },
+  "pools": [
+    {
+      "name": "Pool1",
+      "bpmn_id": "Process_1",
+      "order": 0,
+      "lanes": [
+        {
+          "name": "1",
+          "bpmn_id": "Lane_0tk4r7z",
+          "order": 0,
+          "elements": [
+            {
+              "name": "Lamp setOnStateFunction",
+              "bpmn_id": "Task_0bwmzex",
+              "order": 0,
+              "time_event": null,
+              "notification": null,
+              "message_event": null,
+              "task": {
+                "retries": 0,
+                "parameter": {},
+                "configurables": null,
+                "filter_criteria": {
+                  "characteristic_id": "",
+                  "function_id": "urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9",
+                  "device_class_id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
+                  "aspect_id": null
+                },
+                "selected_service_id": ""
+              }
+            },
+            {
+              "name": "Lamp setColorFunction",
+              "bpmn_id": "Task_0b0luaw",
+              "order": 0,
+              "time_event": null,
+              "notification": null,
+              "message_event": null,
+              "task": {
+                "retries": 0,
+                "parameter": {
+                  "inputs.b": "0",
+                  "inputs.g": "255",
+                  "inputs.r": "0"
+                },
+                "configurables": null,
+                "filter_criteria": {
+                  "characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
+                  "function_id": "urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599",
+                  "device_class_id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
+                  "aspect_id": null
+                },
+                "selected_service_id": ""
+              }
+            }
+          ],
+          "selectables": null,
+          "selected_device_id": ""
+        },
+        {
+          "name": "2",
+          "bpmn_id": "Lane_1j14i0k",
+          "order": 1,
+          "elements": [
+            {
+              "name": "SmartPlug setOnStateFunction",
+              "bpmn_id": "Task_0lyspnf",
+              "order": 0,
+              "time_event": null,
+              "notification": null,
+              "message_event": null,
+              "task": {
+                "retries": 0,
+                "parameter": {},
+                "configurables": null,
+                "filter_criteria": {
+                  "characteristic_id": "",
+                  "function_id": "urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9",
+                  "device_class_id": "urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250",
+                  "aspect_id": null
+                },
+                "selected_service_id": ""
+              }
+            },
+            {
+              "name": "SmartPlug setOffStateFunction",
+              "bpmn_id": "Task_0il8t6t",
+              "order": 0,
+              "time_event": null,
+              "notification": null,
+              "message_event": null,
+              "task": {
+                "retries": 0,
+                "parameter": {},
+                "configurables": null,
+                "filter_criteria": {
+                  "characteristic_id": "",
+                  "function_id": "urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd",
+                  "device_class_id": "urn:infai:ses:device-class:79de1bd9-b933-412d-b98e-4cfe19aa3250",
+                  "aspect_id": null
+                },
+                "selected_service_id": ""
+              }
+            }
+          ],
+          "selectables": null,
+          "selected_device_id": ""
+        }
+      ]
+    },
+    {
+      "name": "Pool2",
+      "bpmn_id": "Process_0yoxyo9",
+      "order": 0,
+      "lanes": [
+        {
+          "name": "",
+          "bpmn_id": "",
+          "order": 0,
+          "elements": [
+            {
+              "name": "Siren setOffStateFunction",
+              "bpmn_id": "Task_0kdvhvm",
+              "order": 0,
+              "time_event": null,
+              "notification": null,
+              "message_event": null,
+              "task": {
+                "retries": 0,
+                "parameter": {},
+                "configurables": null,
+                "filter_criteria": {
+                  "characteristic_id": "",
+                  "function_id": "urn:infai:ses:controlling-function:2f35150b-9df7-4cad-95bc-165fa00219fd",
+                  "device_class_id": "urn:infai:ses:device-class:3e138d25-d5ee-4a89-9a83-630f4308941d",
+                  "aspect_id": null
+                },
+                "selected_service_id": ""
+              }
+            }
+          ],
+          "selectables": null,
+          "selected_device_id": ""
+        }
+      ]
+    }
+  ],
+  "executable": false
+}
