@@ -65,14 +65,14 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 	}
 
 	result = deploymentmodel.Element{
-		BaseInfo: deploymentmodel.BaseInfo{
-			Name:   label,
-			BpmnId: id,
-			Order:  this.getOrder(element),
-		},
+		Name:   label,
+		BpmnId: id,
+		Order:  this.getOrder(element),
 		MessageEvent: &deploymentmodel.MessageEvent{
-			EventId:        "",
-			FilterCriteria: filterCriteria,
+			EventId: "",
+			Selection: deploymentmodel.Selection{
+				FilterCriteria: filterCriteria,
+			},
 		},
 	}
 	return result, nil

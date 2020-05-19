@@ -22,62 +22,47 @@ import (
 )
 
 func ExampleMarshalling() {
+	laneId := "lane-id"
 	deployment := Deployment{
 		Name:       "example deployment",
 		Diagram:    Diagram{},
 		Executable: false,
-		Pools: []Pool{
+		Elements: []Element{
 			{
-				BaseInfo: BaseInfo{
-					Name:   "pool name",
-					BpmnId: "pool_bpmn_id",
-					Order:  42,
-				},
-				Lanes: []Lane{
-					{
-						BaseInfo: BaseInfo{
-							Name:   "lane name",
-							BpmnId: "lane_bpmn_id",
-							Order:  13,
-						},
-						Elements: []Element{
-							{
-								BaseInfo: BaseInfo{
-									Name:   "task",
-									BpmnId: "task_bpmn_id",
-									Order:  0,
-								},
-								Task: &Task{
-									Retries:   3,
-									Input:     "000",
-									Parameter: map[string]string{"inputs": `"ff0"`},
-									Configurables: []Configurable{
-										{
-											CharacteristicId: "example_duration",
-											Values: []ConfigurableValue{
-												{
-													Name:      "duration",
-													Path:      "path.to.duration",
-													Value:     42,
-													ValueType: "https://schema.org/Integer",
-												},
-											},
-										},
-									},
-									SelectedServiceId: "",
+				BpmnId:     "task_bpmn_id",
+				LaneBpmnId: &laneId,
+				Name:       "task",
+				Order:      0,
+				Task: &Task{
+					Retries:   3,
+					Parameter: map[string]string{"inputs": `"ff0"`},
+					Configurables: []Configurable{
+						{
+							CharacteristicId: "example_duration",
+							Values: []ConfigurableValue{
+								{
+									Name:      "duration",
+									Path:      "path.to.duration",
+									Value:     42,
+									ValueType: "https://schema.org/Integer",
 								},
 							},
 						},
-						FilterCriteria: []FilterCriteria{
-							{
-								CharacteristicId: strptr("example_color_hex"),
-								FunctionId:       strptr("function_id"),
-								DeviceClassId:    nil,
-								AspectId:         nil,
+					},
+					Selection: Selection{
+						FilterCriteria: FilterCriteria{},
+						SelectionOptions: []SelectionOption{{
+							Device: Device{
+								Id:   "did",
+								Name: "device",
 							},
-						},
-						Selectables:      nil,
-						SelectedDeviceId: "",
+							Services: []Service{{
+								Id:   "sid",
+								Name: "service",
+							}},
+						}},
+						SelectedDeviceId:  "sdid",
+						SelectedServiceId: "ssid",
 					},
 				},
 			},
@@ -91,68 +76,68 @@ func ExampleMarshalling() {
 	//<nil>{
 	//     "id": "",
 	//     "name": "example deployment",
+	//     "description": "",
 	//     "diagram": {
 	//         "xml_raw": "",
 	//         "xml_deployed": "",
 	//         "svg": ""
 	//     },
-	//     "pools": [
+	//     "elements": [
 	//         {
-	//             "name": "pool name",
-	//             "bpmn_id": "pool_bpmn_id",
-	//             "order": 42,
-	//             "lanes": [
-	//                 {
-	//                     "name": "lane name",
-	//                     "bpmn_id": "lane_bpmn_id",
-	//                     "order": 13,
-	//                     "elements": [
-	//                         {
-	//                             "name": "task",
-	//                             "bpmn_id": "task_bpmn_id",
-	//                             "order": 0,
-	//                             "time_event": null,
-	//                             "notification": null,
-	//                             "message_event": null,
-	//                             "task": {
-	//                                 "retries": 3,
-	//                                 "input": "000",
-	//                                 "parameter": {
-	//                                     "inputs": "\"ff0\""
-	//                                 },
-	//                                 "configurables": [
-	//                                     {
-	//                                         "characteristic_id": "example_duration",
-	//                                         "values": [
-	//                                             {
-	//                                                 "name": "duration",
-	//                                                 "path": "path.to.duration",
-	//                                                 "value": 42,
-	//                                                 "value_type": "https://schema.org/Integer"
-	//                                             }
-	//                                         ]
-	//                                     }
-	//                                 ],
-	//                                 "selected_service_id": ""
+	//             "bpmn_id": "task_bpmn_id",
+	//             "lane_bpmn_id": "lane-id",
+	//             "name": "task",
+	//             "order": 0,
+	//             "time_event": null,
+	//             "notification": null,
+	//             "message_event": null,
+	//             "task": {
+	//                 "retries": 3,
+	//                 "parameter": {
+	//                     "inputs": "\"ff0\""
+	//                 },
+	//                 "configurables": [
+	//                     {
+	//                         "characteristic_id": "example_duration",
+	//                         "values": [
+	//                             {
+	//                                 "name": "duration",
+	//                                 "path": "path.to.duration",
+	//                                 "value": 42,
+	//                                 "value_type": "https://schema.org/Integer"
 	//                             }
-	//                         }
-	//                     ],
-	//                     "filter_criteria": [
+	//                         ]
+	//                     }
+	//                 ],
+	//                 "selection": {
+	//                     "filter_criteria": {
+	//                         "characteristic_id": null,
+	//                         "function_id": null,
+	//                         "device_class_id": null,
+	//                         "aspect_id": null
+	//                     },
+	//                     "selection_options": [
 	//                         {
-	//                             "characteristic_id": "example_color_hex",
-	//                             "function_id": "function_id",
-	//                             "device_class_id": null,
-	//                             "aspect_id": null
+	//                             "device": {
+	//                                 "id": "did",
+	//                                 "name": "device"
+	//                             },
+	//                             "services": [
+	//                                 {
+	//                                     "id": "sid",
+	//                                     "name": "service"
+	//                                 }
+	//                             ]
 	//                         }
 	//                     ],
-	//                     "selectables": null,
-	//                     "selected_device_id": ""
+	//                     "selected_device_id": "sdid",
+	//                     "selected_service_id": "ssid"
 	//                 }
-	//             ]
+	//             }
 	//         }
 	//     ],
 	//     "executable": false
-	//}
+	// }
 }
 
 func strptr(in string) (out *string) {

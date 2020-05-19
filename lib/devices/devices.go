@@ -49,7 +49,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.Selectable, err error, code int) {
+func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption, err error, code int) {
 	startGetFilteredDevices := time.Now()
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, criteria)
 	if err != nil {
@@ -96,7 +96,7 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 			})
 		}
 		for _, device := range devices {
-			result = append(result, deploymentmodel.Selectable{
+			result = append(result, deploymentmodel.SelectionOption{
 				Device: deploymentmodel.Device{
 					Id:   device.Id,
 					Name: device.Name,

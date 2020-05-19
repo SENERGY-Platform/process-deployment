@@ -57,11 +57,9 @@ func (this *Parser) getTimeEvent(element *etree.Element) (result deploymentmodel
 	}
 
 	result = deploymentmodel.Element{
-		BaseInfo: deploymentmodel.BaseInfo{
-			Name:   label,
-			BpmnId: id,
-			Order:  this.getOrder(element),
-		},
+		Name:      label,
+		BpmnId:    id,
+		Order:     this.getOrder(element),
 		TimeEvent: &timeEvent,
 	}
 	return result, nil

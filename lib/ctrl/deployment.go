@@ -24,10 +24,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
-	"log"
 	"net/http"
-	"sort"
-	"time"
 )
 
 func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
@@ -58,20 +55,14 @@ func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
 }
 
 func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
-	startParsing := time.Now()
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
-	durParsing := time.Now().Sub(startParsing)
-	log.Println("DEBUG: prepare deployment parsing time:", durParsing, durParsing.Milliseconds())
-	startSelectables := time.Now()
 	err = this.SetDeploymentOptions(token, &result)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
-	durSelectables := time.Now().Sub(startSelectables)
-	log.Println("DEBUG: prepare deployment selectables time:", durSelectables, durSelectables.Milliseconds())
 	result.Diagram.Svg = svg
 	this.SetExecutableFlag(&result)
 	return result, nil, http.StatusOK
@@ -149,10 +140,6 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment deploymentmo
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	sort.Slice(deployment.Pools, func(i, j int) bool {
-		return deployment.Pools[i].Order < deployment.Pools[j].Order
-	})
-
 	if err = this.publishDeployment(jwt.UserId, deployment); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
@@ -220,21 +207,15 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 
 func (this *Ctrl) SetExecutableFlag(deployment *deploymentmodel.Deployment) {
 	deployment.Executable = true
-	for _, pool := range deployment.Pools {
-		for _, lane := range pool.Lanes {
-			if len(lane.Selectables) == 0 && laneContainsTasks(lane) {
-				deployment.Executable = false
-				return
-			}
+	for _, element := range deployment.Elements {
+		if element.Task != nil && len(element.Task.Selection.SelectionOptions) < 0 {
+			deployment.Executable = false
+			return
+		}
+		if element.MessageEvent != nil && len(element.MessageEvent.Selection.SelectionOptions) < 0 {
+			deployment.Executable = false
+			return
 		}
 	}
-}
-
-func laneContainsTasks(lane deploymentmodel.Lane) bool {
-	for _, element := range lane.Elements {
-		if element.Task != nil {
-			return true
-		}
-	}
-	return false
+	return
 }

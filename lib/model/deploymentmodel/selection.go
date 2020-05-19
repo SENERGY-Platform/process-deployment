@@ -16,7 +16,14 @@
 
 package deploymentmodel
 
-type Selectable struct {
+type Selection struct {
+	FilterCriteria    FilterCriteria    `json:"filter_criteria"`
+	SelectionOptions  []SelectionOption `json:"selection_options"`
+	SelectedDeviceId  string            `json:"selected_device_id"`
+	SelectedServiceId string            `json:"selected_service_id"`
+}
+
+type SelectionOption struct {
 	Device   Device    `json:"device"`
 	Services []Service `json:"services"`
 }

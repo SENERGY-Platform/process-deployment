@@ -28,17 +28,8 @@ type ElementParser struct {
 	Parse func(this *Parser, element *etree.Element) (deploymentmodel.Element, error)
 }
 
-func (this *Parser) getElements(process *etree.Element, ids []string) (result []deploymentmodel.Element, err error) {
-	for _, id := range ids {
-		element, isElement, err := this.getElement(process, id)
-		if err != nil {
-			return result, err
-		}
-		if isElement {
-			result = append(result, element)
-		}
-	}
-	return result, nil
+func (this *Parser) getElements(process *etree.Document) (result []deploymentmodel.Element, err error) {
+	panic("not implemented")
 }
 
 func (this *Parser) getElement(process *etree.Element, id string) (result deploymentmodel.Element, isElement bool, err error) {

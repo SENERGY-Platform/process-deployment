@@ -74,15 +74,15 @@ func (this *Parser) getTask(element *etree.Element) (result deploymentmodel.Elem
 	}
 
 	result = deploymentmodel.Element{
-		BaseInfo: deploymentmodel.BaseInfo{
-			Name:   label,
-			BpmnId: id,
-			Order:  this.getOrder(element),
-		},
+		Name:   label,
+		BpmnId: id,
+		Order:  this.getOrder(element),
 		Task: &deploymentmodel.Task{
-			Retries:        cmd.Retries,
-			Parameter:      parameter,
-			FilterCriteria: filterCriteria,
+			Retries:   cmd.Retries,
+			Parameter: parameter,
+			Selection: deploymentmodel.Selection{
+				FilterCriteria: filterCriteria,
+			},
 		},
 	}
 	return result, nil

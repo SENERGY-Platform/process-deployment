@@ -19,6 +19,7 @@ package parser
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
+	"sort"
 )
 
 func (this *Parser) getDeployment(doc *etree.Document, diagram deploymentmodel.Diagram) (result deploymentmodel.Deployment, err error) {
@@ -31,7 +32,10 @@ func (this *Parser) getDeployment(doc *etree.Document, diagram deploymentmodel.D
 	if err != nil {
 		return result, err
 	}
-	result.Pools, err = this.getPools(doc)
+	result.Elements, err = this.getElements(doc)
+	sort.Slice(result.Elements, func(i, j int) bool {
+		return result.Elements[i].Order < result.Elements[j].Order
+	})
 	return
 }
 

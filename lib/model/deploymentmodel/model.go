@@ -17,12 +17,12 @@
 package deploymentmodel
 
 type Deployment struct {
-	Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Diagram     Diagram `json:"diagram"`
-	Pools       []Pool  `json:"pools"`
-	Executable  bool    `json:"executable"`
+	Id          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Diagram     Diagram   `json:"diagram"`
+	Elements    []Element `json:"elements"`
+	Executable  bool      `json:"executable"`
 }
 
 type Diagram struct {
@@ -31,35 +31,11 @@ type Diagram struct {
 	Svg         string `json:"svg"`
 }
 
-type BaseInfo struct {
-	Name   string `json:"name"`
-	BpmnId string `json:"bpmn_id"`
-	Order  int64  `json:"order"`
-}
-
-type Pool struct {
-	BaseInfo
-	Lanes []Lane `json:"lanes"`
-}
-
-type Lane struct {
-	BaseInfo
-	Elements         []Element    `json:"elements"`
-	Selectables      []Selectable `json:"selectables"`
-	SelectedDeviceId string       `json:"selected_device_id"`
-}
-
-func (this Lane) GetFilterCriteria() (result []FilterCriteria) {
-	for _, element := range this.Elements {
-		if element.Task != nil {
-			result = append(result, element.Task.FilterCriteria)
-		}
-	}
-	return
-}
-
 type Element struct {
-	BaseInfo
+	BpmnId       string        `json:"bpmn_id"`
+	LaneBpmnId   *string       `json:"lane_bpmn_id"`
+	Name         string        `json:"name"`
+	Order        int64         `json:"order"`
 	TimeEvent    *TimeEvent    `json:"time_event"`
 	Notification *Notification `json:"notification"`
 	MessageEvent *MessageEvent `json:"message_event"`
@@ -77,21 +53,17 @@ type Notification struct {
 }
 
 type MessageEvent struct {
-	SelectedDeviceId  string         `json:"selected_device_id"`
-	SelectedServiceId string         `json:"selected_service_id"`
-	Value             string         `json:"value"`
-	FlowId            string         `json:"flow_id"`
-	EventId           string         `json:"event_id"`
-	FilterCriteria    FilterCriteria `json:"filter_criteria"`
-	Selectables       []Selectable   `json:"selectables"`
+	Value     string    `json:"value"`
+	FlowId    string    `json:"flow_id"`
+	EventId   string    `json:"event_id"`
+	Selection Selection `json:"selection"`
 }
 
 type Task struct {
-	Retries           int64             `json:"retries"`
-	Parameter         map[string]string `json:"parameter"`
-	Configurables     []Configurable    `json:"configurables"`
-	FilterCriteria    FilterCriteria    `json:"filter_criteria"`
-	SelectedServiceId string            `json:"selected_service_id"`
+	Retries       int64             `json:"retries"`
+	Parameter     map[string]string `json:"parameter"`
+	Configurables []Configurable    `json:"configurables"`
+	Selection     Selection         `json:"selection"`
 }
 
 type Configurable struct {

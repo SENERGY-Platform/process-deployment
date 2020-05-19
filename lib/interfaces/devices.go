@@ -32,5 +32,5 @@ type Devices interface {
 	GetProtocol(id string) (devicemodel.Protocol, error, int)
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
-	GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) ([]deploymentmodel.Selectable, error, int)
+	GetFilteredDevices(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) ([]deploymentmodel.SelectionOption, error, int)
 }

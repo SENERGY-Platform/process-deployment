@@ -22,20 +22,13 @@ import (
 )
 
 func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
-	for i, pool := range deployment.Pools {
-		for j, lane := range pool.Lanes {
-			deployment.Pools[i].Lanes[j].Selectables, err = this.GetOptions(token, lane.GetFilterCriteria())
-			if err != nil {
-				return err
-			}
-		}
-	}
+	panic("not implemented")
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.Selectable, err error) {
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, criteria []deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption, err error) {
 	if len(criteria) == 0 {
-		return []deploymentmodel.Selectable{}, nil
+		return []deploymentmodel.SelectionOption{}, nil
 	}
 	result, err, _ = this.devices.GetFilteredDevices(token, criteria)
 	return
