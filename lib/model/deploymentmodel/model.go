@@ -33,7 +33,7 @@ type Diagram struct {
 
 type Element struct {
 	BpmnId       string        `json:"bpmn_id"`
-	LaneBpmnId   *string       `json:"lane_bpmn_id"`
+	Group        *string       `json:"group"`
 	Name         string        `json:"name"`
 	Order        int64         `json:"order"`
 	TimeEvent    *TimeEvent    `json:"time_event"`
