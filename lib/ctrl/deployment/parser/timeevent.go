@@ -38,7 +38,7 @@ func (this *Parser) isTimeEvent(element *etree.Element) bool {
 
 func (this *Parser) getTimeEvent(element *etree.Element) (result deploymentmodel.Element, err error) {
 	id := element.SelectAttr("id").Value
-	label := element.SelectAttrValue("name", id)
+	label := element.SelectAttrValue("name", "")
 
 	timeEvent := deploymentmodel.TimeEvent{}
 

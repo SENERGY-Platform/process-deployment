@@ -28,12 +28,31 @@ type ElementParser struct {
 	Parse func(this *Parser, element *etree.Element) (deploymentmodel.Element, error)
 }
 
-func (this *Parser) getElements(process *etree.Document) (result []deploymentmodel.Element, err error) {
-	panic("not implemented")
+func (this *Parser) getElements(doc *etree.Document) (result []deploymentmodel.Element, err error) {
+	groups, err := this.getGroups(doc)
+	if err != nil {
+		return result, err
+	}
+	for _, group := range groups {
+		for _, id := range group.Elements {
+			element, isModelElement, err := this.getElement(doc, id)
+			if err != nil {
+				return result, err
+			}
+			if isModelElement {
+				if group.Group != "" {
+					group := group.Group
+					element.Group = &group
+				}
+				result = append(result, element)
+			}
+		}
+	}
+	return result, err
 }
 
-func (this *Parser) getElement(process *etree.Element, id string) (result deploymentmodel.Element, isElement bool, err error) {
-	dom := process.FindElement(".//*[@id='" + id + "']")
+func (this *Parser) getElement(doc *etree.Document, id string) (result deploymentmodel.Element, isElement bool, err error) {
+	dom := doc.FindElement("//*[@id='" + id + "']")
 	for _, parser := range ElementParsers {
 		if parser.Is(this, dom) {
 			result, err = parser.Parse(this, dom)

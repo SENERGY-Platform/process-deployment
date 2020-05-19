@@ -42,7 +42,7 @@
       "notification": null,
       "message_event": null,
       "task": {
-        "retries": 2,
+        "retries": 0,
         "parameter": {
           "inputs.b":"100",
           "inputs.g":"200",

@@ -28,7 +28,7 @@ import (
 
 const RESOURCE_BASE_DIR = "../../../tests/resources/"
 
-func TestPrepareDeployment(t *testing.T) {
+func TestParseDeployment(t *testing.T) {
 	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
 	if err != nil {
 		t.Error(err)
