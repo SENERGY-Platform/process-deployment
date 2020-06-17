@@ -146,7 +146,7 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment deploymentmo
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	deployment.Xml, err = stringify.Deployment(deployment, this.config.DeploymentAsRef, this.devices, jwt.UserId, this.config.NotificationUrl)
+	deployment.Xml, err = stringify.Deployment(deployment, this.devices, jwt.UserId, this.config.NotificationUrl)
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}

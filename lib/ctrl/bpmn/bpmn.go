@@ -66,11 +66,11 @@ func PrepareDeployment(xml string) (result deploymentmodel.Deployment, err error
 	return
 }
 
-func UseDeploymentSelections(deployment *deploymentmodel.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func UseDeploymentSelections(deployment *deploymentmodel.Deployment, deviceRepo interfaces.Devices) (err error) {
 	ensureValidMsgEvents(deployment)
 
 	// This function only gets called from tests. That's why it's okay to supply test data here
-	deployment.Xml, err = stringify.Deployment(*deployment, selectionAsRef, deviceRepo, "uid", "url")
+	deployment.Xml, err = stringify.Deployment(*deployment, deviceRepo, "uid", "url")
 	return
 }
 

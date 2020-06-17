@@ -26,23 +26,23 @@ import (
 	"runtime/debug"
 )
 
-func LaneElement(doc *etree.Document, lane deploymentmodel.LaneElement, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneElement(doc *etree.Document, lane deploymentmodel.LaneElement, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-	if err := Lane(doc, lane.Lane, selectionAsRef, deviceRepo); err != nil {
+	if err := Lane(doc, lane.Lane, deviceRepo); err != nil {
 		return err
 	}
-	if err := MultiLane(doc, lane.MultiLane, selectionAsRef, deviceRepo); err != nil {
+	if err := MultiLane(doc, lane.MultiLane, deviceRepo); err != nil {
 		return err
 	}
 	return nil
 }
 
-func Lane(doc *etree.Document, lane *deploymentmodel.Lane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func Lane(doc *etree.Document, lane *deploymentmodel.Lane, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -54,7 +54,7 @@ func Lane(doc *etree.Document, lane *deploymentmodel.Lane, selectionAsRef bool, 
 	}
 
 	for _, element := range lane.Elements {
-		if err := LaneTask(doc, element.LaneTask, lane.Selection, selectionAsRef, deviceRepo); err != nil {
+		if err := LaneTask(doc, element.LaneTask, lane.Selection, deviceRepo); err != nil {
 			return err
 		}
 		if err := MsgEvent(doc, element.MsgEvent); err != nil {
@@ -72,7 +72,7 @@ func Lane(doc *etree.Document, lane *deploymentmodel.Lane, selectionAsRef bool, 
 	return nil
 }
 
-func MultiLane(doc *etree.Document, lane *deploymentmodel.MultiLane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func MultiLane(doc *etree.Document, lane *deploymentmodel.MultiLane, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -84,7 +84,7 @@ func MultiLane(doc *etree.Document, lane *deploymentmodel.MultiLane, selectionAs
 	}
 
 	for _, element := range lane.Elements {
-		if err := LaneMultiTask(doc, element.LaneTask, lane.Selections, selectionAsRef, deviceRepo); err != nil {
+		if err := LaneMultiTask(doc, element.LaneTask, lane.Selections, deviceRepo); err != nil {
 			return err
 		}
 		if err := MsgEvent(doc, element.MsgEvent); err != nil {

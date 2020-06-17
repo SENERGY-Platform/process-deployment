@@ -26,18 +26,18 @@ import (
 	"runtime/debug"
 )
 
-func Element(doc *etree.Document, element deploymentmodel.Element, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func Element(doc *etree.Document, element deploymentmodel.Element, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
-	if err := Task(doc, element.Task, selectionAsRef, deviceRepo); err != nil {
+	if err := Task(doc, element.Task, deviceRepo); err != nil {
 		return err
 	}
 
-	if err := MultiTask(doc, element.MultiTask, selectionAsRef, deviceRepo); err != nil {
+	if err := MultiTask(doc, element.MultiTask, deviceRepo); err != nil {
 		return err
 	}
 

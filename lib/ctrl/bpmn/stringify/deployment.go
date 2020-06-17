@@ -23,7 +23,7 @@ import (
 	"github.com/beevik/etree"
 )
 
-func Deployment(deployment deploymentmodel.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices, userId string, notification_url string) (xml string, err error) {
+func Deployment(deployment deploymentmodel.Deployment, deviceRepo interfaces.Devices, userId string, notification_url string) (xml string, err error) {
 	doc := etree.NewDocument()
 	err = doc.ReadFromString(deployment.XmlRaw)
 	if err != nil {
@@ -34,14 +34,14 @@ func Deployment(deployment deploymentmodel.Deployment, selectionAsRef bool, devi
 	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
 
 	for _, element := range deployment.Elements {
-		err = Element(doc, element, selectionAsRef, deviceRepo)
+		err = Element(doc, element, deviceRepo)
 		if err != nil {
 			return "", err
 		}
 	}
 
 	for _, lane := range deployment.Lanes {
-		err = LaneElement(doc, lane, selectionAsRef, deviceRepo)
+		err = LaneElement(doc, lane, deviceRepo)
 		if err != nil {
 			return "", err
 		}

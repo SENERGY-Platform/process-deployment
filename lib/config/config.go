@@ -42,7 +42,6 @@ type ConfigStruct struct {
 	ConsumerGroup               string `json:"consumer_group"`
 	Debug                       bool   `json:"debug"`
 	ConnectivityTest            bool   `json:"connectivity_test"`
-	DeploymentAsRef             bool   `json:"deployment_as_ref"`
 	DeploymentTopic             string `json:"deployment_topic"`
 	NotificationUrl             string `json:"notification_url"`
 }

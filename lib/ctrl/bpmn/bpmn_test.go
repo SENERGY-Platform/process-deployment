@@ -80,7 +80,7 @@ func ExampleEventCastBpmnDeploymentToXmlWithRefs() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, true, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -114,7 +114,7 @@ func ExampleEventCastBpmnDeploymentToXmlWithRefs() {
 	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"fff"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
-	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device\":{\"id\":\"device_id_1\"},\"service\":{\"id\":\"service_id_1\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}","{\"device\":{\"id\":\"device_id_2\"},\"service\":{\"id\":\"service_id_2\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
+	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device_id\":\"device_id_1\",\"service_id\":\"service_id_1\",\"protocol_id\":\"pid\"}","{\"device_id\":\"device_id_2\",\"service_id\":\"service_id_2\",\"protocol_id\":\"pid\"}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
 	//             <bpmn:incoming>SequenceFlow_0ixns30</bpmn:incoming>
 	//             <bpmn:outgoing>SequenceFlow_0htq2f6</bpmn:outgoing>
 	//             <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="collection" camunda:elementVariable="overwrite"/>
@@ -189,7 +189,7 @@ func TestEmptyTimeEvent(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	err = UseDeploymentSelections(&result, false, mock.Devices)
+	err = UseDeploymentSelections(&result, mock.Devices)
 	if err != nil {
 		t.Error(err)
 		return
@@ -322,7 +322,7 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, true, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -356,7 +356,7 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"fff"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
-	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device\":{\"id\":\"device_id_1\"},\"service\":{\"id\":\"service_id_1\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}","{\"device\":{\"id\":\"device_id_2\"},\"service\":{\"id\":\"service_id_2\",\"protocol_id\":\"pid\"},\"protocol\":{\"id\":\"pid\",\"name\":\"protocol1\",\"handler\":\"p\",\"protocol_segments\":null}}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
+	//             <camunda:executionListener event="start"><camunda:script scriptFormat="groovy">execution.setVariable("collection", ["{\"device_id\":\"device_id_1\",\"service_id\":\"service_id_1\",\"protocol_id\":\"pid\"}","{\"device_id\":\"device_id_2\",\"service_id\":\"service_id_2\",\"protocol_id\":\"pid\"}"])</camunda:script></camunda:executionListener></bpmn:extensionElements>
 	//             <bpmn:incoming>SequenceFlow_0ixns30</bpmn:incoming>
 	//             <bpmn:outgoing>SequenceFlow_0htq2f6</bpmn:outgoing>
 	//             <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="collection" camunda:elementVariable="overwrite"/>
@@ -451,7 +451,7 @@ func ExampleSimpleBpmnDeploymentToXml() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -494,7 +494,7 @@ func ExampleSimpleBpmnDeploymentToXml() {
 	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_id_1"},"service":{"id":"service_id_1","protocol_id":"pid"},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_id_1","service_id":"service_id_1","protocol_id":"pid","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -596,7 +596,7 @@ func ExampleDeploymentWithConfigurablesToXml() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -639,7 +639,7 @@ func ExampleDeploymentWithConfigurablesToXml() {
 	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_id_1"},"service":{"id":"service_id_1","protocol_id":"pid"},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"configurables":[{"characteristic_id":"foo","values":[{"label":"bar","path":"batz","value":42,"value_type":"https://schema.org/Integer"}]}],"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_id_1","service_id":"service_id_1","protocol_id":"pid","configurables":[{"characteristic_id":"foo","values":[{"label":"bar","path":"batz","value":42,"value_type":"https://schema.org/Integer"}]}],"input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -725,7 +725,7 @@ func ExampleTimeAndReceiveBpmnDeploymentToXml() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -827,7 +827,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -887,7 +887,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_1"},"service":{"id":"service_1","protocol_id":"pid"},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_1","service_id":"service_1","protocol_id":"pid","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="input">"fff"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -922,7 +922,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 	//             <bpmn:documentation>{"order": 5}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid1","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_2"},"service":{"id":"service_1","protocol_id":"pid"},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid1","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_2","service_id":"service_1","protocol_id":"pid","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="input">"fff"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -934,7 +934,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 	//             <bpmn:documentation>{"order": 6}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device":{"id":"device_2"},"service":{"id":"service_2","protocol_id":"pid"},"protocol":{"id":"pid","name":"protocol1","handler":"p","protocol_segments":null},"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid2","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_2","service_id":"service_2","protocol_id":"pid","input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="input">"fff"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
@@ -1037,7 +1037,7 @@ func TestNotificationsBpmnDeployment(t *testing.T) {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		t.Error(err)
 	}
@@ -1123,7 +1123,7 @@ func ExampleEmptyLaneBpmnDeploymentToXml() {
 
 	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
-	err = UseDeploymentSelections(&deployment, false, mock.Devices)
+	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
 		debug.PrintStack()

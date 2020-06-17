@@ -30,12 +30,9 @@ type Command struct {
 	Aspect      *devicemodel.Aspect      `json:"aspect,omitempty"`
 
 	//deployment time
-	DeviceId   string                `json:"device_id,omitempty"`
-	Device     *devicemodel.Device   `json:"device,omitempty"`
-	ServiceId  string                `json:"service_id,omitempty"`
-	Service    *devicemodel.Service  `json:"service,omitempty"`
-	Protocol   *devicemodel.Protocol `json:"protocol,omitempty"`
-	ProtocolId string                `json:"protocol_id,omitempty"`
+	DeviceId   string `json:"device_id,omitempty"`
+	ServiceId  string `json:"service_id,omitempty"`
+	ProtocolId string `json:"protocol_id,omitempty"`
 
 	Configurables        []Configurable `json:"configurables,omitempty"`
 	ContentVariableHints []string       `json:"content_variable_hints,omitempty"`
@@ -57,10 +54,7 @@ type EventDocumentation struct {
 }
 
 type Overwrite struct {
-	DeviceId   string                `json:"device_id,omitempty"`
-	Device     *devicemodel.Device   `json:"device,omitempty"`
-	ServiceId  string                `json:"service_id,omitempty"`
-	Service    *devicemodel.Service  `json:"service,omitempty"`
-	Protocol   *devicemodel.Protocol `json:"protocol,omitempty"`
-	ProtocolId string                `json:"protocol_id,omitempty"`
+	DeviceId   string `json:"device_id,omitempty"`
+	ServiceId  string `json:"service_id,omitempty"`
+	ProtocolId string `json:"protocol_id,omitempty"`
 }
