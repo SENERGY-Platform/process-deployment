@@ -19,7 +19,8 @@ package db
 import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -36,12 +37,12 @@ var deploymentOwnerKey string
 func init() {
 	CreateCollections = append(CreateCollections, func(db *Mongo, config config.Config) error {
 		var err error
-		deploymentIdKey, err = getBsonFieldName(model.DeploymentCommand{}, deploymentIdFiledName)
+		deploymentIdKey, err = getBsonFieldName(messages.DeploymentCommand{}, deploymentIdFiledName)
 		if err != nil {
 			debug.PrintStack()
 			return err
 		}
-		deploymentOwnerKey, err = getBsonFieldName(model.DeploymentCommand{}, deploymentOwnerFiledName)
+		deploymentOwnerKey, err = getBsonFieldName(messages.DeploymentCommand{}, deploymentOwnerFiledName)
 		if err != nil {
 			debug.PrintStack()
 			return err
@@ -70,9 +71,9 @@ func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err 
 	return
 }
 
-func (this *Mongo) GetDeployment(user string, deploymentId string) (result model.Deployment, err error, code int) {
+func (this *Mongo) GetDeployment(user string, deploymentId string) (result deploymentmodel.Deployment, err error, code int) {
 	ctx, _ := getTimeoutContext()
-	wrapper := model.DeploymentCommand{}
+	wrapper := messages.DeploymentCommand{}
 	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
 	if err == mongo.ErrNoDocuments {
 		return result, errors.New("not found"), http.StatusNotFound
@@ -81,7 +82,7 @@ func (this *Mongo) GetDeployment(user string, deploymentId string) (result model
 		return result, err, http.StatusInternalServerError
 	}
 	if wrapper.Owner != user {
-		return model.Deployment{}, errors.New("access denied"), http.StatusForbidden
+		return deploymentmodel.Deployment{}, errors.New("access denied"), http.StatusForbidden
 	}
 	return wrapper.Deployment, nil, 200
 }
@@ -92,8 +93,8 @@ func (this *Mongo) DeleteDeployment(id string) error {
 	return err
 }
 
-func (this *Mongo) SetDeployment(id string, owner string, deployment model.Deployment) error {
+func (this *Mongo) SetDeployment(id string, owner string, deployment deploymentmodel.Deployment) error {
 	ctx, _ := getTimeoutContext()
-	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, model.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}, options.Replace().SetUpsert(true))
+	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}, options.Replace().SetUpsert(true))
 	return err
 }

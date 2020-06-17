@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package model
+package messages
 
-const CAMUNDA_VARIABLES_PAYLOAD = "payload"
-const CAMUNDA_VARIABLES_OVERWRITE = "overwrite"
-const CAMUNDE_VARIABLES_OVERWRITE_COLLECTION = "collection"
+import "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+
+type DeploymentCommand struct {
+	Command    string                     `json:"command"`
+	Id         string                     `json:"id"`
+	Owner      string                     `json:"owner"`
+	Deployment deploymentmodel.Deployment `json:"deployment"`
+}

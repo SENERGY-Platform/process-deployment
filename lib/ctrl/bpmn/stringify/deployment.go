@@ -19,11 +19,11 @@ package stringify
 import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 )
 
-func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices, userId string, notification_url string) (xml string, err error) {
+func Deployment(deployment deploymentmodel.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices, userId string, notification_url string) (xml string, err error) {
 	doc := etree.NewDocument()
 	err = doc.ReadFromString(deployment.XmlRaw)
 	if err != nil {
@@ -73,7 +73,7 @@ func Deployment(deployment model.Deployment, selectionAsRef bool, deviceRepo int
 
 		// Set payload input
 		payloadParameter := parent.FindElement("camunda:inputParameter[@name='payload']")
-		notificationPayload := model.NotificationPayload{}
+		notificationPayload := deploymentmodel.NotificationPayload{}
 		err = json.Unmarshal([]byte(payloadParameter.Text()), &notificationPayload)
 		if err != nil {
 			return "", err

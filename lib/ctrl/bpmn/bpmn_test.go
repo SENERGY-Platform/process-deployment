@@ -20,8 +20,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	mock "github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"github.com/beevik/etree"
 	"html"
@@ -64,7 +65,7 @@ func ExampleEventCastBpmnDeploymentToXmlWithRefs() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -306,7 +307,7 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -435,7 +436,7 @@ func ExampleSimpleBpmnDeploymentToXml() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -564,7 +565,7 @@ func ExampleDeploymentWithConfigurablesToXml() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -573,9 +574,9 @@ func ExampleDeploymentWithConfigurablesToXml() {
 
 	for index, _ := range deployment.Elements {
 		if deployment.Elements[index].Task != nil {
-			deployment.Elements[index].Task.Configurables = []model.Configurable{{
+			deployment.Elements[index].Task.Configurables = []executionmodel.Configurable{{
 				CharacteristicId: "foo",
-				Values: []model.ConfigurableCharacteristicValue{
+				Values: []executionmodel.ConfigurableCharacteristicValue{
 					{
 						Label:     "bar",
 						Path:      "batz",
@@ -709,7 +710,7 @@ func ExampleTimeAndReceiveBpmnDeploymentToXml() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -811,7 +812,7 @@ func ExampleLanesBpmnDeploymentToXml() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)
@@ -1069,7 +1070,7 @@ func TestNotificationsBpmnDeployment(t *testing.T) {
 
 		// Check payload
 		payloadParameter := parent.FindElement("camunda:inputParameter[@name='payload']")
-		notificationPayload := model.NotificationPayload{}
+		notificationPayload := deploymentmodel.NotificationPayload{}
 		err = json.Unmarshal([]byte(payloadParameter.Text()), &notificationPayload)
 		if err != nil {
 			t.Error(err)
@@ -1105,7 +1106,7 @@ func ExampleEmptyLaneBpmnDeploymentToXml() {
 		return "test_id"
 	}
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(file, &deployment)
 	if err != nil {
 		fmt.Println(err)

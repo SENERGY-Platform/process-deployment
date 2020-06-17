@@ -20,13 +20,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 )
 
-func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneElement(doc *etree.Document, lane deploymentmodel.LaneElement, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -42,7 +42,7 @@ func LaneElement(doc *etree.Document, lane model.LaneElement, selectionAsRef boo
 	return nil
 }
 
-func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func Lane(doc *etree.Document, lane *deploymentmodel.Lane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -72,7 +72,7 @@ func Lane(doc *etree.Document, lane *model.Lane, selectionAsRef bool, deviceRepo
 	return nil
 }
 
-func MultiLane(doc *etree.Document, lane *model.MultiLane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func MultiLane(doc *etree.Document, lane *deploymentmodel.MultiLane, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())

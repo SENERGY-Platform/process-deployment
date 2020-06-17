@@ -23,14 +23,14 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/parsing"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/stringify"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 	"sort"
 )
 
-func PrepareDeployment(xml string) (result model.Deployment, err error) {
+func PrepareDeployment(xml string) (result deploymentmodel.Deployment, err error) {
 	result.XmlRaw = xml
 	defer func() {
 		if r := recover(); r != nil && err == nil {
@@ -65,7 +65,7 @@ func PrepareDeployment(xml string) (result model.Deployment, err error) {
 	return
 }
 
-func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func UseDeploymentSelections(deployment *deploymentmodel.Deployment, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	ensureValidMsgEvents(deployment)
 
 	// This function only gets called from tests. That's why it's okay to supply test data here
@@ -73,7 +73,7 @@ func UseDeploymentSelections(deployment *model.Deployment, selectionAsRef bool, 
 	return
 }
 
-func ensureValidMsgEvents(deployment *model.Deployment) {
+func ensureValidMsgEvents(deployment *deploymentmodel.Deployment) {
 	for _, element := range deployment.Elements {
 		ensureValidMsgEvent(element.MsgEvent)
 		ensureValidMsgEvent(element.ReceiveTaskEvent)
@@ -95,7 +95,7 @@ func ensureValidMsgEvents(deployment *model.Deployment) {
 	return
 }
 
-func ensureValidMsgEvent(event *model.MsgEvent) {
+func ensureValidMsgEvent(event *deploymentmodel.MsgEvent) {
 	if event != nil {
 		event.EventId = config.NewId()
 		if event.TriggerConversion != nil {

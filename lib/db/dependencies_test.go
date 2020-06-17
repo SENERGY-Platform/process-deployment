@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/ory/dockertest"
 	"runtime/debug"
 	"strings"
@@ -70,13 +70,13 @@ func TestDependencies(t *testing.T) {
 		return
 	}
 
-	err = db.SetDependencies(model.Dependencies{
+	err = db.SetDependencies(dependencymodel.Dependencies{
 		DeploymentId: "id1",
 		Owner:        "user1",
-		Devices: []model.DeviceDependency{{
+		Devices: []dependencymodel.DeviceDependency{{
 			DeviceId:      "d1",
 			Name:          "d1",
-			BpmnResources: []model.BpmnResource{{Id: "r1"}, {Id: "r2"}},
+			BpmnResources: []dependencymodel.BpmnResource{{Id: "r1"}, {Id: "r2"}},
 		}},
 		Events: nil,
 	})
@@ -86,13 +86,13 @@ func TestDependencies(t *testing.T) {
 		return
 	}
 
-	err = db.SetDependencies(model.Dependencies{
+	err = db.SetDependencies(dependencymodel.Dependencies{
 		DeploymentId: "id2",
 		Owner:        "user1",
-		Devices: []model.DeviceDependency{{
+		Devices: []dependencymodel.DeviceDependency{{
 			DeviceId:      "d1",
 			Name:          "d1",
-			BpmnResources: []model.BpmnResource{{Id: "r1"}, {Id: "r2"}},
+			BpmnResources: []dependencymodel.BpmnResource{{Id: "r1"}, {Id: "r2"}},
 		}},
 		Events: nil,
 	})
@@ -102,13 +102,13 @@ func TestDependencies(t *testing.T) {
 		return
 	}
 
-	err = db.SetDependencies(model.Dependencies{
+	err = db.SetDependencies(dependencymodel.Dependencies{
 		DeploymentId: "id3",
 		Owner:        "user2",
-		Devices: []model.DeviceDependency{{
+		Devices: []dependencymodel.DeviceDependency{{
 			DeviceId:      "d1",
 			Name:          "d1",
-			BpmnResources: []model.BpmnResource{{Id: "r1"}, {Id: "r2"}},
+			BpmnResources: []dependencymodel.BpmnResource{{Id: "r1"}, {Id: "r2"}},
 		}},
 		Events: nil,
 	})

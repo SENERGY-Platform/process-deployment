@@ -19,13 +19,13 @@ package parsing
 import (
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 )
 
-func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
+func BpmnToElements(doc *etree.Document) (result []deploymentmodel.Element, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -61,7 +61,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 			return result, err
 		}
 		if ok {
-			result = append(result, model.Element{Order: order, ReceiveTaskEvent: &msgEvent})
+			result = append(result, deploymentmodel.Element{Order: order, ReceiveTaskEvent: &msgEvent})
 		}
 	}
 
@@ -71,7 +71,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 			return result, err
 		}
 		if ok {
-			result = append(result, model.Element{Order: order, MsgEvent: &msgEvent})
+			result = append(result, deploymentmodel.Element{Order: order, MsgEvent: &msgEvent})
 		}
 	}
 
@@ -80,7 +80,7 @@ func BpmnToElements(doc *etree.Document) (result []model.Element, err error) {
 		if err != nil {
 			return result, err
 		}
-		result = append(result, model.Element{Order: order, TimeEvent: &timeEvent})
+		result = append(result, deploymentmodel.Element{Order: order, TimeEvent: &timeEvent})
 	}
 
 	return result, nil

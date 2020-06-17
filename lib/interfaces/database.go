@@ -19,7 +19,8 @@ package interfaces
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 )
 
 type DatabaseFactory interface {
@@ -28,12 +29,12 @@ type DatabaseFactory interface {
 
 type Database interface {
 	CheckDeploymentAccess(user string, deploymentId string) (error, int)
-	GetDeployment(user string, deploymentId string) (model.Deployment, error, int)
+	GetDeployment(user string, deploymentId string) (deploymentmodel.Deployment, error, int)
 	DeleteDeployment(id string) error
-	SetDeployment(id string, owner string, deployment model.Deployment) error
-	GetDependencies(user string, deploymentId string) (model.Dependencies, error, int)
-	GetDependenciesList(user string, limit int, offset int) ([]model.Dependencies, error, int)
-	GetSelectedDependencies(user string, ids []string) ([]model.Dependencies, error, int)
-	SetDependencies(dependencies model.Dependencies) error
+	SetDeployment(id string, owner string, deployment deploymentmodel.Deployment) error
+	GetDependencies(user string, deploymentId string) (dependencymodel.Dependencies, error, int)
+	GetDependenciesList(user string, limit int, offset int) ([]dependencymodel.Dependencies, error, int)
+	GetSelectedDependencies(user string, ids []string) ([]dependencymodel.Dependencies, error, int)
+	SetDependencies(dependencies dependencymodel.Dependencies) error
 	DeleteDependencies(id string) error
 }

@@ -19,14 +19,14 @@ package stringify
 import (
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 	"strings"
 )
 
-func MsgEvent(doc *etree.Document, event *model.MsgEvent) (err error) {
+func MsgEvent(doc *etree.Document, event *deploymentmodel.MsgEvent) (err error) {
 	if event == nil {
 		return nil
 	}
@@ -45,7 +45,7 @@ func MsgEvent(doc *etree.Document, event *model.MsgEvent) (err error) {
 	return nil
 }
 
-func ReceiverTask(doc *etree.Document, event *model.MsgEvent) (err error) {
+func ReceiverTask(doc *etree.Document, event *deploymentmodel.MsgEvent) (err error) {
 	if event == nil {
 		return nil
 	}
@@ -64,7 +64,7 @@ func ReceiverTask(doc *etree.Document, event *model.MsgEvent) (err error) {
 	return nil
 }
 
-func TimeEvent(doc *etree.Document, event *model.TimeEvent) (err error) {
+func TimeEvent(doc *etree.Document, event *deploymentmodel.TimeEvent) (err error) {
 	if event == nil {
 		return nil
 	}

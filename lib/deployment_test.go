@@ -23,8 +23,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"io/ioutil"
@@ -86,7 +87,7 @@ func ExampleCtrl_Deployment() {
 		return
 	}
 
-	updateSimpleObj := model.Deployment{}
+	updateSimpleObj := deploymentmodel.Deployment{}
 	err = json.Unmarshal(createSimple, &updateSimpleObj)
 	if err != nil {
 		fmt.Println(err)
@@ -126,7 +127,7 @@ func ExampleCtrl_Deployment() {
 		fmt.Println(err)
 		return
 	}
-	mocks.Devices.SetOptions([]model.Selectable{
+	mocks.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "foo",
@@ -230,7 +231,7 @@ func ExampleCtrl_noEngineAccess() {
 		return
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(scriptProcess), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(scriptProcess), Svg: "<svg/>"}
 	preparedJson, err := json.Marshal(preparereq)
 	if err != nil {
 		debug.PrintStack()
@@ -547,7 +548,7 @@ func ExampleCtrl_DeploymentEmptyLane() {
 		return
 	}
 
-	updateSimpleObj := model.Deployment{}
+	updateSimpleObj := deploymentmodel.Deployment{}
 	err = json.Unmarshal(createSimple, &updateSimpleObj)
 	if err != nil {
 		fmt.Println(err)
@@ -617,7 +618,7 @@ func ExampleCtrl_DeploymentEmptyLane() {
 
 func prepareMockRepos() {
 	mocks.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-	mocks.Devices.SetOptions([]model.Selectable{
+	mocks.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -708,7 +709,7 @@ func subExampleDeploymentCreate(conf config.Config, deploymentJson []byte) error
 	return subExampleGetDependencies(conf, config.NewId())
 }
 
-func subExampleDeploymentUpdate(conf config.Config, deployment model.Deployment) error {
+func subExampleDeploymentUpdate(conf config.Config, deployment deploymentmodel.Deployment) error {
 	deploymentJson, err := json.Marshal(deployment)
 	if err != nil {
 		debug.PrintStack()

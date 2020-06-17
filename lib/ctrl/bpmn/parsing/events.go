@@ -20,13 +20,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 )
 
-func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order int64, err error) {
+func BpmnToMsgEvent(event *etree.Element) (ok bool, result deploymentmodel.MsgEvent, order int64, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -42,7 +43,7 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 
 	id := event.SelectAttr("id").Value
 	label := event.SelectAttrValue("name", id)
-	documentation := model.EventDocumentation{}
+	documentation := executionmodel.EventDocumentation{}
 	documentations := event.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -50,13 +51,13 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 			return false, result, 0, err
 		}
 	}
-	result = model.MsgEvent{
+	result = deploymentmodel.MsgEvent{
 		Label:         label,
 		BpmnElementId: id,
 	}
 
 	if documentation.CharacteristicId != "" {
-		result.TriggerConversion = &model.Conversion{
+		result.TriggerConversion = &deploymentmodel.Conversion{
 			To: documentation.CharacteristicId,
 		}
 	}
@@ -64,7 +65,7 @@ func BpmnToMsgEvent(event *etree.Element) (ok bool, result model.MsgEvent, order
 	return true, result, documentation.Order, nil
 }
 
-func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (result model.TimeEvent, order int64, err error) {
+func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (result deploymentmodel.TimeEvent, order int64, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -73,7 +74,7 @@ func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (resu
 	}()
 	id := event.SelectAttr("id").Value
 	label := event.SelectAttrValue("name", id)
-	documentation := model.Documentation{}
+	documentation := executionmodel.Documentation{}
 	documentations := event.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -81,7 +82,7 @@ func BpmnToTimeEvent(event *etree.Element, eventDefinition *etree.Element) (resu
 			return result, 0, err
 		}
 	}
-	result = model.TimeEvent{
+	result = deploymentmodel.TimeEvent{
 		BpmnElementId: id,
 		Label:         label,
 	}

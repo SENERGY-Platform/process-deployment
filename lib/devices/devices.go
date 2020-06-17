@@ -20,7 +20,6 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
@@ -49,7 +48,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error, code int) {
+func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) (result []devicemodel.Selectable, err error, code int) {
 	startGetFilteredDevices := time.Now()
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
 	if err != nil {
@@ -91,7 +90,7 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 			services = append(services, service)
 		}
 		for _, device := range devices {
-			result = append(result, model.Selectable{
+			result = append(result, devicemodel.Selectable{
 				Device:   device,
 				Services: services,
 			})

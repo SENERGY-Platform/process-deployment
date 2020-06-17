@@ -17,21 +17,22 @@
 package ctrl
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *model.Deployment) (err error) {
+func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
 	for index, element := range deployment.Elements {
 		if element.Task != nil {
-			options, err := this.GetOptions(token, []model.DeviceDescription{element.Task.DeviceDescription})
+			options, err := this.GetOptions(token, []devicemodel.DeviceDescription{element.Task.DeviceDescription})
 			if err != nil {
 				return err
 			}
 			element.Task.Selectables = options
 		}
 		if element.MultiTask != nil {
-			options, err := this.GetOptions(token, []model.DeviceDescription{element.MultiTask.DeviceDescription})
+			options, err := this.GetOptions(token, []devicemodel.DeviceDescription{element.MultiTask.DeviceDescription})
 			if err != nil {
 				return err
 			}
@@ -59,9 +60,9 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) (result []model.Selectable, err error) {
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) (result []devicemodel.Selectable, err error) {
 	if len(descriptions) == 0 {
-		return []model.Selectable{}, nil
+		return []devicemodel.Selectable{}, nil
 	}
 	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
 	return

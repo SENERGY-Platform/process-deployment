@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-package model
+package devicemodel
 
 import (
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 )
 
 func ExampleToFilter() {
 	fmt.Println(DeviceDescriptions{
 		{
 			CharacteristicId: "foobar",
-			Function:         devicemodel.Function{Id: "f1"},
-			DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
-			Aspect:           &devicemodel.Aspect{Id: "a1"},
+			Function:         Function{Id: "f1"},
+			DeviceClass:      &DeviceClass{Id: "dc1"},
+			Aspect:           &Aspect{Id: "a1"},
 		},
 		{
 			CharacteristicId: "foobar",
-			Function:         devicemodel.Function{Id: "f1"},
-			DeviceClass:      &devicemodel.DeviceClass{Id: "dc2"},
-			Aspect:           &devicemodel.Aspect{Id: "a2"},
+			Function:         Function{Id: "f1"},
+			DeviceClass:      &DeviceClass{Id: "dc2"},
+			Aspect:           &Aspect{Id: "a2"},
 		},
 		{
 			CharacteristicId: "foobar",
-			Function:         devicemodel.Function{Id: "f2"},
-			DeviceClass:      &devicemodel.DeviceClass{Id: "dc3"},
-			Aspect:           &devicemodel.Aspect{Id: "a2"},
+			Function:         Function{Id: "f2"},
+			DeviceClass:      &DeviceClass{Id: "dc3"},
+			Aspect:           &Aspect{Id: "a2"},
 		},
 	}.ToFilter())
 
@@ -51,9 +50,9 @@ func ExampleNilToFilter() {
 	fmt.Println(DeviceDescriptions{
 		{
 			CharacteristicId: "foobar",
-			Function:         devicemodel.Function{Id: "f1"},
-			DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
-			Aspect:           &devicemodel.Aspect{Id: "a1"},
+			Function:         Function{Id: "f1"},
+			DeviceClass:      &DeviceClass{Id: "dc1"},
+			Aspect:           &Aspect{Id: "a1"},
 		},
 		{},
 	}.ToFilter())

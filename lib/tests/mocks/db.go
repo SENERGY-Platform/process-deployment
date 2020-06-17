@@ -21,20 +21,22 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"net/http"
 	"sync"
 )
 
 type DatabaseMock struct {
-	deployments  map[string]model.DeploymentCommand
-	dependencies map[string]model.Dependencies
+	deployments  map[string]messages.DeploymentCommand
+	dependencies map[string]dependencymodel.Dependencies
 	mux          sync.Mutex
 }
 
 var Database = &DatabaseMock{
-	deployments:  map[string]model.DeploymentCommand{},
-	dependencies: map[string]model.Dependencies{},
+	deployments:  map[string]messages.DeploymentCommand{},
+	dependencies: map[string]dependencymodel.Dependencies{},
 }
 
 func (this *DatabaseMock) New(ctx context.Context, config config.Config) (interfaces.Database, error) {
@@ -45,15 +47,15 @@ func (this *DatabaseMock) CheckDeploymentAccess(user string, deploymentId string
 	return nil, 200
 }
 
-func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (model.Deployment, error, int) {
+func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deploymentmodel.Deployment, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	deployment, ok := this.deployments[deploymentId]
 	if !ok {
-		return model.Deployment{}, errors.New("deployment not found"), http.StatusNotFound
+		return deploymentmodel.Deployment{}, errors.New("deployment not found"), http.StatusNotFound
 	}
 	if deployment.Owner != user {
-		return model.Deployment{}, errors.New("access denied"), http.StatusForbidden
+		return deploymentmodel.Deployment{}, errors.New("access denied"), http.StatusForbidden
 	}
 	return deployment.Deployment, nil, 200
 }
@@ -65,27 +67,27 @@ func (this *DatabaseMock) DeleteDeployment(id string) error {
 	return nil
 }
 
-func (this *DatabaseMock) SetDeployment(id string, owner string, deployment model.Deployment) error {
+func (this *DatabaseMock) SetDeployment(id string, owner string, deployment deploymentmodel.Deployment) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	this.deployments[id] = model.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}
+	this.deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}
 	return nil
 }
 
-func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (model.Dependencies, error, int) {
+func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (dependencymodel.Dependencies, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	dependencies, ok := this.dependencies[deploymentId]
 	if !ok {
-		return model.Dependencies{}, errors.New("dependencies not found"), http.StatusNotFound
+		return dependencymodel.Dependencies{}, errors.New("dependencies not found"), http.StatusNotFound
 	}
 	if dependencies.Owner != user {
-		return model.Dependencies{}, errors.New("access denied"), http.StatusForbidden
+		return dependencymodel.Dependencies{}, errors.New("access denied"), http.StatusForbidden
 	}
 	return dependencies, nil, 200
 }
 
-func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int) (result []model.Dependencies, err error, code int) {
+func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int) (result []dependencymodel.Dependencies, err error, code int) {
 	count := 0
 	for _, dependencie := range this.dependencies {
 		if dependencie.Owner == user {
@@ -101,7 +103,7 @@ func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int
 	return result, nil, 200
 }
 
-func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (result []model.Dependencies, err error, code int) {
+func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (result []dependencymodel.Dependencies, err error, code int) {
 	for _, id := range ids {
 		dependency, ok := this.dependencies[id]
 		if !ok {
@@ -117,7 +119,7 @@ func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (re
 	return result, nil, 200
 }
 
-func (this *DatabaseMock) SetDependencies(dependencies model.Dependencies) error {
+func (this *DatabaseMock) SetDependencies(dependencies dependencymodel.Dependencies) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.dependencies[dependencies.DeploymentId] = dependencies

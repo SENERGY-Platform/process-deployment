@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package model
+package deploymentmodel
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
+)
 
 type Lane struct {
 	//information direct from model
 	Label         string `json:"label"`
 	BpmnElementId string `json:"bpmn_element_id"`
 
-	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
+	DeviceDescriptions []devicemodel.DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	Selectables []Selectable `json:"selectables"`
+	Selectables []devicemodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selection *devicemodel.Device `json:"selection"`
@@ -39,10 +42,10 @@ type MultiLane struct {
 	Label         string `json:"label"`
 	BpmnElementId string `json:"bpmn_element_id"`
 
-	DeviceDescriptions []DeviceDescription `json:"device_descriptions"`
+	DeviceDescriptions []devicemodel.DeviceDescription `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	Selectables []Selectable `json:"selectables"`
+	Selectables []devicemodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selections []*devicemodel.Device `json:"selections"`
@@ -63,8 +66,8 @@ type LaneTask struct {
 	Label   string `json:"label" bson:"label"`
 	Retries int64  `json:"retries,omitempty"`
 
-	DeviceDescription DeviceDescription `json:"device_description"`
-	Input             interface{}       `json:"input"`
+	DeviceDescription devicemodel.DeviceDescription `json:"device_description"`
+	Input             interface{}                   `json:"input"`
 
 	BpmnElementId string `json:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task"`
@@ -74,7 +77,7 @@ type LaneTask struct {
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`
 
-	Configurables []Configurable `json:"configurables"`
+	Configurables []executionmodel.Configurable `json:"configurables"`
 
 	ContentVariableHints []string `json:"content_variable_hints,omitempty"`
 }

@@ -22,8 +22,9 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/stringify"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"log"
 	"net/http"
@@ -31,7 +32,7 @@ import (
 	"time"
 )
 
-func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
+func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
 	switch cmd.Command {
 	case "PUT":
 		err := this.SaveDependencies(cmd)
@@ -58,7 +59,7 @@ func (this *Ctrl) HandleDeployment(cmd model.DeploymentCommand) error {
 	}
 }
 
-func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml string, svg string) (result model.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
 	startParsing := time.Now()
 	result, err = bpmn.PrepareDeployment(xml)
 	if err != nil {
@@ -78,7 +79,7 @@ func (this *Ctrl) PrepareDeployment(token jwt_http_router.JwtImpersonate, xml st
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result model.Deployment, err error, code int) {
+func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result deploymentmodel.Deployment, err error, code int) {
 	result, err, code = this.db.GetDeployment(jwt.UserId, id)
 	if err != nil {
 		return result, err, code
@@ -90,12 +91,12 @@ func (this *Ctrl) GetDeployment(jwt jwt_http_router.Jwt, id string) (result mode
 	return
 }
 
-func (this *Ctrl) CreateDeployment(jwt jwt_http_router.Jwt, deployment model.Deployment) (result model.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeployment(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
 	return this.setDeployment(jwt, deployment)
 }
 
-func (this *Ctrl) UpdateDeployment(jwt jwt_http_router.Jwt, id string, deployment model.Deployment) (result model.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeployment(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
@@ -121,15 +122,15 @@ func (this *Ctrl) RemoveDeployment(jwt jwt_http_router.Jwt, id string) (err erro
 	return nil, 200
 }
 
-func (this *Ctrl) DeleteDeployment(command model.DeploymentCommand) error {
+func (this *Ctrl) DeleteDeployment(command messages.DeploymentCommand) error {
 	return this.db.DeleteDeployment(command.Id)
 }
 
-func (this *Ctrl) SaveDeployment(command model.DeploymentCommand) error {
+func (this *Ctrl) SaveDeployment(command messages.DeploymentCommand) error {
 	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment)
 }
 
-func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deployment) (result model.Deployment, err error, code int) {
+func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(false); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
@@ -159,11 +160,11 @@ func (this *Ctrl) setDeployment(jwt jwt_http_router.Jwt, deployment model.Deploy
 	return deployment, nil, 200
 }
 
-func (this *Ctrl) publishDeployment(owner string, deployment model.Deployment) error {
+func (this *Ctrl) publishDeployment(owner string, deployment deploymentmodel.Deployment) error {
 	if err := deployment.Validate(true); err != nil {
 		return err
 	}
-	cmd := model.DeploymentCommand{
+	cmd := messages.DeploymentCommand{
 		Command:    "PUT",
 		Id:         deployment.Id,
 		Owner:      owner,
@@ -177,7 +178,7 @@ func (this *Ctrl) publishDeployment(owner string, deployment model.Deployment) e
 }
 
 func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
-	cmd := model.DeploymentCommand{
+	cmd := messages.DeploymentCommand{
 		Command: "DELETE",
 		Id:      id,
 		Owner:   user,
@@ -190,7 +191,7 @@ func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 }
 
 //ensures selection correctness
-func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.JwtImpersonate, deployment *model.Deployment) (err error, code int) {
+func (this *Ctrl) ensureDeploymentSelectionCorrectness(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
 	deviceCache := map[string]devicemodel.Device{}
 	serviceCache := map[string]devicemodel.Service{}
 
@@ -342,7 +343,7 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	return &result, nil, 200
 }
 
-func (this *Ctrl) SetExecutableFlag(deployment *model.Deployment) {
+func (this *Ctrl) SetExecutableFlag(deployment *deploymentmodel.Deployment) {
 	deployment.Executable = true
 	for _, lane := range deployment.Lanes {
 		this.setExecutableFlagByLane(deployment, lane)
@@ -352,7 +353,7 @@ func (this *Ctrl) SetExecutableFlag(deployment *model.Deployment) {
 	}
 }
 
-func (this *Ctrl) setExecutableFlagByLane(deployment *model.Deployment, lane model.LaneElement) {
+func (this *Ctrl) setExecutableFlagByLane(deployment *deploymentmodel.Deployment, lane deploymentmodel.LaneElement) {
 	if lane.Lane != nil && len(lane.Lane.Selectables) == 0 {
 		deployment.Executable = false
 	}
@@ -361,7 +362,7 @@ func (this *Ctrl) setExecutableFlagByLane(deployment *model.Deployment, lane mod
 	}
 }
 
-func (this *Ctrl) SetExecutableFlagByElement(deployment *model.Deployment, element model.Element) {
+func (this *Ctrl) SetExecutableFlagByElement(deployment *deploymentmodel.Deployment, element deploymentmodel.Element) {
 	if element.Task != nil && len(element.Task.Selectables) == 0 {
 		deployment.Executable = false
 	}

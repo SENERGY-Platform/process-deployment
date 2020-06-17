@@ -20,7 +20,8 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"log"
 	"net/http"
@@ -33,7 +34,7 @@ func init() {
 
 func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
 	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		msg := model.PrepareRequest{}
+		msg := messages.PrepareRequest{}
 		err := json.NewDecoder(request.Body).Decode(&msg)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -68,7 +69,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 	})
 
 	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		deployment := model.Deployment{}
+		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
 			log.Println("ERROR: unable to parse request", err)
@@ -86,7 +87,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 
 	router.PUT("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := params.ByName("id")
-		deployment := model.Deployment{}
+		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)

@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/iot-device-repository/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	model2 "github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"net/http"
 	"net/http/httptest"
@@ -126,7 +125,7 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+	_, err, _ = repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      nil,
@@ -138,7 +137,7 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
@@ -194,7 +193,7 @@ func TestGetFilteredDevices(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+	_, err, _ = repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      nil,
@@ -206,7 +205,7 @@ func TestGetFilteredDevices(t *testing.T) {
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []model2.DeviceDescription{{
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},

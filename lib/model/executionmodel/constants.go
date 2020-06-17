@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package model
+package executionmodel
 
-type ProcessModel struct {
-	Id          string `json:"_id" bson:"_id"`
-	Date        int64  `json:"date" bson:"date"`
-	Owner       string `json:"owner" bson:"owner"`
-	BpmnXml     string `json:"bpmn_xml" bson:"bpmn_xml"`
-	SvgXml      string `json:"svgXML" bson:"svgXML"`
-	Publish     bool   `json:"publish" bson:"publish"`
-	PublishDate string `json:"publish_date" bson:"publish_date"`
-	Description string `json:"description" bson:"description"`
-}
+const CAMUNDA_VARIABLES_PAYLOAD = "payload"
+const CAMUNDA_VARIABLES_OVERWRITE = "overwrite"
+const CAMUNDE_VARIABLES_OVERWRITE_COLLECTION = "collection"

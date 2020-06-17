@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package model
+package deploymentmodel
 
 import (
 	"errors"
@@ -189,22 +189,6 @@ func (this *MsgEvent) Validate(strict bool) error {
 		if this.TriggerConversion.To == "" {
 			return errors.New("missing msg event cast to")
 		}
-	}
-	return nil
-}
-
-func (this Selection) Validate(strict bool) error {
-	if this.Device == nil {
-		return errors.New("missing device selection")
-	}
-	if this.Service == nil {
-		return errors.New("missing service selection")
-	}
-	if this.Device.Id == "" {
-		return errors.New("missing device id in selection")
-	}
-	if this.Service.Id == "" {
-		return errors.New("missing service id in selection")
 	}
 	return nil
 }

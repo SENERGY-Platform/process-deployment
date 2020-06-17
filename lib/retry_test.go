@@ -22,8 +22,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"io/ioutil"
@@ -69,7 +70,7 @@ func ExampleKeepRetries() {
 		Timeout: 5 * time.Second,
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
 	temp, err := json.Marshal(preparereq)
 	if err != nil {
 		fmt.Println(err)
@@ -95,7 +96,7 @@ func ExampleKeepRetries() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 
 	err = json.NewDecoder(resp.Body).Decode(&deployment)
 
@@ -119,7 +120,7 @@ func ExampleKeepRetries() {
 		return "uuid"
 	}
 
-	createSimpleObj := model.Deployment{}
+	createSimpleObj := deploymentmodel.Deployment{}
 	err = json.Unmarshal(msg, &createSimpleObj)
 	if err != nil {
 		fmt.Println(err)
@@ -139,10 +140,10 @@ func ExampleKeepRetries() {
 	createSimpleObj.Elements[0].Task.Selection.Service.ProtocolId = "pid"
 
 	createSimpleObj.Elements[1].MultiTask.Selections = append(createSimpleObj.Elements[1].MultiTask.Selections,
-		model.Selection{
+		devicemodel.Selection{
 			Device:  &devicemodel.Device{Id: "device_id_1"},
 			Service: &devicemodel.Service{Id: "service_id_1", ProtocolId: "pid"},
-		}, model.Selection{
+		}, devicemodel.Selection{
 			Device:  &devicemodel.Device{Id: "device_id_2"},
 			Service: &devicemodel.Service{Id: "service_id_2", ProtocolId: "pid"},
 		})
@@ -173,7 +174,7 @@ func ExampleKeepRetries() {
 		return
 	}
 
-	updateSimpleObj := model.Deployment{}
+	updateSimpleObj := deploymentmodel.Deployment{}
 	err = json.Unmarshal(createSimple, &updateSimpleObj)
 	if err != nil {
 		fmt.Println(err)

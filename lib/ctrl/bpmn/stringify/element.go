@@ -20,13 +20,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 )
 
-func Element(doc *etree.Document, element model.Element, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func Element(doc *etree.Document, element deploymentmodel.Element, selectionAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())

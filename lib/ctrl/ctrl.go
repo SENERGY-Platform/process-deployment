@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"runtime/debug"
 )
 
@@ -45,7 +45,7 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		return result, err
 	}
 	err = sourcing.NewConsumer(ctx, config, config.DeploymentTopic, func(delivery []byte) error {
-		deployment := model.DeploymentCommand{}
+		deployment := messages.DeploymentCommand{}
 		err := json.Unmarshal(delivery, &deployment)
 		if err != nil {
 			debug.PrintStack()

@@ -19,7 +19,6 @@ package interfaces
 import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
@@ -32,5 +31,5 @@ type Devices interface {
 	GetProtocol(id string) (devicemodel.Protocol, error, int)
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
-	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []model.DeviceDescription) ([]model.Selectable, error, int)
+	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) ([]devicemodel.Selectable, error, int)
 }

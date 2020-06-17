@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package model
+package deploymentmodel
 
 type NotificationPayload struct {
 	//information direct from model

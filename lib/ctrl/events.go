@@ -19,12 +19,12 @@ package ctrl
 import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"strings"
 )
 
-func (this *Ctrl) completeEvents(deployment *model.Deployment) error {
+func (this *Ctrl) completeEvents(deployment *deploymentmodel.Deployment) error {
 	err := this.setDeploymentEventIds(deployment)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (this *Ctrl) completeEvents(deployment *model.Deployment) error {
 	return nil
 }
 
-func (this *Ctrl) setDeploymentEventIds(deployment *model.Deployment) error {
+func (this *Ctrl) setDeploymentEventIds(deployment *deploymentmodel.Deployment) error {
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil {
 			for _, element := range lane.Lane.Elements {
@@ -71,7 +71,7 @@ func (this *Ctrl) setDeploymentEventIds(deployment *model.Deployment) error {
 	return nil
 }
 
-func (this *Ctrl) completeDeploymentEventCasts(deployment *model.Deployment) (err error) {
+func (this *Ctrl) completeDeploymentEventCasts(deployment *deploymentmodel.Deployment) (err error) {
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil {
 			for _, element := range lane.Lane.Elements {
@@ -114,7 +114,7 @@ func (this *Ctrl) completeDeploymentEventCasts(deployment *model.Deployment) (er
 	return nil
 }
 
-func (this *Ctrl) completeEventCast(event *model.MsgEvent) (err error) {
+func (this *Ctrl) completeEventCast(event *deploymentmodel.MsgEvent) (err error) {
 	if event.TriggerConversion != nil && event.TriggerConversion.To != "" {
 		event.TriggerConversion.From, err = getCharacteristicOfPathInService(event.Service, event.Path)
 	}

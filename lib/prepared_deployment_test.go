@@ -23,8 +23,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
 	mock "github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	uuid "github.com/satori/go.uuid"
@@ -71,9 +73,9 @@ func ExampleCtrl_PrepareDeploymentById() {
 	}
 
 	processModelId := uuid.NewV4().String()
-	mock.ProcessModelRepo.SetProcessModel(processModelId, model.ProcessModel{Id: processModelId, BpmnXml: string(file), SvgXml: "<svg/>"})
+	mock.ProcessModelRepo.SetProcessModel(processModelId, processmodel.ProcessModel{Id: processModelId, BpmnXml: string(file), SvgXml: "<svg/>"})
 
-	mock.Devices.SetOptions([]model.Selectable{
+	mock.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -109,7 +111,7 @@ func ExampleCtrl_PrepareDeploymentById() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 
 	err = json.NewDecoder(resp.Body).Decode(&deployment)
 
@@ -160,7 +162,7 @@ func ExampleCtrl_PrepareDeployment() {
 		return
 	}
 
-	mock.Devices.SetOptions([]model.Selectable{
+	mock.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -177,7 +179,7 @@ func ExampleCtrl_PrepareDeployment() {
 		Timeout: 5 * time.Second,
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
 	temp, err := json.Marshal(preparereq)
 	if err != nil {
 		fmt.Println(err)
@@ -203,7 +205,7 @@ func ExampleCtrl_PrepareDeployment() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 
 	err = json.NewDecoder(resp.Body).Decode(&deployment)
 
@@ -262,7 +264,7 @@ func ExampleCtrl_PrepareDeployment2() {
 		return
 	}
 
-	mock.Devices.SetOptions([]model.Selectable{
+	mock.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -279,7 +281,7 @@ func ExampleCtrl_PrepareDeployment2() {
 		Timeout: 5 * time.Second,
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
 	temp, err := json.Marshal(preparereq)
 	if err != nil {
 		debug.PrintStack()
@@ -308,7 +310,7 @@ func ExampleCtrl_PrepareDeployment2() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	if resp.StatusCode != 200 {
 		t, _ := ioutil.ReadAll(resp.Body)
 		err = errors.New(string(t))
@@ -371,7 +373,7 @@ func ExampleCtrl_PrepareDeployment3() {
 		return
 	}
 
-	mock.Devices.SetOptions([]model.Selectable{
+	mock.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -388,7 +390,7 @@ func ExampleCtrl_PrepareDeployment3() {
 		Timeout: 5 * time.Second,
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
 	temp, err := json.Marshal(preparereq)
 	if err != nil {
 		debug.PrintStack()
@@ -417,7 +419,7 @@ func ExampleCtrl_PrepareDeployment3() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 	if resp.StatusCode != 200 {
 		t, _ := ioutil.ReadAll(resp.Body)
 		err = errors.New(string(t))
@@ -476,7 +478,7 @@ func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
 		return
 	}
 
-	mock.Devices.SetOptions([]model.Selectable{
+	mock.Devices.SetOptions([]devicemodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -493,7 +495,7 @@ func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
 		Timeout: 5 * time.Second,
 	}
 
-	preparereq := model.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
+	preparereq := messages.PrepareRequest{Xml: string(file), Svg: "<svg/>"}
 	temp, err := json.Marshal(preparereq)
 	if err != nil {
 		fmt.Println(err)
@@ -522,7 +524,7 @@ func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
 	}
 	defer resp.Body.Close()
 
-	deployment := model.Deployment{}
+	deployment := deploymentmodel.Deployment{}
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

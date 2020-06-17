@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package model
+package executionmodel
 
-type PrepareRequest struct {
-	Xml string `json:"xml"`
-	Svg string `json:"svg"`
+import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+
+type Configurable struct {
+	CharacteristicId string                            `json:"characteristic_id"`
+	Values           []ConfigurableCharacteristicValue `json:"values"`
+}
+
+type ConfigurableCharacteristicValue struct {
+	Label     string           `json:"label"`
+	Path      string           `json:"path"`
+	Value     interface{}      `json:"value"`
+	ValueType devicemodel.Type `json:"value_type"`
 }

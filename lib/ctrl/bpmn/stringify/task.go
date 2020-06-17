@@ -22,15 +22,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 	"text/template"
 )
 
-func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func Task(doc *etree.Document, task *deploymentmodel.Task, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -41,7 +42,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 		}
 	}()
 
-	command := model.Command{
+	command := executionmodel.Command{
 		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
@@ -71,7 +72,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 		return err
 	}
 
-	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
 	doc.FindElement(xpath).SetText(string(commandStr))
 
 	for name, value := range task.Parameter {
@@ -81,7 +82,7 @@ func Task(doc *etree.Document, task *model.Task, selectAsRef bool, deviceRepo in
 	return nil
 }
 
-func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneTask(doc *etree.Document, task *deploymentmodel.LaneTask, device *devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -92,7 +93,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Dev
 		}
 	}()
 
-	command := model.Command{
+	command := executionmodel.Command{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,
@@ -123,7 +124,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Dev
 		return err
 	}
 
-	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
 	doc.FindElement(xpath).SetText(string(commandStr))
 
 	for name, value := range task.Parameter {
@@ -133,7 +134,7 @@ func LaneTask(doc *etree.Document, task *model.LaneTask, device *devicemodel.Dev
 	return nil
 }
 
-func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func MultiTask(doc *etree.Document, task *deploymentmodel.MultiTask, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -144,7 +145,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 		}
 	}()
 
-	command := model.Command{
+	command := executionmodel.Command{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,
@@ -160,7 +161,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 		return err
 	}
 
-	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
 	doc.FindElement(xpath).SetText(string(commandStr))
 
 	for name, value := range task.Parameter {
@@ -174,8 +175,8 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	}
 
 	loopElement := doc.FindElement("//bpmn:serviceTask[@id='" + task.BpmnElementId + "']/bpmn:multiInstanceLoopCharacteristics")
-	loopElement.CreateAttr("camunda:collection", model.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION)
-	loopElement.CreateAttr("camunda:elementVariable", model.CAMUNDA_VARIABLES_OVERWRITE)
+	loopElement.CreateAttr("camunda:collection", executionmodel.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION)
+	loopElement.CreateAttr("camunda:elementVariable", executionmodel.CAMUNDA_VARIABLES_OVERWRITE)
 
 	scriptElement := doc.CreateElement("camunda:script")
 	scriptElement.CreateAttr("scriptFormat", "groovy")
@@ -188,7 +189,7 @@ func MultiTask(doc *etree.Document, task *model.MultiTask, selectAsRef bool, dev
 	return nil
 }
 
-func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
+func LaneMultiTask(doc *etree.Document, task *deploymentmodel.LaneTask, devices []*devicemodel.Device, selectAsRef bool, deviceRepo interfaces.Devices) (err error) {
 	if task == nil {
 		return nil
 	}
@@ -199,7 +200,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 		}
 	}()
 
-	command := model.Command{
+	command := executionmodel.Command{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,
@@ -215,7 +216,7 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 		return err
 	}
 
-	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']"
+	xpath := "//bpmn:serviceTask[@id='" + task.BpmnElementId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
 	doc.FindElement(xpath).SetText(string(commandStr))
 
 	for name, value := range task.Parameter {
@@ -223,9 +224,9 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 		doc.FindElement(xpath).SetText(value)
 	}
 
-	overwrites := []model.Overwrite{}
+	overwrites := []executionmodel.Overwrite{}
 	for _, device := range devices {
-		overwrite := model.Overwrite{}
+		overwrite := executionmodel.Overwrite{}
 		if selectAsRef {
 			protocol, err, _ := deviceRepo.GetProtocol(task.SelectedService.ProtocolId)
 			if err != nil {
@@ -248,8 +249,8 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 	}
 
 	loopElement := doc.FindElement("//bpmn:serviceTask[@id='" + task.BpmnElementId + "']/bpmn:multiInstanceLoopCharacteristics")
-	loopElement.CreateAttr("camunda:collection", model.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION)
-	loopElement.CreateAttr("camunda:elementVariable", model.CAMUNDA_VARIABLES_OVERWRITE)
+	loopElement.CreateAttr("camunda:collection", executionmodel.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION)
+	loopElement.CreateAttr("camunda:elementVariable", executionmodel.CAMUNDA_VARIABLES_OVERWRITE)
 
 	scriptElement := doc.CreateElement("camunda:script")
 	scriptElement.CreateAttr("scriptFormat", "groovy")
@@ -262,10 +263,10 @@ func LaneMultiTask(doc *etree.Document, task *model.LaneTask, devices []*devicem
 	return nil
 }
 
-func createOverwriteVariableScript(selections []model.Selection, selectAsRef bool, deviceRepo interfaces.Devices) (script string, err error) {
-	overwrites := []model.Overwrite{}
+func createOverwriteVariableScript(selections []devicemodel.Selection, selectAsRef bool, deviceRepo interfaces.Devices) (script string, err error) {
+	overwrites := []executionmodel.Overwrite{}
 	for _, selection := range selections {
-		overwrite := model.Overwrite{}
+		overwrite := executionmodel.Overwrite{}
 		if selectAsRef {
 			protocol, err, _ := deviceRepo.GetProtocol(selection.Service.ProtocolId)
 			if err != nil {
@@ -284,7 +285,7 @@ func createOverwriteVariableScript(selections []model.Selection, selectAsRef boo
 	return overwritesToScript(overwrites)
 }
 
-func overwritesToScript(overwrites []model.Overwrite) (script string, err error) {
+func overwritesToScript(overwrites []executionmodel.Overwrite) (script string, err error) {
 	overwriteSelections := []string{}
 	for _, overwrite := range overwrites {
 		overwriteMsg, err := json.Marshal(overwrite)
@@ -303,7 +304,7 @@ func overwritesToScript(overwrites []model.Overwrite) (script string, err error)
 	}
 	var buffer bytes.Buffer
 	err = templ.Execute(&buffer, map[string]string{
-		"CollectionName": model.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION,
+		"CollectionName": executionmodel.CAMUNDE_VARIABLES_OVERWRITE_COLLECTION,
 		"Collection":     string(collection),
 	})
 	return buffer.String(), err

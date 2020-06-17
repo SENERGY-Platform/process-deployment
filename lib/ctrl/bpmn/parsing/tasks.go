@@ -20,24 +20,26 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 )
 
-func BpmnToMultitask(task *etree.Element) (result model.Element, err error) {
+func BpmnToMultitask(task *etree.Element) (result deploymentmodel.Element, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
 		}
 	}()
-	cmd := model.Command{}
-	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']")
+	cmd := executionmodel.Command{}
+	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
 	err = json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
 	if err != nil {
 		return result, err
 	}
 
-	documentation := model.Documentation{}
+	documentation := executionmodel.Documentation{}
 	documentations := task.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -51,12 +53,12 @@ func BpmnToMultitask(task *etree.Element) (result model.Element, err error) {
 	id := task.SelectAttr("id").Value
 	label := task.SelectAttrValue("name", id)
 
-	result = model.Element{
+	result = deploymentmodel.Element{
 		Order: documentation.Order,
-		MultiTask: &model.MultiTask{
+		MultiTask: &deploymentmodel.MultiTask{
 			Label:   label,
 			Retries: cmd.Retries,
-			DeviceDescription: model.DeviceDescription{
+			DeviceDescription: devicemodel.DeviceDescription{
 				CharacteristicId: cmd.CharacteristicId,
 				Function:         cmd.Function,
 				DeviceClass:      cmd.DeviceClass,
@@ -70,20 +72,20 @@ func BpmnToMultitask(task *etree.Element) (result model.Element, err error) {
 	return result, nil
 }
 
-func BpmnToTask(task *etree.Element) (result model.Element, err error) {
+func BpmnToTask(task *etree.Element) (result deploymentmodel.Element, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
 		}
 	}()
-	cmd := model.Command{}
-	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + model.CAMUNDA_VARIABLES_PAYLOAD + "']")
+	cmd := executionmodel.Command{}
+	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
 	err = json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
 	if err != nil {
 		return result, err
 	}
 
-	documentation := model.Documentation{}
+	documentation := executionmodel.Documentation{}
 	documentations := task.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -97,12 +99,12 @@ func BpmnToTask(task *etree.Element) (result model.Element, err error) {
 	id := task.SelectAttr("id").Value
 	label := task.SelectAttrValue("name", id)
 
-	result = model.Element{
+	result = deploymentmodel.Element{
 		Order: documentation.Order,
-		Task: &model.Task{
+		Task: &deploymentmodel.Task{
 			Label:   label,
 			Retries: cmd.Retries,
-			DeviceDescription: model.DeviceDescription{
+			DeviceDescription: devicemodel.DeviceDescription{
 				CharacteristicId: cmd.CharacteristicId,
 				Function:         cmd.Function,
 				DeviceClass:      cmd.DeviceClass,

@@ -20,14 +20,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 	"sort"
 )
 
-func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
+func BpmnToLanes(doc *etree.Document) (result []deploymentmodel.LaneElement, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -79,7 +81,7 @@ func BpmnToLanes(doc *etree.Document) (result []model.LaneElement, err error) {
 }
 
 func getLaneInfo(lane *etree.Element) (id string, label string, order int64, err error) {
-	documentation := model.Documentation{}
+	documentation := executionmodel.Documentation{}
 	documentations := lane.FindElements(".//bpmn:documentation")
 	if len(documentations) > 0 {
 		err = json.Unmarshal([]byte(documentations[0].Text()), &documentation)
@@ -95,7 +97,7 @@ func getLaneInfo(lane *etree.Element) (id string, label string, order int64, err
 
 var EmptyLane = errors.New("empty lane")
 
-func createLaneElement(id string, label string, order int64, subElements []model.LaneSubElement) (result model.LaneElement, err error) {
+func createLaneElement(id string, label string, order int64, subElements []deploymentmodel.LaneSubElement) (result deploymentmodel.LaneElement, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -113,14 +115,14 @@ func createLaneElement(id string, label string, order int64, subElements []model
 
 	isMulti := isMultiTaskLane(subElements)
 	if isMulti {
-		result.MultiLane = &model.MultiLane{
+		result.MultiLane = &deploymentmodel.MultiLane{
 			Label:              label,
 			BpmnElementId:      id,
 			DeviceDescriptions: deviceDescriptions,
 			Elements:           subElements,
 		}
 	} else {
-		result.Lane = &model.Lane{
+		result.Lane = &deploymentmodel.Lane{
 			Label:              label,
 			BpmnElementId:      id,
 			DeviceDescriptions: deviceDescriptions,
@@ -130,7 +132,7 @@ func createLaneElement(id string, label string, order int64, subElements []model
 	return
 }
 
-func aggregateLaneTaskInfo(elements []model.LaneSubElement) (result []model.DeviceDescription) {
+func aggregateLaneTaskInfo(elements []deploymentmodel.LaneSubElement) (result []devicemodel.DeviceDescription) {
 	for _, element := range elements {
 		if element.LaneTask != nil {
 			result = append(result, element.LaneTask.DeviceDescription)
@@ -139,7 +141,7 @@ func aggregateLaneTaskInfo(elements []model.LaneSubElement) (result []model.Devi
 	return
 }
 
-func isMultiTaskLane(elements []model.LaneSubElement) bool {
+func isMultiTaskLane(elements []deploymentmodel.LaneSubElement) bool {
 	if !hasTasks(elements) {
 		return false
 	}
@@ -151,7 +153,7 @@ func isMultiTaskLane(elements []model.LaneSubElement) bool {
 	return true
 }
 
-func hasTasks(elements []model.LaneSubElement) bool {
+func hasTasks(elements []deploymentmodel.LaneSubElement) bool {
 	for _, element := range elements {
 		if element.LaneTask != nil {
 			return true
@@ -160,7 +162,7 @@ func hasTasks(elements []model.LaneSubElement) bool {
 	return false
 }
 
-func getLaneSubElements(lane *etree.Element) (result []model.LaneSubElement, err error) {
+func getLaneSubElements(lane *etree.Element) (result []deploymentmodel.LaneSubElement, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -186,7 +188,7 @@ func idIsDescendent(element *etree.Element, id string) bool {
 }
 
 //use this function if a collaboration with only one lane is used and no bpmn:flowNodeRef exists
-func getLoneLaneSubElements(process *etree.Element) (result []model.LaneSubElement, err error) {
+func getLoneLaneSubElements(process *etree.Element) (result []deploymentmodel.LaneSubElement, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -221,7 +223,7 @@ func getLoneLaneSubElements(process *etree.Element) (result []model.LaneSubEleme
 	return
 }
 
-func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubElement, isDeploymentElement bool, err error) {
+func getLaneSubElement(doc *etree.Element, id string) (result deploymentmodel.LaneSubElement, isDeploymentElement bool, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -237,7 +239,7 @@ func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubEleme
 				return result, false, err
 			}
 			result.Order = simpletask.Order
-			result.LaneTask = &model.LaneTask{
+			result.LaneTask = &deploymentmodel.LaneTask{
 				Label:             simpletask.Task.Label,
 				Retries:           simpletask.Task.Retries,
 				DeviceDescription: simpletask.Task.DeviceDescription,
@@ -283,7 +285,7 @@ func getLaneSubElement(doc *etree.Element, id string) (result model.LaneSubEleme
 	return result, false, nil
 }
 
-type LaneElementByOrder []model.LaneSubElement
+type LaneElementByOrder []deploymentmodel.LaneSubElement
 
 func (a LaneElementByOrder) Len() int           { return len(a) }
 func (a LaneElementByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }

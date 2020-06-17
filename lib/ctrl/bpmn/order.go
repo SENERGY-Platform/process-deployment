@@ -16,15 +16,17 @@
 
 package bpmn
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+)
 
-type LaneByOrder []model.LaneElement
+type LaneByOrder []deploymentmodel.LaneElement
 
 func (a LaneByOrder) Len() int           { return len(a) }
 func (a LaneByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a LaneByOrder) Less(i, j int) bool { return a[i].Order < a[j].Order }
 
-type ElementByOrder []model.Element
+type ElementByOrder []deploymentmodel.Element
 
 func (a ElementByOrder) Len() int           { return len(a) }
 func (a ElementByOrder) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
