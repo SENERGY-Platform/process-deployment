@@ -29,11 +29,11 @@ import (
 
 type SemanticRepoFactory struct{}
 
-func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) (result []devicemodel.DeviceType, err error, code int) {
+func (this *Repository) GetFilteredDeviceTypes(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.DeviceType, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
-	payload, err := json.Marshal(devicemodel.DeviceDescriptions(descriptions).ToFilter())
+	payload, err := json.Marshal(descriptions)
 
 	req, err := http.NewRequest(
 		"GET",

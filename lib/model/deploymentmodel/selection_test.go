@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package devicemodel
+package deploymentmodel
 
 import (
 	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 )
 
 func ExampleToFilter() {
 	fmt.Println(DeviceDescriptions{
 		{
 			CharacteristicId: "foobar",
-			Function:         Function{Id: "f1"},
-			DeviceClass:      &DeviceClass{Id: "dc1"},
-			Aspect:           &Aspect{Id: "a1"},
+			Function:         devicemodel.Function{Id: "f1"},
+			DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
+			Aspect:           &devicemodel.Aspect{Id: "a1"},
 		},
 		{
 			CharacteristicId: "foobar",
-			Function:         Function{Id: "f1"},
-			DeviceClass:      &DeviceClass{Id: "dc2"},
-			Aspect:           &Aspect{Id: "a2"},
+			Function:         devicemodel.Function{Id: "f1"},
+			DeviceClass:      &devicemodel.DeviceClass{Id: "dc2"},
+			Aspect:           &devicemodel.Aspect{Id: "a2"},
 		},
 		{
 			CharacteristicId: "foobar",
-			Function:         Function{Id: "f2"},
-			DeviceClass:      &DeviceClass{Id: "dc3"},
-			Aspect:           &Aspect{Id: "a2"},
+			Function:         devicemodel.Function{Id: "f2"},
+			DeviceClass:      &devicemodel.DeviceClass{Id: "dc3"},
+			Aspect:           &devicemodel.Aspect{Id: "a2"},
 		},
 	}.ToFilter())
 
@@ -50,9 +51,9 @@ func ExampleNilToFilter() {
 	fmt.Println(DeviceDescriptions{
 		{
 			CharacteristicId: "foobar",
-			Function:         Function{Id: "f1"},
-			DeviceClass:      &DeviceClass{Id: "dc1"},
-			Aspect:           &Aspect{Id: "a1"},
+			Function:         devicemodel.Function{Id: "f1"},
+			DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
+			Aspect:           &devicemodel.Aspect{Id: "a1"},
 		},
 		{},
 	}.ToFilter())

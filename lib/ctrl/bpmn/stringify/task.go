@@ -263,7 +263,7 @@ func LaneMultiTask(doc *etree.Document, task *deploymentmodel.LaneTask, devices 
 	return nil
 }
 
-func createOverwriteVariableScript(selections []devicemodel.Selection, selectAsRef bool, deviceRepo interfaces.Devices) (script string, err error) {
+func createOverwriteVariableScript(selections []deploymentmodel.Selection, selectAsRef bool, deviceRepo interfaces.Devices) (script string, err error) {
 	overwrites := []executionmodel.Overwrite{}
 	for _, selection := range selections {
 		overwrite := executionmodel.Overwrite{}

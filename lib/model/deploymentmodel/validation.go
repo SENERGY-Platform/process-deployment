@@ -276,3 +276,19 @@ func (this *LaneTask) Validate(strict bool) error {
 	}
 	return nil
 }
+
+func (this Selection) Validate(strict bool) error {
+	if this.Device == nil {
+		return errors.New("missing device selection")
+	}
+	if this.Service == nil {
+		return errors.New("missing service selection")
+	}
+	if this.Device.Id == "" {
+		return errors.New("missing device id in selection")
+	}
+	if this.Service.Id == "" {
+		return errors.New("missing service id in selection")
+	}
+	return nil
+}

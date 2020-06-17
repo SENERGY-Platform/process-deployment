@@ -26,7 +26,7 @@ type Lane struct {
 	Label         string `json:"label"`
 	BpmnElementId string `json:"bpmn_element_id"`
 
-	DeviceDescriptions []devicemodel.DeviceDescription `json:"device_descriptions"`
+	DeviceDescriptions DeviceDescriptions `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
 	Selectables []devicemodel.Selectable `json:"selectables"`
@@ -42,7 +42,7 @@ type MultiLane struct {
 	Label         string `json:"label"`
 	BpmnElementId string `json:"bpmn_element_id"`
 
-	DeviceDescriptions []devicemodel.DeviceDescription `json:"device_descriptions"`
+	DeviceDescriptions DeviceDescriptions `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
 	Selectables []devicemodel.Selectable `json:"selectables"`
@@ -66,8 +66,8 @@ type LaneTask struct {
 	Label   string `json:"label" bson:"label"`
 	Retries int64  `json:"retries,omitempty"`
 
-	DeviceDescription devicemodel.DeviceDescription `json:"device_description"`
-	Input             interface{}                   `json:"input"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	Input             interface{}       `json:"input"`
 
 	BpmnElementId string `json:"bpmn_element_id"`
 	MultiTask     bool   `json:"multi_task"`

@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 )
@@ -58,7 +57,7 @@ func BpmnToMultitask(task *etree.Element) (result deploymentmodel.Element, err e
 		MultiTask: &deploymentmodel.MultiTask{
 			Label:   label,
 			Retries: cmd.Retries,
-			DeviceDescription: devicemodel.DeviceDescription{
+			DeviceDescription: deploymentmodel.DeviceDescription{
 				CharacteristicId: cmd.CharacteristicId,
 				Function:         cmd.Function,
 				DeviceClass:      cmd.DeviceClass,
@@ -104,7 +103,7 @@ func BpmnToTask(task *etree.Element) (result deploymentmodel.Element, err error)
 		Task: &deploymentmodel.Task{
 			Label:   label,
 			Retries: cmd.Retries,
-			DeviceDescription: devicemodel.DeviceDescription{
+			DeviceDescription: deploymentmodel.DeviceDescription{
 				CharacteristicId: cmd.CharacteristicId,
 				Function:         cmd.Function,
 				DeviceClass:      cmd.DeviceClass,

@@ -25,14 +25,14 @@ import (
 func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
 	for index, element := range deployment.Elements {
 		if element.Task != nil {
-			options, err := this.GetOptions(token, []devicemodel.DeviceDescription{element.Task.DeviceDescription})
+			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.Task.DeviceDescription}.ToFilter())
 			if err != nil {
 				return err
 			}
 			element.Task.Selectables = options
 		}
 		if element.MultiTask != nil {
-			options, err := this.GetOptions(token, []devicemodel.DeviceDescription{element.MultiTask.DeviceDescription})
+			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.MultiTask.DeviceDescription}.ToFilter())
 			if err != nil {
 				return err
 			}
@@ -42,14 +42,14 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 	}
 	for index, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions)
+			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions.ToFilter())
 			if err != nil {
 				return err
 			}
 			lane.Lane.Selectables = options
 		}
 		if lane.MultiLane != nil {
-			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions)
+			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions.ToFilter())
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func (this *Ctrl) SetDeploymentOptions(token jwt_http_router.JwtImpersonate, dep
 	return nil
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) (result []devicemodel.Selectable, err error) {
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.Selectable, err error) {
 	if len(descriptions) == 0 {
 		return []devicemodel.Selectable{}, nil
 	}

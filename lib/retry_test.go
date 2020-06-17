@@ -140,10 +140,10 @@ func ExampleKeepRetries() {
 	createSimpleObj.Elements[0].Task.Selection.Service.ProtocolId = "pid"
 
 	createSimpleObj.Elements[1].MultiTask.Selections = append(createSimpleObj.Elements[1].MultiTask.Selections,
-		devicemodel.Selection{
+		deploymentmodel.Selection{
 			Device:  &devicemodel.Device{Id: "device_id_1"},
 			Service: &devicemodel.Service{Id: "service_id_1", ProtocolId: "pid"},
-		}, devicemodel.Selection{
+		}, deploymentmodel.Selection{
 			Device:  &devicemodel.Device{Id: "device_id_2"},
 			Service: &devicemodel.Service{Id: "service_id_2", ProtocolId: "pid"},
 		})

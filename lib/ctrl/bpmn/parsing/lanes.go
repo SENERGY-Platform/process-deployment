@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 	"log"
@@ -132,7 +131,7 @@ func createLaneElement(id string, label string, order int64, subElements []deplo
 	return
 }
 
-func aggregateLaneTaskInfo(elements []deploymentmodel.LaneSubElement) (result []devicemodel.DeviceDescription) {
+func aggregateLaneTaskInfo(elements []deploymentmodel.LaneSubElement) (result []deploymentmodel.DeviceDescription) {
 	for _, element := range elements {
 		if element.LaneTask != nil {
 			result = append(result, element.LaneTask.DeviceDescription)

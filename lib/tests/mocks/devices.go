@@ -89,7 +89,7 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) ([]devicemodel.Selectable, error, int) {
+func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) ([]devicemodel.Selectable, error, int) {
 	if len(descriptions) == 0 {
 		return nil, errors.New("missing descriptions"), 500
 	}

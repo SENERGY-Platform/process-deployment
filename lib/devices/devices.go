@@ -48,7 +48,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions []devicemodel.DeviceDescription) (result []devicemodel.Selectable, err error, code int) {
+func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.Selectable, err error, code int) {
 	startGetFilteredDevices := time.Now()
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
 	if err != nil {
@@ -72,12 +72,12 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 		for _, service := range dt.Services {
 			for _, desc := range descriptions {
 				for _, function := range service.Functions {
-					if function.Id == desc.Function.Id {
-						if desc.Aspect == nil {
+					if function.Id == desc.FunctionId {
+						if desc.AspectId == "" {
 							serviceIndex[service.Id] = service
 						} else {
 							for _, aspect := range service.Aspects {
-								if aspect.Id == desc.Aspect.Id {
+								if aspect.Id == desc.AspectId {
 									serviceIndex[service.Id] = service
 								}
 							}

@@ -23,17 +23,17 @@ import (
 
 type Task struct {
 	//information direct from model
-	Label             string                        `json:"label"`
-	DeviceDescription devicemodel.DeviceDescription `json:"device_description"`
-	BpmnElementId     string                        `json:"bpmn_element_id"`
-	Retries           int64                         `json:"retries,omitempty"`
-	Input             interface{}                   `json:"input"`
+	Label             string            `json:"label"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	BpmnElementId     string            `json:"bpmn_element_id"`
+	Retries           int64             `json:"retries,omitempty"`
+	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
 	Selectables []devicemodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
-	Selection devicemodel.Selection `json:"selection"`
+	Selection Selection `json:"selection"`
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`
@@ -45,17 +45,17 @@ type Task struct {
 
 type MultiTask struct {
 	//information direct from model
-	Label             string                        `json:"label"`
-	DeviceDescription devicemodel.DeviceDescription `json:"device_description"`
-	BpmnElementId     string                        `json:"bpmn_element_id"`
-	Retries           int64                         `json:"retries,omitempty"`
-	Input             interface{}                   `json:"input"`
+	Label             string            `json:"label"`
+	DeviceDescription DeviceDescription `json:"device_description"`
+	BpmnElementId     string            `json:"bpmn_element_id"`
+	Retries           int64             `json:"retries,omitempty"`
+	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
 	Selectables []devicemodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
-	Selections []devicemodel.Selection `json:"selections"`
+	Selections []Selection `json:"selections"`
 
 	//information to be completed by the user
 	Parameter map[string]string `json:"parameter"`

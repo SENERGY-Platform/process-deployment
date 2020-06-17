@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/iot-device-repository/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"net/http"
 	"net/http/httptest"
@@ -125,24 +126,24 @@ func TestGetFilteredDeviceTypes(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
+	_, err, _ = repo.GetFilteredDeviceTypes("token", deploymentmodel.DeviceDescriptions{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      nil,
 		Aspect:           nil,
-	}})
+	}}.ToFilter())
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", deploymentmodel.DeviceDescriptions{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
 		Aspect:           &devicemodel.Aspect{Id: "a1"},
-	}})
+	}}.ToFilter())
 
 	if err != nil {
 		t.Error(err)
@@ -193,24 +194,24 @@ func TestGetFilteredDevices(t *testing.T) {
 
 	repo := temp.(*Repository)
 
-	_, err, _ = repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
+	_, err, _ = repo.GetFilteredDeviceTypes("token", deploymentmodel.DeviceDescriptions{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      nil,
 		Aspect:           nil,
-	}})
+	}}.ToFilter())
 
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	dt, err, _ := repo.GetFilteredDeviceTypes("token", []devicemodel.DeviceDescription{{
+	dt, err, _ := repo.GetFilteredDeviceTypes("token", deploymentmodel.DeviceDescriptions{{
 		CharacteristicId: "chid1",
 		Function:         devicemodel.Function{Id: "fid"},
 		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
 		Aspect:           &devicemodel.Aspect{Id: "a1"},
-	}})
+	}}.ToFilter())
 
 	if err != nil {
 		t.Error(err)
