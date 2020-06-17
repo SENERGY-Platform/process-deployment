@@ -18,6 +18,7 @@ package deploymentmodel
 
 type Deployment struct {
 	Id          string        `json:"id"`
+	Version     string        `json:"version,omitempty"`
 	Executable  bool          `json:"executable"`
 	XmlRaw      string        `json:"xml_raw"`
 	Xml         string        `json:"xml"`

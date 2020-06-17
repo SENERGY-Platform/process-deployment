@@ -120,21 +120,21 @@ func TestDeployments(t *testing.T) {
 
 	expected := `
 	GET:
-	{ false     [] [] } not found 404 
-	{ false     [] [] } not found 404 
-	{ false     [] [] } access denied 403
-	{id1 false    name1 [] [] } <nil> 200
+	{  false     [] [] } not found 404 
+	{  false     [] [] } not found 404 
+	{  false     [] [] } access denied 403
+	{id1  false    name1 [] [] } <nil> 200
 	CHECK:
 	not found 404
 	not found 404
 	access denied 403
 	<nil> 200
 	DELETE:
-	{id1 false    name1 [] [] } <nil> 200
+	{id1  false    name1 [] [] } <nil> 200
 	<nil>
-	{id1 false    name1 [] [] } <nil> 200
+	{id1  false    name1 [] [] } <nil> 200
 	<nil>
-	{ false     [] [] } not found 404
+	{  false     [] [] } not found 404
 	`
 	compareExampleStr(t, buffer.String(), expected)
 }
