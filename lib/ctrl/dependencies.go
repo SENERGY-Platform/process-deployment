@@ -19,8 +19,11 @@ package ctrl
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"log"
+	"runtime/debug"
 	"sort"
 )
 
@@ -37,7 +40,24 @@ func (this *Ctrl) GetSelectedDependencies(jwt jwt_http_router.Jwt, ids []string)
 }
 
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {
-	dependencies, err := this.deploymentToDependencies(command.Deployment)
+	v1, v2, err := CastDeploymentVersion(command.Deployment)
+	if err != nil {
+		//allow unknown versions; and save empty dependencies
+		log.Println("WARNING: ", err)
+		debug.PrintStack()
+		return this.db.SetDependencies(dependencymodel.Dependencies{
+			DeploymentId: command.Id,
+			Owner:        command.Owner,
+			Devices:      []dependencymodel.DeviceDependency{},
+			Events:       []dependencymodel.EventDependency{},
+		})
+	}
+	var dependencies dependencymodel.Dependencies
+	if v1 != nil {
+		dependencies, err = this.deploymentToDependenciesV1(*v1)
+	} else if v2 != nil {
+		dependencies, err = this.deploymentToDependenciesV2(*v2)
+	}
 	if err != nil {
 		return err
 	}
@@ -49,7 +69,7 @@ func (this *Ctrl) DeleteDependencies(command messages.DeploymentCommand) error {
 	return this.db.DeleteDependencies(command.Id)
 }
 
-func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
+func (this *Ctrl) deploymentToDependenciesV1(deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
 	result.DeploymentId = deployment.Id
 	for _, lane := range deployment.Lanes {
 		if lane.Lane != nil && lane.Lane.Selection != nil && lane.Lane.Selection.Id != "" {
@@ -204,6 +224,10 @@ func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment
 	sort.Sort(DeviceDependenciesByDeviceId(result.Devices))
 	sort.Sort(EventDependenciesByEventId(result.Events))
 	return result, nil
+}
+
+func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deployment) (result dependencymodel.Dependencies, err error) {
+	panic("not implemented") //TODO
 }
 
 func reduceDeviceDependencies(dependencies []dependencymodel.DeviceDependency) (result []dependencymodel.DeviceDependency) {

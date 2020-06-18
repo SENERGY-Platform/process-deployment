@@ -42,7 +42,7 @@ func Task(doc *etree.Document, task *deploymentmodel.Task, deviceRepo interfaces
 		}
 	}()
 
-	command := executionmodel.Command{
+	command := executionmodel.Task{
 		Retries:          task.Retries,
 		Function:         task.DeviceDescription.Function,
 		CharacteristicId: task.DeviceDescription.CharacteristicId,
@@ -83,7 +83,7 @@ func LaneTask(doc *etree.Document, task *deploymentmodel.LaneTask, device *devic
 		}
 	}()
 
-	command := executionmodel.Command{
+	command := executionmodel.Task{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,
@@ -125,7 +125,7 @@ func MultiTask(doc *etree.Document, task *deploymentmodel.MultiTask, deviceRepo 
 		}
 	}()
 
-	command := executionmodel.Command{
+	command := executionmodel.Task{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,
@@ -180,7 +180,7 @@ func LaneMultiTask(doc *etree.Document, task *deploymentmodel.LaneTask, devices 
 		}
 	}()
 
-	command := executionmodel.Command{
+	command := executionmodel.Task{
 		Retries:              task.Retries,
 		Function:             task.DeviceDescription.Function,
 		CharacteristicId:     task.DeviceDescription.CharacteristicId,

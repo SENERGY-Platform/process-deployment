@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package messages
+package stringifier
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 )
 
-type DeploymentCommand struct {
-	Command      string                       `json:"command"`
-	Id           string                       `json:"id"`
-	Owner        string                       `json:"owner"`
-	Deployment   *deploymentmodel.Deployment  `json:"deployment"`
-	DeploymentV2 *deploymentmodel2.Deployment `json:"deployment_v2,omitempty"`
+type Stringifier struct {
+	conf config.Config
+}
+
+func New(conf config.Config) *Stringifier {
+	return &Stringifier{conf: conf}
+}
+
+func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (string, error) {
+	panic("implement me")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package db
+package docker
 
 import (
+	"context"
 	"github.com/ory/dockertest"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
-	"strings"
-	"testing"
+	"time"
 )
 
 func MongoTestServer(pool *dockertest.Pool) (closer func(), hostPort string, ipAddress string, err error) {
@@ -35,25 +35,10 @@ func MongoTestServer(pool *dockertest.Pool) (closer func(), hostPort string, ipA
 	hostPort = repo.GetPort("27017/tcp")
 	err = pool.Retry(func() error {
 		log.Println("try mongodb connection...")
-		ctx, _ := getTimeoutContext()
+		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:"+hostPort))
 		err = client.Ping(ctx, readpref.Primary())
 		return err
 	})
 	return func() { repo.Close() }, hostPort, repo.Container.NetworkSettings.IPAddress, err
-}
-
-func compareExampleStr(t *testing.T, actual string, expected string) {
-	actual = strings.TrimSpace(actual)
-	expected = strings.TrimSpace(expected)
-	actualLines := strings.Split(actual, "\n")
-	expectedLines := strings.Split(expected, "\n")
-	if len(actualLines) != len(expectedLines) {
-		t.Fatal("GOT:\n", actual, "\nWANT:\n", expected)
-	}
-	for index, actualLine := range actualLines {
-		if strings.TrimSpace(actualLine) != strings.TrimSpace(expectedLines[index]) {
-			t.Fatal("LINE: ", index, "\nWANT:\n", strings.TrimSpace(actualLine), "\nGOT:\n", strings.TrimSpace(expectedLines[index]))
-		}
-	}
 }

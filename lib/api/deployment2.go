@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"log"
@@ -28,19 +28,25 @@ import (
 	"time"
 )
 
+const ACTIVATE_V2 = false
+
 func init() {
-	endpoints = append(endpoints, DeploymentsEndpoints)
+	endpoints = append(endpoints, func(router *jwt_http_router.Router, conf config.Config, ctrl *ctrl.Ctrl) {
+		if ACTIVATE_V2 {
+			Deployments2Endpoints(router, conf, ctrl)
+		}
+	})
 }
 
-func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
-	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
+	router.POST("/v2/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		msg := messages.PrepareRequest{}
 		err := json.NewDecoder(request.Body).Decode(&msg)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.PrepareDeploymentV1(jwt.Impersonate, msg.Xml, msg.Svg)
+		result, err, code := ctrl.PrepareDeploymentV2(jwt.Impersonate, msg.Xml, msg.Svg)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -49,7 +55,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.GET("/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/v2/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := params.ByName("modelId")
 		process, err, code := ctrl.GetProcessModel(jwt.Impersonate, id)
 		if err != nil {
@@ -57,7 +63,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 			return
 		}
 		start := time.Now()
-		result, err, code := ctrl.PrepareDeploymentV1(jwt.Impersonate, process.BpmnXml, process.SvgXml)
+		result, err, code := ctrl.PrepareDeploymentV2(jwt.Impersonate, process.BpmnXml, process.SvgXml)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -68,7 +74,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.POST("/v2/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
@@ -76,7 +82,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.CreateDeploymentV1(jwt, deployment)
+		result, err, code := ctrl.CreateDeploymentV2(jwt, deployment)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -85,7 +91,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.PUT("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.PUT("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := params.ByName("id")
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
@@ -93,7 +99,7 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.UpdateDeploymentV1(jwt, id, deployment)
+		result, err, code := ctrl.UpdateDeploymentV2(jwt, id, deployment)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -102,9 +108,9 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.GET("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := params.ByName("id")
-		result, err, code := ctrl.GetDeploymentV1(jwt, id)
+		result, err, code := ctrl.GetDeploymentV2(jwt, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -113,9 +119,9 @@ func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, 
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.DELETE("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.DELETE("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
 		id := params.ByName("id")
-		err, code := ctrl.RemoveDeploymentV1(jwt, id)
+		err, code := ctrl.RemoveDeploymentV2(jwt, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return

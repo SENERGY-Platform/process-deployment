@@ -20,14 +20,17 @@ import (
 	"context"
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/ory/dockertest"
 	"runtime/debug"
 	"strings"
 	"testing"
 )
 
-func TestDeployments(t *testing.T) {
+func TestDeploymentsV1(t *testing.T) {
 	if testing.Short() {
 		t.Skip("short tests only without docker")
 	}
@@ -50,7 +53,7 @@ func TestDeployments(t *testing.T) {
 		testprint(err)
 		return
 	}
-	closer, port, _, err := MongoTestServer(pool)
+	closer, port, _, err := docker.MongoTestServer(pool)
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
@@ -69,7 +72,130 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id1", "user1", deploymentmodel.Deployment{
+	err = db.SetDeployment("id1", "user1", &deploymentmodel.Deployment{
+		Id:   "id1",
+		Name: "name1",
+	}, nil)
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+
+	err = db.SetDeployment("id2", "user1", &deploymentmodel.Deployment{
+		Id:   "id2",
+		Name: "name2",
+	}, nil)
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+
+	err = db.SetDeployment("id3", "user2", &deploymentmodel.Deployment{
+		Id:   "id3",
+		Name: "name3",
+	}, nil)
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+
+	testprint("GET V1:")
+	testprint(testGetDeploymentV1(db, "nope", "nope"))
+	testprint(testGetDeploymentV1(db, "user1", "nope"))
+	testprint(testGetDeploymentV1(db, "nope", "id1"))
+	testprint(testGetDeploymentV1(db, "user1", "id1"))
+
+	testprint("GET V2:")
+	testprint(testGetDeploymentV2(db, "nope", "nope"))
+	testprint(testGetDeploymentV2(db, "user1", "nope"))
+	testprint(testGetDeploymentV2(db, "nope", "id1"))
+	testprint(testGetDeploymentV2(db, "user1", "id1"))
+
+	testprint("CHECK:")
+	testprint(db.CheckDeploymentAccess("nope", "nope"))
+	testprint(db.CheckDeploymentAccess("user1", "nope"))
+	testprint(db.CheckDeploymentAccess("nope", "id1"))
+	testprint(db.CheckDeploymentAccess("user1", "id1"))
+
+	testprint("DELETE:")
+	testprint(testGetDeploymentV1(db, "user1", "id1"))
+	testprint(db.DeleteDeployment("nope"))
+	testprint(testGetDeploymentV1(db, "user1", "id1"))
+	testprint(db.DeleteDeployment("id1"))
+	testprint(testGetDeploymentV1(db, "user1", "id1"))
+
+	expected := `
+	GET V1:
+	{ false     [] [] } not found 404 
+	{ false     [] [] } not found 404 
+	{ false     [] [] } access denied 403
+	{id1 false    name1 [] [] } <nil> 200
+	GET V2:
+	{   {  } [] false} not found 404 
+	{   {  } [] false} not found 404 
+	{   {  } [] false} access denied 403
+	{   {  } [] false} <nil> 200
+	CHECK:
+	not found 404
+	not found 404
+	access denied 403
+	<nil> 200
+	DELETE:
+	{id1 false    name1 [] [] } <nil> 200
+	<nil>
+	{id1 false    name1 [] [] } <nil> 200
+	<nil>
+	{ false     [] [] } not found 404  
+	`
+	compareExampleStr(t, buffer.String(), expected)
+}
+
+func TestDeploymentsV2(t *testing.T) {
+	if testing.Short() {
+		t.Skip("short tests only without docker")
+	}
+	buffer := &strings.Builder{}
+	testprint := func(args ...interface{}) {
+		fmt.Fprintln(buffer, args...)
+	}
+
+	config, err := config.LoadConfig("../../config.json")
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+	config.Debug = true
+
+	pool, err := dockertest.NewPool("")
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+	closer, port, _, err := docker.MongoTestServer(pool)
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+	defer closer()
+
+	config.MongoUrl = "mongodb://localhost:" + port
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	db, err := Factory.New(ctx, config)
+	if err != nil {
+		debug.PrintStack()
+		testprint(err)
+		return
+	}
+
+	err = db.SetDeployment("id1", "user1", nil, &deploymentmodel2.Deployment{
 		Id:   "id1",
 		Name: "name1",
 	})
@@ -79,7 +205,7 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id2", "user1", deploymentmodel.Deployment{
+	err = db.SetDeployment("id2", "user1", nil, &deploymentmodel2.Deployment{
 		Id:   "id2",
 		Name: "name2",
 	})
@@ -89,7 +215,7 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id3", "user2", deploymentmodel.Deployment{
+	err = db.SetDeployment("id3", "user2", nil, &deploymentmodel2.Deployment{
 		Id:   "id3",
 		Name: "name3",
 	})
@@ -99,11 +225,17 @@ func TestDeployments(t *testing.T) {
 		return
 	}
 
-	testprint("GET:")
-	testprint(db.GetDeployment("nope", "nope"))
-	testprint(db.GetDeployment("user1", "nope"))
-	testprint(db.GetDeployment("nope", "id1"))
-	testprint(db.GetDeployment("user1", "id1"))
+	testprint("GET V1:")
+	testprint(testGetDeploymentV1(db, "nope", "nope"))
+	testprint(testGetDeploymentV1(db, "user1", "nope"))
+	testprint(testGetDeploymentV1(db, "nope", "id1"))
+	testprint(testGetDeploymentV1(db, "user1", "id1"))
+
+	testprint("GET V2:")
+	testprint(testGetDeploymentV2(db, "nope", "nope"))
+	testprint(testGetDeploymentV2(db, "user1", "nope"))
+	testprint(testGetDeploymentV2(db, "nope", "id1"))
+	testprint(testGetDeploymentV2(db, "user1", "id1"))
 
 	testprint("CHECK:")
 	testprint(db.CheckDeploymentAccess("nope", "nope"))
@@ -112,29 +244,65 @@ func TestDeployments(t *testing.T) {
 	testprint(db.CheckDeploymentAccess("user1", "id1"))
 
 	testprint("DELETE:")
-	testprint(db.GetDeployment("user1", "id1"))
+	testprint(testGetDeploymentV2(db, "user1", "id1"))
 	testprint(db.DeleteDeployment("nope"))
-	testprint(db.GetDeployment("user1", "id1"))
+	testprint(testGetDeploymentV2(db, "user1", "id1"))
 	testprint(db.DeleteDeployment("id1"))
-	testprint(db.GetDeployment("user1", "id1"))
+	testprint(testGetDeploymentV2(db, "user1", "id1"))
 
 	expected := `
-	GET:
-	{  false     [] [] } not found 404 
-	{  false     [] [] } not found 404 
-	{  false     [] [] } access denied 403
-	{id1  false    name1 [] [] } <nil> 200
+	GET V1:
+	{ false     [] [] } not found 404 
+	{ false     [] [] } not found 404 
+	{ false     [] [] } access denied 403
+	{ false     [] [] } <nil> 200 
+	GET V2:
+	{   {  } [] false} not found 404 
+	{   {  } [] false} not found 404 
+	{   {  } [] false} access denied 403
+	{id1 name1  {  } [] false} <nil> 200
 	CHECK:
 	not found 404
 	not found 404
 	access denied 403
 	<nil> 200
 	DELETE:
-	{id1  false    name1 [] [] } <nil> 200
+	{id1 name1  {  } [] false} <nil> 200
 	<nil>
-	{id1  false    name1 [] [] } <nil> 200
+	{id1 name1  {  } [] false} <nil> 200
 	<nil>
-	{  false     [] [] } not found 404
+	{   {  } [] false} not found 404
 	`
 	compareExampleStr(t, buffer.String(), expected)
+}
+
+func testGetDeploymentV1(db interfaces.Database, userId string, deploymentId string) (deployment deploymentmodel.Deployment, err error, code int) {
+	temp, _, err, code := db.GetDeployment(userId, deploymentId)
+	if temp != nil {
+		deployment = *temp
+	}
+	return deployment, err, code
+}
+
+func testGetDeploymentV2(db interfaces.Database, userId string, deploymentId string) (deployment deploymentmodel2.Deployment, err error, code int) {
+	_, temp, err, code := db.GetDeployment(userId, deploymentId)
+	if temp != nil {
+		deployment = *temp
+	}
+	return deployment, err, code
+}
+
+func compareExampleStr(t *testing.T, actual string, expected string) {
+	actual = strings.TrimSpace(actual)
+	expected = strings.TrimSpace(expected)
+	actualLines := strings.Split(actual, "\n")
+	expectedLines := strings.Split(expected, "\n")
+	if len(actualLines) != len(expectedLines) {
+		t.Fatal("GOT:\n", actual, "\nWANT:\n", expected)
+	}
+	for index, actualLine := range actualLines {
+		if strings.TrimSpace(actualLine) != strings.TrimSpace(expectedLines[index]) {
+			t.Fatal("LINE: ", index+1, "\nGOT:\n", strings.TrimSpace(actualLine), "\nWANT:\n", strings.TrimSpace(expectedLines[index]), "\n\n", actual)
+		}
+	}
 }

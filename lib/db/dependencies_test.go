@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/ory/dockertest"
 	"runtime/debug"
 	"strings"
@@ -51,7 +52,7 @@ func TestDependencies(t *testing.T) {
 		testprint(err)
 		return
 	}
-	closer, port, _, err := MongoTestServer(pool)
+	closer, port, _, err := docker.MongoTestServer(pool)
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)

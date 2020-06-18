@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2020 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-package messages
+package parser
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/beevik/etree"
+	"log"
+	"strconv"
 )
 
-type DeploymentCommand struct {
-	Command      string                       `json:"command"`
-	Id           string                       `json:"id"`
-	Owner        string                       `json:"owner"`
-	Deployment   *deploymentmodel.Deployment  `json:"deployment"`
-	DeploymentV2 *deploymentmodel2.Deployment `json:"deployment_v2,omitempty"`
+func (this *Parser) getOrder(element *etree.Element) int64 {
+	if element == nil {
+		return 0
+	}
+	orderAttr := element.SelectAttr("order")
+	if orderAttr == nil {
+		return 0
+	}
+	order, err := strconv.ParseInt(orderAttr.Value, 10, 64)
+	if err != nil {
+		if this.conf.Debug {
+			log.Println("unable to parse element senergy:order as int64", err, *element)
+		}
+		return 0
+	}
+	return order
 }

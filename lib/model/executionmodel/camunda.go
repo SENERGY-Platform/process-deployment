@@ -20,7 +20,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 )
 
-type Command struct {
+type Task struct {
 	//modeling time
 	Function         devicemodel.Function `json:"function"`
 	CharacteristicId string               `json:"characteristic_id"`

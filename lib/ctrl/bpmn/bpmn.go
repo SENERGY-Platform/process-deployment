@@ -31,7 +31,6 @@ import (
 )
 
 func PrepareDeployment(xml string) (result deploymentmodel.Deployment, err error) {
-	result.Version = "1"
 	result.XmlRaw = xml
 	defer func() {
 		if r := recover(); r != nil && err == nil {

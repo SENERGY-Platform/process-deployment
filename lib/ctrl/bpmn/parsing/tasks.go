@@ -31,7 +31,7 @@ func BpmnToMultitask(task *etree.Element) (result deploymentmodel.Element, err e
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
 		}
 	}()
-	cmd := executionmodel.Command{}
+	cmd := executionmodel.Task{}
 	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
 	err = json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
 	if err != nil {
@@ -77,7 +77,7 @@ func BpmnToTask(task *etree.Element) (result deploymentmodel.Element, err error)
 			err = errors.New(fmt.Sprint("Recovered Error: getAbstractTaskParameter() ", r))
 		}
 	}()
-	cmd := executionmodel.Command{}
+	cmd := executionmodel.Task{}
 	cmdPayload := task.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
 	err = json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
 	if err != nil {

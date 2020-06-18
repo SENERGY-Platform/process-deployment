@@ -20,25 +20,31 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/parser"
+	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/stringifier"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"runtime/debug"
 )
 
 type Ctrl struct {
-	config              config.Config
-	db                  interfaces.Database
-	devices             interfaces.Devices
-	deploymentPublisher interfaces.Producer
-	processrepo         interfaces.ProcessRepo
+	config                config.Config
+	db                    interfaces.Database
+	devices               interfaces.Devices
+	deploymentPublisher   interfaces.Producer
+	processrepo           interfaces.ProcessRepo
+	deploymentParser      interfaces.DeploymentParser
+	deploymentStringifier interfaces.DeploymentStringifier
 }
 
 func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo) (result *Ctrl, err error) {
 	result = &Ctrl{
-		config:      config,
-		db:          db,
-		devices:     devices,
-		processrepo: processrepo,
+		config:                config,
+		db:                    db,
+		devices:               devices,
+		processrepo:           processrepo,
+		deploymentParser:      parser.New(config),
+		deploymentStringifier: stringifier.New(config),
 	}
 	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)
 	if err != nil {

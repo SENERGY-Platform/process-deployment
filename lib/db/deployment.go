@@ -20,6 +20,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -67,24 +68,19 @@ func (this *Mongo) deploymentsCollection() *mongo.Collection {
 }
 
 func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err error, code int) {
-	_, err, code = this.GetDeployment(user, deploymentId)
-	return
-}
-
-func (this *Mongo) GetDeployment(user string, deploymentId string) (result deploymentmodel.Deployment, err error, code int) {
 	ctx, _ := getTimeoutContext()
 	wrapper := messages.DeploymentCommand{}
 	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
 	if err == mongo.ErrNoDocuments {
-		return result, errors.New("not found"), http.StatusNotFound
+		return errors.New("not found"), http.StatusNotFound
 	}
 	if err != nil {
-		return result, err, http.StatusInternalServerError
+		return err, http.StatusInternalServerError
 	}
 	if wrapper.Owner != user {
-		return deploymentmodel.Deployment{}, errors.New("access denied"), http.StatusForbidden
+		return errors.New("access denied"), http.StatusForbidden
 	}
-	return wrapper.Deployment, nil, 200
+	return nil, 200
 }
 
 func (this *Mongo) DeleteDeployment(id string) error {
@@ -93,8 +89,25 @@ func (this *Mongo) DeleteDeployment(id string) error {
 	return err
 }
 
-func (this *Mongo) SetDeployment(id string, owner string, deployment deploymentmodel.Deployment) error {
+func (this *Mongo) GetDeployment(user string, deploymentId string) (deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment, err error, code int) {
 	ctx, _ := getTimeoutContext()
-	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}, options.Replace().SetUpsert(true))
+	wrapper := messages.DeploymentCommand{}
+	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil, errors.New("not found"), http.StatusNotFound
+	}
+	if err != nil {
+		return nil, nil, err, http.StatusInternalServerError
+	}
+	if wrapper.Owner != user {
+		return nil, nil, errors.New("access denied"), http.StatusForbidden
+	}
+
+	return wrapper.Deployment, wrapper.DeploymentV2, nil, 200
+}
+
+func (this *Mongo) SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error {
+	ctx, _ := getTimeoutContext()
+	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deploymentV1, DeploymentV2: deploymentV2}, options.Replace().SetUpsert(true))
 	return err
 }
