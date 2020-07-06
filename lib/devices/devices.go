@@ -24,7 +24,6 @@ import (
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
 	"log"
-	"time"
 )
 
 var L1Expiration = 60         // 60sec
@@ -49,7 +48,10 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 var Factory = &RepositoryFactory{}
 
 func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.Selectable, err error, code int) {
-	startGetFilteredDevices := time.Now()
+	filteredProtocols := map[string]bool{}
+	for _, protocolId := range this.config.EventBasedProtocols {
+		filteredProtocols[protocolId] = true
+	}
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
 	if err != nil {
 		return result, err, code
@@ -57,28 +59,21 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 	if this.config.Debug {
 		log.Println("DEBUG: GetFilteredDevices()::GetFilteredDeviceTypes()", deviceTypes)
 	}
-	durstartGetFilteredDevicesSemantic := time.Now().Sub(startGetFilteredDevices)
-	log.Println("DEBUG: prepare deployment durstartGetFilteredDevicesSemantic time:", durstartGetFilteredDevicesSemantic, durstartGetFilteredDevicesSemantic.Milliseconds())
 	for _, dt := range deviceTypes {
-		devices, err, code := this.GetDevicesOfType(token, dt.Id)
-		if err != nil {
-			return result, err, code
-		}
-		if this.config.Debug {
-			log.Println("DEBUG: GetFilteredDevices()::GetDevicesOfType()", dt.Id, devices)
-		}
 		services := []devicemodel.Service{}
 		serviceIndex := map[string]devicemodel.Service{}
 		for _, service := range dt.Services {
 			for _, desc := range descriptions {
 				for _, function := range service.Functions {
-					if function.Id == desc.FunctionId {
-						if desc.AspectId == "" {
-							serviceIndex[service.Id] = service
-						} else {
-							for _, aspect := range service.Aspects {
-								if aspect.Id == desc.AspectId {
-									serviceIndex[service.Id] = service
+					if !(function.RdfType == devicemodel.SES_ONTOLOGY_MEASURING_FUNCTION && filteredProtocols[service.ProtocolId]) {
+						if function.Id == desc.FunctionId {
+							if desc.AspectId == "" {
+								serviceIndex[service.Id] = service
+							} else {
+								for _, aspect := range service.Aspects {
+									if aspect.Id == desc.AspectId {
+										serviceIndex[service.Id] = service
+									}
 								}
 							}
 						}
@@ -89,17 +84,24 @@ func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate,
 		for _, service := range serviceIndex {
 			services = append(services, service)
 		}
-		for _, device := range devices {
-			result = append(result, devicemodel.Selectable{
-				Device:   device,
-				Services: services,
-			})
+		if len(services) > 0 {
+			devices, err, code := this.GetDevicesOfType(token, dt.Id)
+			if err != nil {
+				return result, err, code
+			}
+			if this.config.Debug {
+				log.Println("DEBUG: GetFilteredDevices()::GetDevicesOfType()", dt.Id, devices)
+			}
+			for _, device := range devices {
+				result = append(result, devicemodel.Selectable{
+					Device:   device,
+					Services: services,
+				})
+			}
 		}
 	}
 	if this.config.Debug {
 		log.Println("DEBUG: GetFilteredDevices()", result)
 	}
-	durstartGetFilteredDevices := time.Now().Sub(startGetFilteredDevices)
-	log.Println("DEBUG: prepare deployment GetFilteredDevices time:", durstartGetFilteredDevices, durstartGetFilteredDevices.Milliseconds())
 	return result, nil, 200
 }
