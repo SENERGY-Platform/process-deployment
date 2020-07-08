@@ -177,6 +177,7 @@ func TestGetFilteredDevices(t *testing.T) {
 		json.NewEncoder(w).Encode([]devicemodel.DeviceType{
 			{Id: "dt1", Name: "dt1name", DeviceClass: devicemodel.DeviceClass{Id: "dc1"}, Services: []devicemodel.Service{
 				testService("11", "pid", devicemodel.SES_ONTOLOGY_MEASURING_FUNCTION),
+				testService("11_b", "mqtt", devicemodel.SES_ONTOLOGY_MEASURING_FUNCTION),
 				testService("12", "pid", devicemodel.SES_ONTOLOGY_CONTROLLING_FUNCTION),
 			}},
 			{Id: "dt2", Name: "dt2name", DeviceClass: devicemodel.DeviceClass{Id: "dc1"}, Services: []devicemodel.Service{
@@ -222,9 +223,8 @@ func TestGetFilteredDevices(t *testing.T) {
 	defer searchmock.Close()
 
 	c := &config.ConfigStruct{
-		SemanticRepoUrl:     semanticmock.URL,
-		PermSearchUrl:       searchmock.URL,
-		EventBasedProtocols: []string{"mqtt"},
+		SemanticRepoUrl: semanticmock.URL,
+		PermSearchUrl:   searchmock.URL,
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -242,7 +242,7 @@ func TestGetFilteredDevices(t *testing.T) {
 		Function:         devicemodel.Function{Id: devicemodel.SES_ONTOLOGY_MEASURING_FUNCTION + "_1"},
 		DeviceClass:      &devicemodel.DeviceClass{Id: "dc1"},
 		Aspect:           &devicemodel.Aspect{Id: "a1"},
-	}}.ToFilter())
+	}}.ToFilter(), []string{"mqtt"})
 
 	if err != nil {
 		t.Error(err)

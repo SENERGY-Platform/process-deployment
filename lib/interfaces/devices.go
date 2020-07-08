@@ -29,7 +29,8 @@ type DevicesFactory interface {
 
 type Devices interface {
 	GetProtocol(id string) (devicemodel.Protocol, error, int)
+	GetProtocols() (result []devicemodel.Protocol, err error, code int)
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
-	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) ([]devicemodel.Selectable, error, int)
+	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) ([]devicemodel.Selectable, error, int)
 }

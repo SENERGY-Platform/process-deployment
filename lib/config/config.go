@@ -28,23 +28,22 @@ import (
 )
 
 type ConfigStruct struct {
-	LogLevel                    string   `json:"log_level"`
-	ApiPort                     string   `json:"api_port"`
-	ZookeeperUrl                string   `json:"zookeeper_url"`
-	DeviceRepoUrl               string   `json:"device_repo_url"`
-	SemanticRepoUrl             string   `json:"semantic_repo_url"`
-	ProcessRepoUrl              string   `json:"process_repo_url"`
-	PermSearchUrl               string   `json:"perm_search_url"`
-	MongoUrl                    string   `json:"mongo_url"`
-	MongoTable                  string   `json:"mongo_table"`
-	MongoDeploymentCollection   string   `json:"mongo_deployment_collection"`
-	MongoDependenciesCollection string   `json:"mongo_dependencies_collection"`
-	ConsumerGroup               string   `json:"consumer_group"`
-	Debug                       bool     `json:"debug"`
-	ConnectivityTest            bool     `json:"connectivity_test"`
-	DeploymentTopic             string   `json:"deployment_topic"`
-	NotificationUrl             string   `json:"notification_url"`
-	EventBasedProtocols         []string `json:"event_based_protocols"`
+	LogLevel                    string `json:"log_level"`
+	ApiPort                     string `json:"api_port"`
+	ZookeeperUrl                string `json:"zookeeper_url"`
+	DeviceRepoUrl               string `json:"device_repo_url"`
+	SemanticRepoUrl             string `json:"semantic_repo_url"`
+	ProcessRepoUrl              string `json:"process_repo_url"`
+	PermSearchUrl               string `json:"perm_search_url"`
+	MongoUrl                    string `json:"mongo_url"`
+	MongoTable                  string `json:"mongo_table"`
+	MongoDeploymentCollection   string `json:"mongo_deployment_collection"`
+	MongoDependenciesCollection string `json:"mongo_dependencies_collection"`
+	ConsumerGroup               string `json:"consumer_group"`
+	Debug                       bool   `json:"debug"`
+	ConnectivityTest            bool   `json:"connectivity_test"`
+	DeploymentTopic             string `json:"deployment_topic"`
+	NotificationUrl             string `json:"notification_url"`
 }
 
 type Config = *ConfigStruct

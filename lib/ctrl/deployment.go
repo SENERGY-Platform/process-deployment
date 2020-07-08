@@ -132,11 +132,11 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	return &result, nil, 200
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.Selectable, err error) {
+func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) (result []devicemodel.Selectable, err error) {
 	if len(descriptions) == 0 {
 		return []devicemodel.Selectable{}, nil
 	}
-	result, err, _ = this.devices.GetFilteredDevices(token, descriptions)
+	result, err, _ = this.devices.GetFilteredDevices(token, descriptions, protocolBlockList)
 	return
 }
 
@@ -173,4 +173,17 @@ func CastDeploymentVersion(in interface{}) (v1 *deploymentmodel.Deployment, v2 *
 			return nil, nil, errors.New("unknown version")
 		}
 	}
+}
+
+func (this *Ctrl) GetBlockedProtocols() (result []string, err error) {
+	protocols, err, _ := this.devices.GetProtocols()
+	if err != nil {
+		return result, err
+	}
+	for _, protocol := range protocols {
+		if protocol.Interaction == devicemodel.EVENT {
+			result = append(result, protocol.Id)
+		}
+	}
+	return result, nil
 }

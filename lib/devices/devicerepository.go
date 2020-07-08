@@ -35,6 +35,11 @@ func (this *Repository) GetProtocol(id string) (result devicemodel.Protocol, err
 	return
 }
 
+func (this *Repository) GetProtocols() (result []devicemodel.Protocol, err error, code int) {
+	err, code = this.getUncachedList(this.defaultToken, "protocols", &result)
+	return
+}
+
 func (this *Repository) GetDevice(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.Device, err error, code int) {
 	err, code = this.get(string(token), "devices", id, &result)
 	return
@@ -106,4 +111,40 @@ func (this *Repository) get(token string, resource string, id string, result int
 		}
 		return nil, 200
 	}
+}
+
+func (this *Repository) getUncachedList(token string, resource string, result interface{}) (error, int) {
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	req, err := http.NewRequest(
+		"GET",
+		this.config.DeviceRepoUrl+"/"+resource,
+		nil,
+	)
+	if err != nil {
+		debug.PrintStack()
+		return err, http.StatusInternalServerError
+	}
+	req.Header.Set("Authorization", token)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		debug.PrintStack()
+		return err, http.StatusInternalServerError
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		debug.PrintStack()
+		return errors.New("unexpected statuscode"), resp.StatusCode
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(result)
+	if err != nil {
+		debug.PrintStack()
+		return err, http.StatusInternalServerError
+	}
+	return nil, 200
 }

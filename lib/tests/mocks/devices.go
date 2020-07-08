@@ -51,6 +51,15 @@ func (this *DeviceRepoMock) GetProtocol(id string) (devicemodel.Protocol, error,
 	}
 }
 
+func (this *DeviceRepoMock) GetProtocols() (result []devicemodel.Protocol, err error, code int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	for _, protocol := range this.protocols {
+		result = append(result, protocol)
+	}
+	return result, nil, 200
+}
+
 func (this *DeviceRepoMock) SetProtocol(id string, protocol devicemodel.Protocol) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
@@ -89,7 +98,7 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) ([]devicemodel.Selectable, error, int) {
+func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) ([]devicemodel.Selectable, error, int) {
 	if len(descriptions) == 0 {
 		return nil, errors.New("missing descriptions"), 500
 	}

@@ -45,3 +45,18 @@ type Service struct {
 	Functions   []Function `json:"functions,omitempty"`
 	RdfType     string     `json:"rdf_type,omitempty"`
 }
+
+type Interaction string
+
+const (
+	EVENT   Interaction = "event"
+	REQUEST Interaction = "request"
+)
+
+type Protocol struct {
+	Id               string            `json:"id"`
+	Name             string            `json:"name"`
+	Handler          string            `json:"handler"`
+	Interaction      Interaction       `json:"interaction"`
+	ProtocolSegments []ProtocolSegment `json:"protocol_segments"`
+}

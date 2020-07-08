@@ -13,6 +13,5 @@
   "device_repo_url": "http://device-repo:8080",
   "semantic_repo_url": "http://semantic-repo:8080",
   "perm_search_url": "http://permission-search:8080",
-  "notification_url": "http://notification-service:5000",
-  "event_based_protocols": []
+  "notification_url": "http://notification-service:5000"
 }

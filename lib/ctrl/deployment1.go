@@ -255,16 +255,17 @@ func (this *Ctrl) SetExecutableFlagByElementV1(deployment *deploymentmodel.Deplo
 }
 
 func (this *Ctrl) SetDeploymentOptionsV1(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
+	protocolBlockList, err := this.GetBlockedProtocols()
 	for index, element := range deployment.Elements {
 		if element.Task != nil {
-			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.Task.DeviceDescription}.ToFilter())
+			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.Task.DeviceDescription}.ToFilter(), protocolBlockList)
 			if err != nil {
 				return err
 			}
 			element.Task.Selectables = options
 		}
 		if element.MultiTask != nil {
-			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.MultiTask.DeviceDescription}.ToFilter())
+			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.MultiTask.DeviceDescription}.ToFilter(), protocolBlockList)
 			if err != nil {
 				return err
 			}
@@ -274,14 +275,14 @@ func (this *Ctrl) SetDeploymentOptionsV1(token jwt_http_router.JwtImpersonate, d
 	}
 	for index, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions.ToFilter())
+			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions.ToFilter(), protocolBlockList)
 			if err != nil {
 				return err
 			}
 			lane.Lane.Selectables = options
 		}
 		if lane.MultiLane != nil {
-			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions.ToFilter())
+			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions.ToFilter(), protocolBlockList)
 			if err != nil {
 				return err
 			}

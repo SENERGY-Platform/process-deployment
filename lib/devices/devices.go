@@ -47,9 +47,9 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter) (result []devicemodel.Selectable, err error, code int) {
+func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) (result []devicemodel.Selectable, err error, code int) {
 	filteredProtocols := map[string]bool{}
-	for _, protocolId := range this.config.EventBasedProtocols {
+	for _, protocolId := range protocolBlockList {
 		filteredProtocols[protocolId] = true
 	}
 	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
