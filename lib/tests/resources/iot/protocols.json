@@ -1,0 +1,34 @@
+[
+  {
+    "id": "urn:infai:ses:protocol:c9a06d44-0cd0-465b-b0d9-560d604057a2",
+    "name": "mqtt-connector",
+    "handler": "mqtt",
+    "interaction": "event",
+    "protocol_segments": [
+      {
+        "id": "urn:infai:ses:protocol-segment:ffaaf98e-7360-400c-94d4-7775683d38ca",
+        "name": "payload"
+      },
+      {
+        "id": "urn:infai:ses:protocol-segment:e07a3534-d67f-4d35-bc14-352fdccf6d8d",
+        "name": "topic"
+      }
+    ]
+  },
+  {
+    "id": "urn:infai:ses:protocol:f3a63aeb-187e-4dd9-9ef5-d97a6eb6292b",
+    "name": "standard-connector",
+    "handler": "connector",
+    "interaction": "request",
+    "protocol_segments": [
+      {
+        "id": "urn:infai:ses:protocol-segment:9956d8b5-46fa-4381-a227-c1df69808997",
+        "name": "metadata"
+      },
+      {
+        "id": "urn:infai:ses:protocol-segment:0d211842-cef8-41ec-ab6b-9dbc31bc3a65",
+        "name": "data"
+      }
+    ]
+  }
+]
