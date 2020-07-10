@@ -16,6 +16,10 @@
 
 package deploymentmodel
 
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+)
+
 type Selection struct {
 	FilterCriteria    FilterCriteria    `json:"filter_criteria"`
 	SelectionOptions  []SelectionOption `json:"selection_options"`
@@ -43,4 +47,17 @@ type FilterCriteria struct {
 	FunctionId       *string `json:"function_id"`
 	DeviceClassId    *string `json:"device_class_id"`
 	AspectId         *string `json:"aspect_id"`
+}
+
+func (this FilterCriteria) ToDeviceTypeFilter() (result devicemodel.DeviceTypeFilterElement) {
+	if this.FunctionId != nil {
+		result.FunctionId = *this.FunctionId
+	}
+	if this.DeviceClassId != nil {
+		result.DeviceClassId = *this.DeviceClassId
+	}
+	if this.AspectId != nil {
+		result.AspectId = *this.AspectId
+	}
+	return
 }

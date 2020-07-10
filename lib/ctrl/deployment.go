@@ -180,8 +180,12 @@ func (this *Ctrl) GetBlockedProtocols() (result []string, err error) {
 	if err != nil {
 		return result, err
 	}
+	return this.FilterProtocols(protocols, devicemodel.EVENT)
+}
+
+func (this *Ctrl) FilterProtocols(protocols []devicemodel.Protocol, filterBy devicemodel.Interaction) (result []string, err error) {
 	for _, protocol := range protocols {
-		if protocol.Interaction == devicemodel.EVENT {
+		if protocol.Interaction == filterBy {
 			result = append(result, protocol.Id)
 		}
 	}
