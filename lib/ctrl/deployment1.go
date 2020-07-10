@@ -66,12 +66,12 @@ func (this *Ctrl) GetDeploymentV1(jwt jwt_http_router.Jwt, id string) (result de
 	return
 }
 
-func (this *Ctrl) CreateDeploymentV1(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeploymentV1(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeploymentV1(jwt, deployment)
+	return this.setDeploymentV1(jwt, deployment, source)
 }
 
-func (this *Ctrl) UpdateDeploymentV1(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeploymentV1(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
@@ -81,7 +81,7 @@ func (this *Ctrl) UpdateDeploymentV1(jwt jwt_http_router.Jwt, id string, deploym
 		return result, err, code
 	}
 
-	return this.setDeploymentV1(jwt, deployment)
+	return this.setDeploymentV1(jwt, deployment, source)
 }
 
 func (this *Ctrl) RemoveDeploymentV1(jwt jwt_http_router.Jwt, id string) (err error, code int) {
@@ -293,7 +293,7 @@ func (this *Ctrl) SetDeploymentOptionsV1(token jwt_http_router.JwtImpersonate, d
 	return nil
 }
 
-func (this *Ctrl) setDeploymentV1(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) setDeploymentV1(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(false); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
@@ -317,7 +317,7 @@ func (this *Ctrl) setDeploymentV1(jwt jwt_http_router.Jwt, deployment deployment
 	sort.Sort(bpmn.LaneByOrder(deployment.Lanes))
 	sort.Sort(bpmn.ElementByOrder(deployment.Elements))
 
-	if err = this.publishDeploymentV1(jwt.UserId, deployment.Id, deployment); err != nil {
+	if err = this.publishDeploymentV1(jwt.UserId, deployment.Id, deployment, source); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200

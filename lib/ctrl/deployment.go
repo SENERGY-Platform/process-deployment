@@ -61,7 +61,7 @@ func (this *Ctrl) SaveDeployment(command messages.DeploymentCommand) error {
 	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment, command.DeploymentV2)
 }
 
-func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploymentmodel.Deployment) error {
+func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploymentmodel.Deployment, source string) error {
 	if err := deployment.Validate(true); err != nil {
 		return err
 	}
@@ -70,6 +70,7 @@ func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploy
 		Id:         id,
 		Owner:      owner,
 		Deployment: &deployment,
+		Source:     source,
 	}
 	msg, err := json.Marshal(cmd)
 	if err != nil {
@@ -78,7 +79,7 @@ func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploy
 	return this.deploymentPublisher.Produce(id, msg)
 }
 
-func (this *Ctrl) publishDeploymentV2(owner string, id string, deployment deploymentmodel2.Deployment) error {
+func (this *Ctrl) publishDeploymentV2(owner string, id string, deployment deploymentmodel2.Deployment, source string) error {
 	if err := deployment.Validate(true); err != nil {
 		return err
 	}
@@ -87,6 +88,7 @@ func (this *Ctrl) publishDeploymentV2(owner string, id string, deployment deploy
 		Id:           id,
 		Owner:        owner,
 		DeploymentV2: &deployment,
+		Source:       source,
 	}
 	msg, err := json.Marshal(cmd)
 	if err != nil {

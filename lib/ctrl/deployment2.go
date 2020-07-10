@@ -55,12 +55,12 @@ func (this *Ctrl) GetDeploymentV2(jwt jwt_http_router.Jwt, id string) (result de
 	return
 }
 
-func (this *Ctrl) CreateDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeploymentV2(jwt, deployment)
+	return this.setDeploymentV2(jwt, deployment, source)
 }
 
-func (this *Ctrl) UpdateDeploymentV2(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeploymentV2(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
@@ -70,7 +70,7 @@ func (this *Ctrl) UpdateDeploymentV2(jwt jwt_http_router.Jwt, id string, deploym
 		return result, err, code
 	}
 
-	return this.setDeploymentV2(jwt, deployment)
+	return this.setDeploymentV2(jwt, deployment, source)
 }
 
 func (this *Ctrl) RemoveDeploymentV2(jwt jwt_http_router.Jwt, id string) (err error, code int) {
@@ -192,7 +192,7 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(deploymentmodel.ValidateRequest); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
@@ -213,7 +213,7 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	if err = this.publishDeploymentV2(jwt.UserId, deployment.Id, deployment); err != nil {
+	if err = this.publishDeploymentV2(jwt.UserId, deployment.Id, deployment, source); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200

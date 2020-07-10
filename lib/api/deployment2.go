@@ -75,6 +75,7 @@ func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config,
 	})
 
 	router.POST("/v2/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+		source := request.URL.Query().Get("source")
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
@@ -82,7 +83,7 @@ func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config,
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.CreateDeploymentV2(jwt, deployment)
+		result, err, code := ctrl.CreateDeploymentV2(jwt, deployment, source)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -92,6 +93,7 @@ func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config,
 	})
 
 	router.PUT("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+		source := request.URL.Query().Get("source")
 		id := params.ByName("id")
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
@@ -99,7 +101,7 @@ func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config,
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.UpdateDeploymentV2(jwt, id, deployment)
+		result, err, code := ctrl.UpdateDeploymentV2(jwt, id, deployment, source)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return

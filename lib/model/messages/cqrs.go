@@ -27,4 +27,5 @@ type DeploymentCommand struct {
 	Owner        string                       `json:"owner"`
 	Deployment   *deploymentmodel.Deployment  `json:"deployment"`
 	DeploymentV2 *deploymentmodel2.Deployment `json:"deployment_v2,omitempty"`
+	Source       string                       `json:"source,omitempty"`
 }
