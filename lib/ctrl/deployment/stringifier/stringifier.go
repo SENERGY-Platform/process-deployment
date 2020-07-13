@@ -19,6 +19,7 @@ package stringifier
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/beevik/etree"
 )
 
 type Stringifier struct {
@@ -29,6 +30,51 @@ func New(conf config.Config) *Stringifier {
 	return &Stringifier{conf: conf}
 }
 
-func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (string, error) {
-	panic("implement me")
+func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (xml string, err error) {
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(deployment.Diagram.XmlRaw)
+	if err != nil {
+		return
+	}
+
+	doc.FindElement("//bpmn:process").CreateAttr("name", deployment.Name)
+	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
+
+	for _, element := range deployment.Elements {
+		err = this.Element(doc, element)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	xml, err = doc.WriteToString()
+	return
+}
+
+func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.Element) error {
+	if element.Task != nil {
+		err := this.Task(doc, element)
+		if err != nil {
+			return err
+		}
+	}
+	if element.MessageEvent != nil {
+		err := this.MessageEvent(doc, element)
+		if err != nil {
+			return err
+		}
+	}
+	if element.TimeEvent != nil {
+		err := this.TimeEvent(doc, element)
+		if err != nil {
+			return err
+		}
+	}
+	if element.Notification != nil {
+		err := this.Notification(doc, element)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

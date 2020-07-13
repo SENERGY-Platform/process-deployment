@@ -16,6 +16,8 @@
 
 package deploymentmodel
 
+import "github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
+
 type Deployment struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -60,20 +62,8 @@ type MessageEvent struct {
 }
 
 type Task struct {
-	Retries       int64             `json:"retries"`
-	Parameter     map[string]string `json:"parameter"`
-	Configurables []Configurable    `json:"configurables"`
-	Selection     Selection         `json:"selection"`
-}
-
-type Configurable struct {
-	CharacteristicId string              `json:"characteristic_id"`
-	Values           []ConfigurableValue `json:"values"`
-}
-
-type ConfigurableValue struct {
-	Name      string      `json:"name"`
-	Path      string      `json:"path"`
-	Value     interface{} `json:"value"`
-	ValueType string      `json:"value_type"`
+	Retries       int64                         `json:"retries"`
+	Parameter     map[string]string             `json:"parameter"`
+	Configurables []executionmodel.Configurable `json:"configurables"`
+	Selection     Selection                     `json:"selection"`
 }
