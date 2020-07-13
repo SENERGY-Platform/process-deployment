@@ -34,7 +34,6 @@ const (
 
 //strict for cqrs; else for user
 func (this Deployment) Validate(kind ValidationKind) (err error) {
-	panic("not implemented") //TODO: validate sub elements (pools, lanes, tasks, etc.)
 	if this.Id == "" {
 		return errors.New("missing deployment id")
 	}
@@ -54,7 +53,12 @@ func (this Deployment) Validate(kind ValidationKind) (err error) {
 	if kind == ValidatePublish && this.Diagram.XmlDeployed == "" {
 		return errors.New("missing deployment xml")
 	}
-
+	for _, element := range this.Elements {
+		err = element.Validate(kind)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -83,4 +87,23 @@ func xmlContainsEngineAccess(xml string) (triesAccess bool, err error) {
 		}
 	}
 	return false, nil
+}
+
+func (this Element) Validate(kind ValidationKind) error {
+	if this.BpmnId == "" {
+		return errors.New("missing bpmn element id")
+	}
+	if this.Task != nil && this.Task.Selection.SelectedDeviceId == "" {
+		return errors.New("missing device selection in task")
+	}
+	if this.Task != nil && this.Task.Selection.SelectedServiceId == "" {
+		return errors.New("missing service selection in task")
+	}
+	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedDeviceId == "" {
+		return errors.New("missing device selection in event")
+	}
+	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedServiceId == "" {
+		return errors.New("missing service selection in event")
+	}
+	return nil
 }

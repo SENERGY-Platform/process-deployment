@@ -76,3 +76,35 @@ func (this *Repository) getDevicesOfTypeFromPermsearch(token jwt_http_router.Jwt
 	}
 	return result, nil, http.StatusOK
 }
+
+func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (result map[string]bool, err error) {
+	buff := new(bytes.Buffer)
+	err = json.NewEncoder(buff).Encode(ids)
+	if err != nil {
+		return result, err
+	}
+	req, err := http.NewRequest("POST", this.config.PermSearchUrl+"/ids/check/devices/x", buff)
+	if err != nil {
+		debug.PrintStack()
+		return result, err
+	}
+	req.Header.Set("Authorization", string(token))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		debug.PrintStack()
+		return result, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		debug.PrintStack()
+		return result, errors.New(buf.String())
+	}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		debug.PrintStack()
+		return result, err
+	}
+	return result, nil
+}

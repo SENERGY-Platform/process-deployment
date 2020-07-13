@@ -221,5 +221,23 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 
 //ensures selection correctness
 func (this *Ctrl) ensureDeploymentSelectionAccess(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
-	panic("not implemented")
+	ids := []string{}
+	for _, element := range deployment.Elements {
+		if element.Task != nil {
+			ids = append(ids, element.Task.Selection.SelectedDeviceId)
+		}
+		if element.MessageEvent != nil {
+			ids = append(ids, element.MessageEvent.Selection.SelectedDeviceId)
+		}
+	}
+	access, err := this.devices.CheckAccess(token, ids)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	for _, access := range access {
+		if !access {
+			return errors.New("access denied"), http.StatusForbidden
+		}
+	}
+	return nil, http.StatusOK
 }

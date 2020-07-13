@@ -18,24 +18,13 @@ package ctrl
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (this *Ctrl) completeEventsV2(deployment *deploymentmodel.Deployment) error {
-	err := this.setDeploymentEventIdsV2(deployment)
-	if err != nil {
-		return err
-	}
-	err = this.completeDeploymentEventCastsV2(deployment)
-	if err != nil {
-		return err
+	for index, element := range deployment.Elements {
+		element.MessageEvent.EventId = uuid.NewV4().String()
+		deployment.Elements[index] = element
 	}
 	return nil
-}
-
-func (this *Ctrl) setDeploymentEventIdsV2(deployment *deploymentmodel.Deployment) error {
-	panic("not implemented") //TODO
-}
-
-func (this *Ctrl) completeDeploymentEventCastsV2(deployment *deploymentmodel.Deployment) (err error) {
-	panic("not implemented") //TODO
 }

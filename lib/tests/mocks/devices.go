@@ -112,3 +112,7 @@ func (this *DeviceRepoMock) SetOptions(options []devicemodel.Selectable) {
 	defer this.mux.Unlock()
 	this.options = options
 }
+
+func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error) {
+	return map[string]bool{}, nil
+}

@@ -33,4 +33,5 @@ type Devices interface {
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
 	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) ([]devicemodel.Selectable, error, int)
+	CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error)
 }
