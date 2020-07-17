@@ -124,7 +124,7 @@ func (this *Ctrl) SetDeploymentOptionsV2(token jwt_http_router.JwtImpersonate, d
 			if err != nil {
 				return err
 			}
-			element.MessageEvent.Selection.SelectionOptions = getSelectionOptions(selectable, element.Task.Selection.FilterCriteria)
+			element.MessageEvent.Selection.SelectionOptions = getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria)
 		}
 		deployment.Elements[index] = element
 	}
