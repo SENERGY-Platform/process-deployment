@@ -17,9 +17,13 @@
 package stringifier
 
 import (
+	"errors"
+	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/beevik/etree"
+	"log"
+	"runtime/debug"
 )
 
 type Stringifier struct {
@@ -31,6 +35,12 @@ func New(conf config.Config) *Stringifier {
 }
 
 func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (xml string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
 	doc := etree.NewDocument()
 	err = doc.ReadFromString(deployment.Diagram.XmlRaw)
 	if err != nil {
