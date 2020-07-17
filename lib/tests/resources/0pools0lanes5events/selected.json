@@ -97,7 +97,7 @@
       "name": "",
       "order": 0,
       "time_event": {
-        "type": "timeDuration",
+        "type": "timeCycle",
         "time": "* 2 * * * ?"
       },
       "notification": null,
