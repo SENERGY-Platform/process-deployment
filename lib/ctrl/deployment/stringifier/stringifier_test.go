@@ -20,9 +20,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
-	"github.com/beevik/etree"
 	"io/ioutil"
-	"reflect"
 	"runtime/debug"
 	"testing"
 )
@@ -56,7 +54,7 @@ func isValidaForStringifierTest(dir string) bool {
 			files[info.Name()] = true
 		}
 	}
-	return files["selected.json"] && files["deployed.bpmn"]
+	return files["selected.json"] && files["deployed.bpmn"] && files["raw.bpmn"]
 }
 
 func testDeployment(t *testing.T, exampleName string) {
@@ -84,27 +82,27 @@ func testDeployment(t *testing.T, exampleName string) {
 		return
 	}
 
+	raw, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/raw.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	deployment.Diagram.XmlRaw = string(raw)
+
 	actual, err := stringifier.Deployment(deployment, "user1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	actualDoc := etree.NewDocument()
-	err = actualDoc.ReadFromString(actual)
+
+	expected, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/deployed.bpmn")
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	expectedDoc := etree.NewDocument()
-	err = expectedDoc.ReadFromFile(RESOURCE_BASE_DIR + exampleName + "/deployed.bpmn")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if !reflect.DeepEqual(expectedDoc, actualDoc) {
-		t.Error(string(actual))
+	if actual != string(expected) {
+		t.Error(actual, "\n\n", string(expected))
 		return
 	}
 }

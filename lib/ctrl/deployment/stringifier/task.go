@@ -52,7 +52,7 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 		command.CharacteristicId = *task.Selection.FilterCriteria.CharacteristicId
 	}
 
-	if task.Selection.FilterCriteria.FunctionId != nil {
+	if task.Selection.FilterCriteria.DeviceClassId != nil {
 		command.DeviceClass = &devicemodel.DeviceClass{Id: *task.Selection.FilterCriteria.DeviceClassId}
 	}
 
@@ -77,13 +77,13 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	command.DeviceId = task.Selection.SelectedDeviceId
 	command.ServiceId = task.Selection.SelectedServiceId
 
-	commandStr, err := json.Marshal(command)
+	commandStr, err := json.MarshalIndent(command, "", "\t")
 
 	if err != nil {
 		return err
 	}
 
-	doc.FindElement(xpath).SetText(string(commandStr))
+	doc.FindElement(xpath).SetCData(string(commandStr))
 
 	for name, value := range task.Parameter {
 		xpath := "//bpmn:serviceTask[@id='" + element.BpmnId + "']//camunda:inputParameter[@name='" + name + "']"
