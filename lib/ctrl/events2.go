@@ -23,8 +23,10 @@ import (
 
 func (this *Ctrl) completeEventsV2(deployment *deploymentmodel.Deployment) error {
 	for index, element := range deployment.Elements {
-		element.MessageEvent.EventId = uuid.NewV4().String()
-		deployment.Elements[index] = element
+		if element.MessageEvent != nil {
+			element.MessageEvent.EventId = uuid.NewV4().String()
+			deployment.Elements[index] = element
+		}
 	}
 	return nil
 }
