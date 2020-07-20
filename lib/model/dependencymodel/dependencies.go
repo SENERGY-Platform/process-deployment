@@ -38,4 +38,5 @@ type EventDependency struct {
 type BpmnResource struct {
 	Id    string `json:"id" bson:"id"`
 	label string `json:"label" bson:"label"`
+	//Label string `json:"label" bson:"label"` //TODO: fix label (breaks old tests)
 }

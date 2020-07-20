@@ -227,7 +227,44 @@ func (this *Ctrl) deploymentToDependenciesV1(deployment deploymentmodel.Deployme
 }
 
 func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deployment) (result dependencymodel.Dependencies, err error) {
-	panic("not implemented") //TODO
+	result.DeploymentId = deployment.Id
+	for _, element := range deployment.Elements {
+		if element.Task != nil {
+			dependency := getDeviceDependencyFromSelection(element.Task.Selection)
+			dependency.BpmnResources = []dependencymodel.BpmnResource{{
+				Id: element.BpmnId,
+				//Label: element.Name,
+			}}
+			result.Devices = append(result.Devices, dependency)
+		}
+		if element.MessageEvent != nil {
+			dependency := getDeviceDependencyFromSelection(element.MessageEvent.Selection)
+			dependency.BpmnResources = []dependencymodel.BpmnResource{{
+				Id: element.BpmnId,
+				//Label: element.Name,
+			}}
+			result.Devices = append(result.Devices, dependency)
+			result.Events = append(result.Events, dependencymodel.EventDependency{
+				EventId: element.MessageEvent.EventId,
+				BpmnResources: []dependencymodel.BpmnResource{{
+					Id: element.BpmnId,
+					//Label: element.Name,
+				}},
+			})
+		}
+	}
+	return
+}
+
+func getDeviceDependencyFromSelection(selection deploymentmodel2.Selection) (result dependencymodel.DeviceDependency) {
+	result.DeviceId = selection.SelectedServiceId
+	for _, option := range selection.SelectionOptions {
+		if option.Device.Id == result.DeviceId {
+			result.Name = option.Device.Name
+			return
+		}
+	}
+	return
 }
 
 func reduceDeviceDependencies(dependencies []dependencymodel.DeviceDependency) (result []dependencymodel.DeviceDependency) {
