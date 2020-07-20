@@ -28,14 +28,8 @@ import (
 	"time"
 )
 
-const ACTIVATE_V2 = false
-
 func init() {
-	endpoints = append(endpoints, func(router *jwt_http_router.Router, conf config.Config, ctrl *ctrl.Ctrl) {
-		if ACTIVATE_V2 {
-			Deployments2Endpoints(router, conf, ctrl)
-		}
-	})
+	endpoints = append(endpoints, Deployments2Endpoints)
 }
 
 func Deployments2Endpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
