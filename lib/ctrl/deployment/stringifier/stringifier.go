@@ -51,7 +51,7 @@ func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userI
 	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
 
 	for _, element := range deployment.Elements {
-		err = this.Element(doc, element)
+		err = this.Element(doc, element, userId)
 		if err != nil {
 			return "", err
 		}
@@ -61,7 +61,7 @@ func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userI
 	return
 }
 
-func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.Element) error {
+func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.Element, userId string) error {
 	if element.Task != nil {
 		err := this.Task(doc, element)
 		if err != nil {
@@ -81,7 +81,7 @@ func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.El
 		}
 	}
 	if element.Notification != nil {
-		err := this.Notification(doc, element)
+		err := this.Notification(doc, element, userId)
 		if err != nil {
 			return err
 		}

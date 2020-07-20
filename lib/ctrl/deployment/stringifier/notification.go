@@ -17,10 +17,65 @@
 package stringifier
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
+	"log"
+	"runtime/debug"
 )
 
-func (this *Stringifier) Notification(doc *etree.Document, element deploymentmodel.Element) error {
-	panic("not implemented")
+func (this *Stringifier) Notification(doc *etree.Document, element deploymentmodel.Element, userId string) (err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	input := doc.FindElement("//*[@id='" + element.BpmnId + "']//camunda:inputParameter[@name='deploymentIdentifier']")
+	if input.Text() != "notification" {
+		return errors.New("unexpected content in notification input parameter")
+	}
+	parent := input.Parent()
+
+	element.Notification = &deploymentmodel.Notification{
+		Title:   "",
+		Message: "",
+	}
+
+	// Set url input
+	urlParameter := parent.CreateElement("camunda:inputParameter")
+	urlParameter.CreateAttr("name", "url")
+	urlParameter.SetText(this.conf.NotificationUrl)
+
+	// Set method input
+	methodParameter := parent.CreateElement("camunda:inputParameter")
+	methodParameter.CreateAttr("name", "method")
+	methodParameter.SetText("PUT")
+
+	// Set header input
+	headersParameter := parent.CreateElement("camunda:inputParameter")
+	headersParameter.CreateAttr("name", "headers")
+	mapElement := headersParameter.CreateElement("camunda:map")
+	keyElement := mapElement.CreateElement("camunda:entry")
+	keyElement.CreateAttr("key", "Content-Type")
+	keyElement.SetText("application/json")
+
+	// Set payload input
+	payloadParameter := parent.FindElement("camunda:inputParameter[@name='payload']")
+	notificationPayload := executionmodel.NotificationPayload{
+		Message: element.Notification.Message,
+		UserId:  userId,
+		Title:   element.Notification.Title,
+		IsRead:  false,
+	}
+	txt, err := json.Marshal(notificationPayload)
+	if err != nil {
+		return err
+	}
+	payloadParameter.SetCData(string(txt))
+
+	return nil
 }

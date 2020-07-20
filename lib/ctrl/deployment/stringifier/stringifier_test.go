@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/helper"
 	"io/ioutil"
 	"runtime/debug"
 	"testing"
@@ -101,7 +102,12 @@ func testDeployment(t *testing.T, exampleName string) {
 		return
 	}
 
-	if actual != string(expected) {
+	equal, err := helper.XmlIsEqual(actual, string(expected))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !equal {
 		t.Error(actual, "\n\n", string(expected))
 		return
 	}

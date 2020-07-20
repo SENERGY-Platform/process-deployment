@@ -1,1 +1,26 @@
-{}
+{
+  "id":"",
+  "name":"Process_1c6tjm4",
+  "description":"",
+  "diagram":{
+    "xml_raw":"",
+    "xml_deployed":"",
+    "svg":""
+  },
+  "elements":[
+    {
+      "bpmn_id":"Task_1n4eucw",
+      "group":null,
+      "name":"Task_1n4eucw",
+      "order":0,
+      "time_event":null,
+      "notification":{
+        "title":"camunda_changed",
+        "message":"test_changed"
+      },
+      "message_event":null,
+      "task":null
+    }
+  ],
+  "executable":false
+}

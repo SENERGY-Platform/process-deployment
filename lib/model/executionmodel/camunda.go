@@ -58,3 +58,11 @@ type Overwrite struct {
 	ServiceId  string `json:"service_id,omitempty"`
 	ProtocolId string `json:"protocol_id,omitempty"`
 }
+
+type NotificationPayload struct {
+	//information direct from model
+	Message string `json:"message"`
+	UserId  string `json:"userId"`
+	Title   string `json:"title"`
+	IsRead  bool   `json:"isRead"`
+}

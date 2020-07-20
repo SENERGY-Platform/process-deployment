@@ -35,7 +35,7 @@ func (this *Stringifier) MessageEvent(doc *etree.Document, element deploymentmod
 		}
 	}()
 	if element.MessageEvent.EventId == "" {
-		element.MessageEvent.EventId = "generated_" + uuid.NewV4().String()
+		element.MessageEvent.EventId = "generated_" + uuid.NewV4().String() //element.MessageEvent is pointer so edit here edits value also for caller
 	}
 	msgRef := strings.Replace("generated_ref_"+element.MessageEvent.EventId, "-", "_", -1)
 	bpmnMsg := doc.CreateElement("bpmn:message")
