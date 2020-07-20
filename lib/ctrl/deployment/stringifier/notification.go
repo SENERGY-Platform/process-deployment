@@ -40,11 +40,6 @@ func (this *Stringifier) Notification(doc *etree.Document, element deploymentmod
 	}
 	parent := input.Parent()
 
-	element.Notification = &deploymentmodel.Notification{
-		Title:   "",
-		Message: "",
-	}
-
 	// Set url input
 	urlParameter := parent.CreateElement("camunda:inputParameter")
 	urlParameter.CreateAttr("name", "url")
