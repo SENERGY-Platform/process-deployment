@@ -142,41 +142,6 @@ func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions 
 	return
 }
 
-func CastDeploymentVersion(in interface{}) (v1 *deploymentmodel.Deployment, v2 *deploymentmodel2.Deployment, err error) {
-	switch v := in.(type) {
-	case deploymentmodel.Deployment:
-		return &v, nil, nil
-	case deploymentmodel2.Deployment:
-		return nil, &v, nil
-	default:
-		temp, err := json.Marshal(in)
-		if err != nil {
-			return nil, nil, err
-		}
-		generic := map[string]interface{}{}
-		err = json.Unmarshal(temp, &generic)
-		if err != nil {
-			return nil, nil, err
-		}
-		switch generic["version"] {
-		case nil:
-			fallthrough
-		case "":
-			fallthrough
-		case "1":
-			v1 = &deploymentmodel.Deployment{}
-			err = json.Unmarshal(temp, v1)
-			return v1, nil, err
-		case "2":
-			v2 = &deploymentmodel2.Deployment{}
-			err = json.Unmarshal(temp, v2)
-			return nil, v2, err
-		default:
-			return nil, nil, errors.New("unknown version")
-		}
-	}
-}
-
 func (this *Ctrl) GetBlockedProtocols() (result []string, err error) {
 	protocols, err, _ := this.devices.GetProtocols()
 	if err != nil {

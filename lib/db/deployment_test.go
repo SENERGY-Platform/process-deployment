@@ -24,7 +24,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 	"runtime/debug"
 	"strings"
 	"testing"

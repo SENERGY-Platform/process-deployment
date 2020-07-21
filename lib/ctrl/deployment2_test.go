@@ -21,15 +21,21 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/parser"
+	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/devices"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
+	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"runtime/debug"
+	"sync"
 	"testing"
 )
 
@@ -51,6 +57,22 @@ func TestPrepareDeploymentV2(t *testing.T) {
 	}
 }
 
+func TestDeploymentHandlerV2(t *testing.T) {
+	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for _, info := range infos {
+		name := info.Name()
+		if info.IsDir() && isValidaForDeploymentHandlerTest(RESOURCE_BASE_DIR+name) {
+			t.Run(name, func(t *testing.T) {
+				testDeploymentHandler(t, name)
+			})
+		}
+	}
+}
+
 func isValidaForPrepareTest(dir string) bool {
 	infos, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -63,6 +85,114 @@ func isValidaForPrepareTest(dir string) bool {
 		}
 	}
 	return files["raw.bpmn"] && files["prepared.json"] && files["devices.json"]
+}
+
+func isValidaForDeploymentHandlerTest(dir string) bool {
+	infos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+	files := map[string]bool{}
+	for _, info := range infos {
+		if !info.IsDir() {
+			files[info.Name()] = true
+		}
+	}
+	return files["selected.json"] && files["dependencies.json"]
+}
+
+func testDeploymentHandler(t *testing.T, exampleName string) {
+	deploymentId := "deployment-id"
+	userId := "user1"
+	defer func() {
+		if r := recover(); r != nil {
+			t.Error(r, string(debug.Stack()))
+		}
+	}()
+
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	ctx, stop := context.WithCancel(context.Background())
+	defer stop()
+
+	conf, err := config.LoadConfig("../../config.json")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedDependenciesJson, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/dependencies.json")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	expectedDependencies := dependencymodel.Dependencies{}
+	err = json.Unmarshal(expectedDependenciesJson, &expectedDependencies)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	expectedDependencies.DeploymentId = deploymentId
+	expectedDependencies.Owner = userId
+
+	deploymentJson, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/selected.json")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	deployment := deploymentmodel.Deployment{}
+	err = json.Unmarshal(deploymentJson, &deployment)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	deployment.Id = deploymentId
+
+	mongoPort, _, err := docker.MongoContainer(ctx, &wg)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	conf.MongoUrl = "mongodb://localhost:" + mongoPort
+
+	db, err := db.Factory.New(ctx, conf)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ctrl := &Ctrl{
+		config: conf,
+		db:     db,
+	}
+
+	err = ctrl.HandleDeployment(messages.DeploymentCommand{
+		Command:      "PUT",
+		Id:           deploymentId,
+		Owner:        userId,
+		Deployment:   nil,
+		DeploymentV2: &deployment,
+		Source:       "test",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	dependencies, err, _ := ctrl.GetDependencies(jwt_http_router.Jwt{UserId: userId}, deployment.Id)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	checkDependencies(t, dependencies, expectedDependencies)
+}
+
+func checkDependencies(t *testing.T, actual dependencymodel.Dependencies, expected dependencymodel.Dependencies) {
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("\n", actual, "\n\n", expected)
+	}
 }
 
 func testPrepareDeployment(t *testing.T, exampleName string) {

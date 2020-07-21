@@ -26,8 +26,8 @@
 		"name": "",
 		"rdf_type": ""
 	},
-	"device_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
-	"service_id": "getStatusService",
+	"device_id": "hue",
+	"service_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
 	"input": {},
 	"retries": 2
 }]]></camunda:inputParameter>
@@ -55,8 +55,8 @@
 		"name": "",
 		"rdf_type": ""
 	},
-	"device_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f",
-	"service_id": "setColorService",
+	"device_id": "hue",
+	"service_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f",
 	"input": {
 		"b": 0,
 		"g": 0,

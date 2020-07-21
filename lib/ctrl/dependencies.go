@@ -22,8 +22,6 @@ import (
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
-	"log"
-	"runtime/debug"
 	"sort"
 )
 
@@ -40,23 +38,13 @@ func (this *Ctrl) GetSelectedDependencies(jwt jwt_http_router.Jwt, ids []string)
 }
 
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {
-	v1, v2, err := CastDeploymentVersion(command.Deployment)
-	if err != nil {
-		//allow unknown versions; and save empty dependencies
-		log.Println("WARNING: ", err)
-		debug.PrintStack()
-		return this.db.SetDependencies(dependencymodel.Dependencies{
-			DeploymentId: command.Id,
-			Owner:        command.Owner,
-			Devices:      []dependencymodel.DeviceDependency{},
-			Events:       []dependencymodel.EventDependency{},
-		})
-	}
 	var dependencies dependencymodel.Dependencies
-	if v1 != nil {
-		dependencies, err = this.deploymentToDependenciesV1(*v1)
-	} else if v2 != nil {
-		dependencies, err = this.deploymentToDependenciesV2(*v2)
+	var err error
+	if command.Deployment != nil {
+		dependencies, err = this.deploymentToDependenciesV1(*command.Deployment)
+	}
+	if command.DeploymentV2 != nil {
+		dependencies, err = this.deploymentToDependenciesV2(*command.DeploymentV2)
 	}
 	if err != nil {
 		return err
@@ -228,6 +216,8 @@ func (this *Ctrl) deploymentToDependenciesV1(deployment deploymentmodel.Deployme
 
 func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deployment) (result dependencymodel.Dependencies, err error) {
 	result.DeploymentId = deployment.Id
+	result.Events = []dependencymodel.EventDependency{}
+	result.Devices = []dependencymodel.DeviceDependency{}
 	for _, element := range deployment.Elements {
 		if element.Task != nil {
 			dependency := getDeviceDependencyFromSelection(element.Task.Selection)
@@ -257,7 +247,7 @@ func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deploym
 }
 
 func getDeviceDependencyFromSelection(selection deploymentmodel2.Selection) (result dependencymodel.DeviceDependency) {
-	result.DeviceId = selection.SelectedServiceId
+	result.DeviceId = selection.SelectedDeviceId
 	for _, option := range selection.SelectionOptions {
 		if option.Device.Id == result.DeviceId {
 			result.Name = option.Device.Name

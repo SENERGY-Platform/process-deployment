@@ -47,8 +47,8 @@
               ]
             }
           ],
-          "selected_device_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
-          "selected_service_id": "getStatusService"
+          "selected_device_id": "hue",
+          "selected_service_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69"
         }
       }
     },
@@ -95,8 +95,8 @@
               ]
             }
           ],
-          "selected_device_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f",
-          "selected_service_id": "setColorService"
+          "selected_device_id": "hue",
+          "selected_service_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f"
         }
       }
     }

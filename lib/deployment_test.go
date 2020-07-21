@@ -30,7 +30,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 	"io/ioutil"
 	"net/http"
 	"net/url"
