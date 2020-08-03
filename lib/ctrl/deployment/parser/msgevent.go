@@ -40,6 +40,20 @@ func (this *Parser) isMsgEvent(element *etree.Element) bool {
 	if msgEvent.SelectAttrValue("messageRef", "") != "" {
 		return false //msg event uses user defined events
 	}
+	aspect := element.SelectAttr("aspect")
+	if aspect == nil || aspect.Value == "" {
+		return false
+	}
+
+	function := element.SelectAttr("function")
+	if function == nil || function.Value == "" {
+		return false
+	}
+
+	characteristic := element.SelectAttr("characteristic")
+	if characteristic == nil || characteristic.Value == "" {
+		return false
+	}
 	return true
 }
 

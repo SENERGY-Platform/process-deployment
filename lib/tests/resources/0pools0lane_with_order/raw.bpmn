@@ -45,7 +45,7 @@
             <bpmn:incoming>SequenceFlow_01rumtx</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_138hi5j</bpmn:outgoing>
         </bpmn:serviceTask>
-        <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_164ft4m" senergy:order="0">
+        <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_164ft4m" senergy:order="0" senergy:characteristic="urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43" senergy:function="urn:infai:ses:measuring-function:bdb6a7c8-4a3d-4fe0-bab3-ce02e09b5869" senergy:aspect="urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6">
             <bpmn:incoming>SequenceFlow_138hi5j</bpmn:incoming>
             <bpmn:outgoing>SequenceFlow_1s3ajt7</bpmn:outgoing>
             <bpmn:messageEventDefinition/>
