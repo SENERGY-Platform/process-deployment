@@ -25,6 +25,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
@@ -75,7 +76,7 @@ func ExampleCtrl_PrepareDeploymentById() {
 	processModelId := uuid.NewV4().String()
 	mock.ProcessModelRepo.SetProcessModel(processModelId, processmodel.ProcessModel{Id: processModelId, BpmnXml: string(file), SvgXml: "<svg/>"})
 
-	mock.Devices.SetOptions([]devicemodel.Selectable{
+	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -162,7 +163,7 @@ func ExampleCtrl_PrepareDeployment() {
 		return
 	}
 
-	mock.Devices.SetOptions([]devicemodel.Selectable{
+	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -264,7 +265,7 @@ func ExampleCtrl_PrepareDeployment2() {
 		return
 	}
 
-	mock.Devices.SetOptions([]devicemodel.Selectable{
+	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -373,7 +374,7 @@ func ExampleCtrl_PrepareDeployment3() {
 		return
 	}
 
-	mock.Devices.SetOptions([]devicemodel.Selectable{
+	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",
@@ -478,18 +479,7 @@ func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
 		return
 	}
 
-	mock.Devices.SetOptions([]devicemodel.Selectable{
-		{
-			Device: devicemodel.Device{
-				Id: "device1",
-			},
-			Services: []devicemodel.Service{
-				{
-					Id: "service1",
-				},
-			},
-		},
-	})
+	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{})
 
 	client := http.Client{
 		Timeout: 5 * time.Second,

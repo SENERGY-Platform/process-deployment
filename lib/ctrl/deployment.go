@@ -134,22 +134,6 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	return &result, nil, 200
 }
 
-func (this *Ctrl) GetOptions(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) (result []devicemodel.Selectable, err error) {
-	if len(descriptions) == 0 {
-		return []devicemodel.Selectable{}, nil
-	}
-	result, err, _ = this.devices.GetFilteredDevices(token, descriptions, protocolBlockList)
-	return
-}
-
-func (this *Ctrl) GetBlockedProtocols() (result []string, err error) {
-	protocols, err, _ := this.devices.GetProtocols()
-	if err != nil {
-		return result, err
-	}
-	return this.FilterProtocols(protocols, devicemodel.EVENT)
-}
-
 func (this *Ctrl) FilterProtocols(protocols []devicemodel.Protocol, filterBy devicemodel.Interaction) (result []string, err error) {
 	for _, protocol := range protocols {
 		if protocol.Interaction == filterBy {

@@ -21,6 +21,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 )
@@ -102,35 +103,55 @@ func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
 }
 
 func (this *Ctrl) SetDeploymentOptionsV2(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
-	protocolBlockList, err := this.GetBlockedProtocols()
+	bulk := this.getDeploymentV2BulkSelectableRequest(deployment)
+	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
 	if err != nil {
 		return err
 	}
+	selectableIndex := map[string][]deviceselectionmodel.Selectable{}
+	for _, element := range bulkResult {
+		selectableIndex[element.Id] = element.Selectables
+	}
+
+	for index, element := range deployment.Elements {
+		if element.Task != nil {
+			selectable := selectableIndex[element.BpmnId]
+			element.Task.Selection.SelectionOptions = getSelectionOptions(selectable, element.Task.Selection.FilterCriteria)
+		}
+		if element.MessageEvent != nil {
+			selectable := selectableIndex[element.BpmnId]
+			element.MessageEvent.Selection.SelectionOptions = getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria)
+		}
+		deployment.Elements[index] = element
+	}
+	return nil
+}
+
+func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
+	useEventFilter := devicemodel.EVENT
 	taskGroups := map[string][]int{}
 	for index, element := range deployment.Elements {
 		if element.Task != nil {
 			if element.Group == nil {
-				selectable, err := this.GetOptions(token, devicemodel.DeviceTypesFilter{element.Task.Selection.FilterCriteria.ToDeviceTypeFilter()}, protocolBlockList)
-				if err != nil {
-					return err
-				}
-				element.Task.Selection.SelectionOptions = getSelectionOptions(selectable, element.Task.Selection.FilterCriteria)
+				bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+					Id:                element.BpmnId,
+					FilterInteraction: &useEventFilter,
+					Criteria:          deviceselectionmodel.FilterCriteriaAndSet{element.Task.Selection.FilterCriteria.ToDeviceTypeFilter()},
+				})
 			} else {
 				taskGroups[*element.Group] = append(taskGroups[*element.Group], index)
 			}
 		}
 		if element.MessageEvent != nil {
-			selectable, err := this.GetOptions(token, devicemodel.DeviceTypesFilter{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()}, []string{})
-			if err != nil {
-				return err
-			}
-			element.MessageEvent.Selection.SelectionOptions = getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria)
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+				Id:       element.BpmnId,
+				Criteria: deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
+			})
 		}
-		deployment.Elements[index] = element
 	}
 
 	for _, indexes := range taskGroups {
-		filter := devicemodel.DeviceTypesFilter{}
+		filter := deviceselectionmodel.FilterCriteriaAndSet{}
 		for _, index := range indexes {
 			element := deployment.Elements[index]
 			if element.Task != nil {
@@ -140,19 +161,18 @@ func (this *Ctrl) SetDeploymentOptionsV2(token jwt_http_router.JwtImpersonate, d
 		for _, index := range indexes {
 			element := deployment.Elements[index]
 			if element.Task != nil {
-				selectable, err := this.GetOptions(token, filter, protocolBlockList)
-				if err != nil {
-					return err
-				}
-				element.Task.Selection.SelectionOptions = getSelectionOptions(selectable, element.Task.Selection.FilterCriteria)
+				bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+					Id:                element.BpmnId,
+					FilterInteraction: &useEventFilter,
+					Criteria:          filter,
+				})
 			}
-			deployment.Elements[index] = element
 		}
 	}
-	return nil
+	return bulk
 }
 
-func getSelectionOptions(selectables []devicemodel.Selectable, criteria deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption) {
+func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption) {
 	for _, selectable := range selectables {
 		serviceDesc := []deploymentmodel.Service{}
 		for _, service := range selectable.Services {

@@ -78,8 +78,6 @@ func ExampleEventCastBpmnDeploymentToXmlWithRefs() {
 		return
 	}
 
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
@@ -320,8 +318,6 @@ func ExampleSimpleBpmnDeploymentToXmlWithRefs() {
 		return
 	}
 
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
@@ -448,8 +444,6 @@ func ExampleSimpleBpmnDeploymentToXml() {
 		fmt.Println(err)
 		return
 	}
-
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
@@ -594,8 +588,6 @@ func ExampleDeploymentWithConfigurablesToXml() {
 		return
 	}
 
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
@@ -723,8 +715,6 @@ func ExampleTimeAndReceiveBpmnDeploymentToXml() {
 		return
 	}
 
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		fmt.Println(err)
@@ -824,8 +814,6 @@ func ExampleLanesBpmnDeploymentToXml() {
 		fmt.Println(err)
 		return
 	}
-
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
@@ -1035,8 +1023,6 @@ func TestNotificationsBpmnDeployment(t *testing.T) {
 		t.Error(err)
 	}
 
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {
 		t.Error(err)
@@ -1120,8 +1106,6 @@ func ExampleEmptyLaneBpmnDeploymentToXml() {
 		debug.PrintStack()
 		return
 	}
-
-	mock.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
 
 	err = UseDeploymentSelections(&deployment, mock.Devices)
 	if err != nil {

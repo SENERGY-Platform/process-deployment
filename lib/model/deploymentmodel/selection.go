@@ -18,6 +18,7 @@ package deploymentmodel
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"reflect"
 )
 
@@ -34,9 +35,9 @@ type DeviceDescription struct {
 	Aspect           *devicemodel.Aspect      `json:"aspect,omitempty"`
 }
 
-func (this DeviceDescriptions) ToFilter() (result devicemodel.DeviceTypesFilter) {
+func (this DeviceDescriptions) ToFilter() (result deviceselectionmodel.FilterCriteriaAndSet) {
 	for _, element := range this {
-		newElement := devicemodel.DeviceTypeFilterElement{
+		newElement := deviceselectionmodel.FilterCriteria{
 			FunctionId: element.Function.Id,
 		}
 		if element.DeviceClass != nil {

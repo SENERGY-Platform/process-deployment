@@ -20,6 +20,7 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
@@ -28,10 +29,9 @@ type DevicesFactory interface {
 }
 
 type Devices interface {
-	GetProtocol(id string) (devicemodel.Protocol, error, int)
-	GetProtocols() (result []devicemodel.Protocol, err error, code int)
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
-	GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) ([]devicemodel.Selectable, error, int)
 	CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error)
+	GetDeviceSelection(token jwt_http_router.JwtImpersonate, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int)
+	GetBulkDeviceSelection(token jwt_http_router.JwtImpersonate, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int)
 }

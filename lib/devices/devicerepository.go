@@ -30,16 +30,6 @@ import (
 	"time"
 )
 
-func (this *Repository) GetProtocol(id string) (result devicemodel.Protocol, err error, code int) {
-	err, code = this.get(this.defaultToken, "protocols", id, &result)
-	return
-}
-
-func (this *Repository) GetProtocols() (result []devicemodel.Protocol, err error, code int) {
-	err, code = this.getUncachedList(this.defaultToken, "protocols", &result)
-	return
-}
-
 func (this *Repository) GetDevice(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.Device, err error, code int) {
 	err, code = this.get(string(token), "devices", id, &result)
 	return

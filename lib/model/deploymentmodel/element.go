@@ -17,7 +17,7 @@
 package deploymentmodel
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 )
 
@@ -30,7 +30,7 @@ type Task struct {
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	Selectables []devicemodel.Selectable `json:"selectables"`
+	Selectables []deviceselectionmodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selection Selection `json:"selection"`
@@ -52,7 +52,7 @@ type MultiTask struct {
 	Input             interface{}       `json:"input"`
 
 	//information prepared for the user to select device and service
-	Selectables []devicemodel.Selectable `json:"selectables"`
+	Selectables []deviceselectionmodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selections []Selection `json:"selections"`

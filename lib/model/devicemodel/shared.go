@@ -49,8 +49,9 @@ type Service struct {
 type Interaction string
 
 const (
-	EVENT   Interaction = "event"
-	REQUEST Interaction = "request"
+	EVENT             Interaction = "event"
+	REQUEST           Interaction = "request"
+	EVENT_AND_REQUEST Interaction = "event+request"
 )
 
 type Protocol struct {

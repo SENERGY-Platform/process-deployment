@@ -17,7 +17,7 @@
 package deploymentmodel
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 )
 
 type Selection struct {
@@ -49,7 +49,7 @@ type FilterCriteria struct {
 	AspectId         *string `json:"aspect_id"`
 }
 
-func (this FilterCriteria) ToDeviceTypeFilter() (result devicemodel.DeviceTypeFilterElement) {
+func (this FilterCriteria) ToDeviceTypeFilter() (result deviceselectionmodel.FilterCriteria) {
 	if this.FunctionId != nil {
 		result.FunctionId = *this.FunctionId
 	}

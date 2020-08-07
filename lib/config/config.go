@@ -32,9 +32,9 @@ type ConfigStruct struct {
 	ApiPort                     string `json:"api_port"`
 	ZookeeperUrl                string `json:"zookeeper_url"`
 	DeviceRepoUrl               string `json:"device_repo_url"`
-	SemanticRepoUrl             string `json:"semantic_repo_url"`
 	ProcessRepoUrl              string `json:"process_repo_url"`
 	PermSearchUrl               string `json:"perm_search_url"`
+	DeviceSelectionUrl          string `json:"device_selection_url"`
 	MongoUrl                    string `json:"mongo_url"`
 	MongoTable                  string `json:"mongo_table"`
 	MongoDeploymentCollection   string `json:"mongo_deployment_collection"`

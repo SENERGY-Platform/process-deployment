@@ -26,6 +26,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
@@ -144,7 +145,7 @@ func ExampleCtrl_Deployment_RealMongo() {
 		fmt.Println(err)
 		return
 	}
-	mocks.Devices.SetOptions([]devicemodel.Selectable{
+	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "foo",
@@ -372,7 +373,7 @@ func ExampleCtrl_Deployment() {
 		fmt.Println(err)
 		return
 	}
-	mocks.Devices.SetOptions([]devicemodel.Selectable{
+	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "foo",
@@ -853,8 +854,7 @@ func ExampleCtrl_DeploymentEmptyLane() {
 }
 
 func prepareMockRepos() {
-	mocks.Devices.SetProtocol("pid", devicemodel.Protocol{Id: "pid", Handler: "p", Name: "protocol1"})
-	mocks.Devices.SetOptions([]devicemodel.Selectable{
+	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
 			Device: devicemodel.Device{
 				Id: "device1",

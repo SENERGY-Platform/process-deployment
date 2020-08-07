@@ -20,10 +20,7 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
-	"log"
 )
 
 var L1Expiration = 60         // 60sec
@@ -46,62 +43,3 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 }
 
 var Factory = &RepositoryFactory{}
-
-func (this *Repository) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) (result []devicemodel.Selectable, err error, code int) {
-	filteredProtocols := map[string]bool{}
-	for _, protocolId := range protocolBlockList {
-		filteredProtocols[protocolId] = true
-	}
-	deviceTypes, err, code := this.GetFilteredDeviceTypes(token, descriptions)
-	if err != nil {
-		return result, err, code
-	}
-	if this.config.Debug {
-		log.Println("DEBUG: GetFilteredDevices()::GetFilteredDeviceTypes()", deviceTypes)
-	}
-	for _, dt := range deviceTypes {
-		services := []devicemodel.Service{}
-		serviceIndex := map[string]devicemodel.Service{}
-		for _, service := range dt.Services {
-			for _, desc := range descriptions {
-				for _, function := range service.Functions {
-					if !(function.RdfType == devicemodel.SES_ONTOLOGY_MEASURING_FUNCTION && filteredProtocols[service.ProtocolId]) {
-						if function.Id == desc.FunctionId {
-							if desc.AspectId == "" {
-								serviceIndex[service.Id] = service
-							} else {
-								for _, aspect := range service.Aspects {
-									if aspect.Id == desc.AspectId {
-										serviceIndex[service.Id] = service
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for _, service := range serviceIndex {
-			services = append(services, service)
-		}
-		if len(services) > 0 {
-			devices, err, code := this.GetDevicesOfType(token, dt.Id)
-			if err != nil {
-				return result, err, code
-			}
-			if this.config.Debug {
-				log.Println("DEBUG: GetFilteredDevices()::GetDevicesOfType()", dt.Id, devices)
-			}
-			for _, device := range devices {
-				result = append(result, devicemodel.Selectable{
-					Device:   device,
-					Services: services,
-				})
-			}
-		}
-	}
-	if this.config.Debug {
-		log.Println("DEBUG: GetFilteredDevices()", result)
-	}
-	return result, nil, 200
-}

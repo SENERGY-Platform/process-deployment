@@ -23,6 +23,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/bpmn/stringify"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"log"
 	"net/http"
@@ -255,42 +256,71 @@ func (this *Ctrl) SetExecutableFlagByElementV1(deployment *deploymentmodel.Deplo
 }
 
 func (this *Ctrl) SetDeploymentOptionsV1(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
-	protocolBlockList, err := this.GetBlockedProtocols()
+	bulk := this.getDeploymentV1BulkSelectableRequest(deployment)
+	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
+	if err != nil {
+		return err
+	}
+	selectableIndex := map[string][]deviceselectionmodel.Selectable{}
+	for _, element := range bulkResult {
+		selectableIndex[element.Id] = element.Selectables
+	}
 	for index, element := range deployment.Elements {
 		if element.Task != nil {
-			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.Task.DeviceDescription}.ToFilter(), protocolBlockList)
-			if err != nil {
-				return err
-			}
-			element.Task.Selectables = options
+			element.Task.Selectables = selectableIndex[element.Task.BpmnElementId]
 		}
 		if element.MultiTask != nil {
-			options, err := this.GetOptions(token, deploymentmodel.DeviceDescriptions{element.MultiTask.DeviceDescription}.ToFilter(), protocolBlockList)
-			if err != nil {
-				return err
-			}
-			element.MultiTask.Selectables = options
+			element.MultiTask.Selectables = selectableIndex[element.MultiTask.BpmnElementId]
 		}
 		deployment.Elements[index] = element
 	}
 	for index, lane := range deployment.Lanes {
 		if lane.Lane != nil {
-			options, err := this.GetOptions(token, lane.Lane.DeviceDescriptions.ToFilter(), protocolBlockList)
-			if err != nil {
-				return err
-			}
-			lane.Lane.Selectables = options
+			lane.Lane.Selectables = selectableIndex[lane.Lane.BpmnElementId]
 		}
 		if lane.MultiLane != nil {
-			options, err := this.GetOptions(token, lane.MultiLane.DeviceDescriptions.ToFilter(), protocolBlockList)
-			if err != nil {
-				return err
-			}
-			lane.MultiLane.Selectables = options
+			lane.MultiLane.Selectables = selectableIndex[lane.MultiLane.BpmnElementId]
 		}
 		deployment.Lanes[index] = lane
 	}
 	return nil
+}
+
+func (this *Ctrl) getDeploymentV1BulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
+	useEventFilter := devicemodel.EVENT
+	for _, element := range deployment.Elements {
+		if element.Task != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+				Id:                element.Task.BpmnElementId,
+				FilterInteraction: &useEventFilter,
+				Criteria:          deploymentmodel.DeviceDescriptions{element.Task.DeviceDescription}.ToFilter(),
+			})
+		}
+		if element.MultiTask != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+				Id:                element.MultiTask.BpmnElementId,
+				FilterInteraction: &useEventFilter,
+				Criteria:          deploymentmodel.DeviceDescriptions{element.MultiTask.DeviceDescription}.ToFilter(),
+			})
+		}
+	}
+	for _, lane := range deployment.Lanes {
+		if lane.Lane != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+				Id:                lane.Lane.BpmnElementId,
+				FilterInteraction: &useEventFilter,
+				Criteria:          lane.Lane.DeviceDescriptions.ToFilter(),
+			})
+		}
+		if lane.MultiLane != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
+				Id:                lane.MultiLane.BpmnElementId,
+				FilterInteraction: &useEventFilter,
+				Criteria:          lane.MultiLane.DeviceDescriptions.ToFilter(),
+			})
+		}
+	}
+	return bulk
 }
 
 func (this *Ctrl) setDeploymentV1(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {

@@ -18,6 +18,7 @@ package deploymentmodel
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 )
 
@@ -29,7 +30,7 @@ type Lane struct {
 	DeviceDescriptions DeviceDescriptions `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	Selectables []devicemodel.Selectable `json:"selectables"`
+	Selectables []deviceselectionmodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selection *devicemodel.Device `json:"selection"`
@@ -45,7 +46,7 @@ type MultiLane struct {
 	DeviceDescriptions DeviceDescriptions `json:"device_descriptions"`
 
 	//information prepared for the user to select device and service
-	Selectables []devicemodel.Selectable `json:"selectables"`
+	Selectables []deviceselectionmodel.Selectable `json:"selectables"`
 
 	//information from user to deploy
 	Selections []*devicemodel.Device `json:"selections"`

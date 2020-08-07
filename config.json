@@ -11,7 +11,7 @@
   "mongo_deployment_collection": "deployments",
   "mongo_dependencies_collection": "dependencies",
   "device_repo_url": "http://device-repo:8080",
-  "semantic_repo_url": "http://semantic-repo:8080",
+  "device_selection_url": "http://device-selection:8080",
   "perm_search_url": "http://permission-search:8080",
   "notification_url": "http://notification-service:5000"
 }

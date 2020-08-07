@@ -22,48 +22,23 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 	"sync"
 )
 
 type DeviceRepoMock struct {
-	mux       sync.Mutex
-	protocols map[string]devicemodel.Protocol
-	devices   map[string]devicemodel.Device
-	services  map[string]devicemodel.Service
-	options   []devicemodel.Selectable
+	mux      sync.Mutex
+	devices  map[string]devicemodel.Device
+	services map[string]devicemodel.Service
+	options  []deviceselectionmodel.Selectable
 }
 
-var Devices = &DeviceRepoMock{protocols: map[string]devicemodel.Protocol{}, devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
+var Devices = &DeviceRepoMock{devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
 
 func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {
 	return this, nil
-}
-
-func (this *DeviceRepoMock) GetProtocol(id string) (devicemodel.Protocol, error, int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	if result, ok := this.protocols[id]; ok {
-		return result, nil, 200
-	} else {
-		return result, errors.New("protocol " + id + " not found"), http.StatusNotFound
-	}
-}
-
-func (this *DeviceRepoMock) GetProtocols() (result []devicemodel.Protocol, err error, code int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	for _, protocol := range this.protocols {
-		result = append(result, protocol)
-	}
-	return result, nil, 200
-}
-
-func (this *DeviceRepoMock) SetProtocol(id string, protocol devicemodel.Protocol) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	this.protocols[id] = protocol
 }
 
 func (this *DeviceRepoMock) GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int) {
@@ -98,21 +73,30 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetFilteredDevices(token jwt_http_router.JwtImpersonate, descriptions devicemodel.DeviceTypesFilter, protocolBlockList []string) ([]devicemodel.Selectable, error, int) {
-	if len(descriptions) == 0 {
-		return nil, errors.New("missing descriptions"), 500
-	}
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	return this.options, nil, 200
+func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error) {
+	return map[string]bool{}, nil
 }
 
-func (this *DeviceRepoMock) SetOptions(options []devicemodel.Selectable) {
+func (this *DeviceRepoMock) SetOptions(options []deviceselectionmodel.Selectable) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.options = options
 }
 
-func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error) {
-	return map[string]bool{}, nil
+func (this *DeviceRepoMock) GetDeviceSelection(token jwt_http_router.JwtImpersonate, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	return this.options, nil, 200
+}
+
+func (this *DeviceRepoMock) GetBulkDeviceSelection(token jwt_http_router.JwtImpersonate, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	for _, element := range bulk {
+		result = append(result, deviceselectionmodel.BulkResultElement{
+			Id:          element.Id,
+			Selectables: this.options,
+		})
+	}
+	return result, nil, 200
 }
