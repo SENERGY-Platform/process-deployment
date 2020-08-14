@@ -51,6 +51,102 @@ func TestDeploymentHandlerV2(t *testing.T) {
 	}
 }
 
+func TestSetExecutableFlagV2(t *testing.T) {
+	t.Run("true", testSetExecutableFlag(deploymentmodel.Deployment{}, true))
+	t.Run("task true", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				Task: &deploymentmodel.Task{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+		},
+	}, true))
+	t.Run("task false", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				Task: &deploymentmodel.Task{
+					Selection: deploymentmodel.Selection{},
+				},
+			},
+		},
+	}, false))
+
+	t.Run("event false", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				MessageEvent: &deploymentmodel.MessageEvent{
+					Selection: deploymentmodel.Selection{},
+				},
+			},
+		},
+	}, false))
+
+	t.Run("event true", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				MessageEvent: &deploymentmodel.MessageEvent{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+		},
+	}, true))
+
+	t.Run("event task true", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				MessageEvent: &deploymentmodel.MessageEvent{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+			{
+				Task: &deploymentmodel.Task{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+		},
+	}, true))
+
+	t.Run("event task false 1", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				MessageEvent: &deploymentmodel.MessageEvent{
+					Selection: deploymentmodel.Selection{},
+				},
+			},
+			{
+				Task: &deploymentmodel.Task{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+		},
+	}, false))
+
+	t.Run("event task false 2", testSetExecutableFlag(deploymentmodel.Deployment{
+		Elements: []deploymentmodel.Element{
+			{
+				MessageEvent: &deploymentmodel.MessageEvent{
+					Selection: deploymentmodel.Selection{SelectionOptions: []deploymentmodel.SelectionOption{deploymentmodel.SelectionOption{}}},
+				},
+			},
+			{
+				Task: &deploymentmodel.Task{
+					Selection: deploymentmodel.Selection{},
+				},
+			},
+		},
+	}, false))
+}
+
+func testSetExecutableFlag(deployment deploymentmodel.Deployment, expected bool) func(t *testing.T) {
+	return func(t *testing.T) {
+		(&Ctrl{}).SetExecutableFlagV2(&deployment)
+		if deployment.Executable != expected {
+			t.Error(deployment.Executable, expected)
+		}
+	}
+}
+
 func isValidaForDeploymentHandlerTest(dir string) bool {
 	infos, err := ioutil.ReadDir(dir)
 	if err != nil {

@@ -90,11 +90,11 @@ func (this *Ctrl) RemoveDeploymentV2(jwt jwt_http_router.Jwt, id string) (err er
 func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
 	deployment.Executable = true
 	for _, element := range deployment.Elements {
-		if element.Task != nil && len(element.Task.Selection.SelectionOptions) < 0 {
+		if element.Task != nil && len(element.Task.Selection.SelectionOptions) == 0 {
 			deployment.Executable = false
 			return
 		}
-		if element.MessageEvent != nil && len(element.MessageEvent.Selection.SelectionOptions) < 0 {
+		if element.MessageEvent != nil && len(element.MessageEvent.Selection.SelectionOptions) == 0 {
 			deployment.Executable = false
 			return
 		}
