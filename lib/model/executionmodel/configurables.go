@@ -16,16 +16,13 @@
 
 package executionmodel
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-
 type Configurable struct {
 	CharacteristicId string                            `json:"characteristic_id"`
 	Values           []ConfigurableCharacteristicValue `json:"values"`
 }
 
 type ConfigurableCharacteristicValue struct {
-	Label     string           `json:"label"`
-	Path      string           `json:"path"`
-	Value     interface{}      `json:"value"`
-	ValueType devicemodel.Type `json:"value_type"`
+	Label string `json:"label"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
 }

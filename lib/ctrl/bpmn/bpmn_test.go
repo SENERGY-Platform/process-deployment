@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	mock "github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"github.com/beevik/etree"
@@ -572,10 +571,9 @@ func ExampleDeploymentWithConfigurablesToXml() {
 				CharacteristicId: "foo",
 				Values: []executionmodel.ConfigurableCharacteristicValue{
 					{
-						Label:     "bar",
-						Path:      "batz",
-						Value:     42,
-						ValueType: devicemodel.Integer,
+						Label: "bar",
+						Path:  "batz",
+						Value: "42",
 					},
 				},
 			}}
@@ -631,7 +629,7 @@ func ExampleDeploymentWithConfigurablesToXml() {
 	//             <bpmn:documentation>{"order": 1}</bpmn:documentation>
 	//             <bpmn:extensionElements>
 	//                 <camunda:inputOutput>
-	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_id_1","service_id":"service_id_1","protocol_id":"pid","configurables":[{"characteristic_id":"foo","values":[{"label":"bar","path":"batz","value":42,"value_type":"https://schema.org/Integer"}]}],"input":"000"}</camunda:inputParameter>
+	//                     <camunda:inputParameter name="payload">{"function":{"id":"fid","name":"","concept_id":"","rdf_type":""},"characteristic_id":"example_hex","device_id":"device_id_1","service_id":"service_id_1","protocol_id":"pid","configurables":[{"characteristic_id":"foo","values":[{"label":"bar","path":"batz","value":"42"}]}],"input":"000"}</camunda:inputParameter>
 	//                     <camunda:inputParameter name="inputs">"ff0"</camunda:inputParameter>
 	//                 </camunda:inputOutput>
 	//             </bpmn:extensionElements>
