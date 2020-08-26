@@ -133,12 +133,3 @@ func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *
 	(*cache)[id] = result
 	return &result, nil, 200
 }
-
-func (this *Ctrl) FilterProtocols(protocols []devicemodel.Protocol, filterBy devicemodel.Interaction) (result []string, err error) {
-	for _, protocol := range protocols {
-		if protocol.Interaction == filterBy {
-			result = append(result, protocol.Id)
-		}
-	}
-	return result, nil
-}

@@ -24,26 +24,26 @@ type Device struct {
 }
 
 type DeviceType struct {
-	Id          string      `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Image       string      `json:"image"`
-	Services    []Service   `json:"services"`
-	DeviceClass DeviceClass `json:"device_class"`
-	RdfType     string      `json:"rdf_type"`
+	Id            string    `json:"id"`
+	Name          string    `json:"name"`
+	Description   string    `json:"description"`
+	Services      []Service `json:"services"`
+	DeviceClassId string    `json:"device_class_id"`
+	RdfType       string    `json:"rdf_type"`
 }
 
 type Service struct {
-	Id          string     `json:"id"`
-	LocalId     string     `json:"local_id,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Description string     `json:"description,omitempty"`
-	Aspects     []Aspect   `json:"aspects,omitempty"`
-	ProtocolId  string     `json:"protocol_id,omitempty"`
-	Inputs      []Content  `json:"inputs,omitempty"`
-	Outputs     []Content  `json:"outputs,omitempty"`
-	Functions   []Function `json:"functions,omitempty"`
-	RdfType     string     `json:"rdf_type,omitempty"`
+	Id          string      `json:"id"`
+	LocalId     string      `json:"local_id,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Interaction Interaction `json:"interaction,omitempty"`
+	AspectIds   []string    `json:"aspect_ids,omitempty"`
+	ProtocolId  string      `json:"protocol_id,omitempty"`
+	Inputs      []Content   `json:"inputs,omitempty"`
+	Outputs     []Content   `json:"outputs,omitempty"`
+	FunctionIds []string    `json:"function_ids,omitempty"`
+	RdfType     string      `json:"rdf_type,omitempty"`
 }
 
 type Interaction string
@@ -58,6 +58,10 @@ type Protocol struct {
 	Id               string            `json:"id"`
 	Name             string            `json:"name"`
 	Handler          string            `json:"handler"`
-	Interaction      Interaction       `json:"interaction"`
 	ProtocolSegments []ProtocolSegment `json:"protocol_segments"`
+}
+
+type ProtocolSegment struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }

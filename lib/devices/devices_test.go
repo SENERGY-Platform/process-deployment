@@ -94,14 +94,3 @@ func TestCaching(t *testing.T) {
 	}
 
 }
-
-func testService(id string, protocolId string, functionType string) devicemodel.Service {
-	return devicemodel.Service{
-		Id:         id,
-		LocalId:    id + "_l",
-		Name:       id + "_name",
-		Aspects:    []devicemodel.Aspect{{Id: "a1"}},
-		ProtocolId: protocolId,
-		Functions:  []devicemodel.Function{{Id: functionType + "_1", RdfType: functionType}},
-	}
-}

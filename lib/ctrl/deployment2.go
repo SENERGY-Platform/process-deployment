@@ -197,14 +197,14 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria) bool {
 	implementsFunction := false
 	matchesAspect := false
-	for _, function := range service.Functions {
-		if criteria.FunctionId != nil && *criteria.FunctionId == function.Id {
+	for _, function := range service.FunctionIds {
+		if criteria.FunctionId != nil && *criteria.FunctionId == function {
 			implementsFunction = true
 			break
 		}
 	}
-	for _, aspect := range service.Aspects {
-		if criteria.AspectId != nil && *criteria.AspectId == aspect.Id {
+	for _, aspect := range service.AspectIds {
+		if criteria.AspectId != nil && *criteria.AspectId == aspect {
 			matchesAspect = true
 			break
 		}

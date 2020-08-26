@@ -19,6 +19,7 @@ package devicemodel
 type DeviceClass struct {
 	Id      string `json:"id"`
 	Name    string `json:"name"`
+	Image   string `json:"image"`
 	RdfType string `json:"rdf_type"`
 }
 
@@ -36,10 +37,11 @@ type Aspect struct {
 }
 
 type Concept struct {
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	CharacteristicIds []string `json:"characteristic_ids"`
-	RdfType           string   `json:"rdf_type"`
+	Id                   string   `json:"id"`
+	Name                 string   `json:"name"`
+	CharacteristicIds    []string `json:"characteristic_ids"`
+	BaseCharacteristicId string   `json:"base_characteristic_id"`
+	RdfType              string   `json:"rdf_type"`
 }
 
 type Characteristic struct {

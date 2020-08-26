@@ -53,6 +53,7 @@
 	"device_class": {
 		"id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
 		"name": "",
+		"image": "",
 		"rdf_type": ""
 	},
 	"device_id": "hue",
