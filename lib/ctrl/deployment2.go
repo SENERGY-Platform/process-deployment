@@ -184,7 +184,7 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 			}
 		}
 		result = append(result, deploymentmodel.SelectionOption{
-			Device: deploymentmodel.Device{
+			Device: &deploymentmodel.Device{
 				Id:   selectable.Device.Id,
 				Name: selectable.Device.Name,
 			},
@@ -241,22 +241,40 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 
 //ensures selection correctness
 func (this *Ctrl) ensureDeploymentSelectionAccess(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
-	ids := []string{}
+	deviceIds := []string{}
+	deviceGroupIds := []string{}
 	for _, element := range deployment.Elements {
-		if element.Task != nil {
-			ids = append(ids, element.Task.Selection.SelectedDeviceId)
+		if element.Task != nil && element.Task.Selection.SelectedDeviceId != nil {
+			deviceIds = append(deviceIds, *element.Task.Selection.SelectedDeviceId)
 		}
-		if element.MessageEvent != nil {
-			ids = append(ids, element.MessageEvent.Selection.SelectedDeviceId)
+		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceId != nil {
+			deviceIds = append(deviceIds, *element.MessageEvent.Selection.SelectedDeviceId)
+		}
+		if element.Task != nil && element.Task.Selection.SelectedDeviceGroupId != nil {
+			deviceGroupIds = append(deviceGroupIds, *element.Task.Selection.SelectedDeviceGroupId)
+		}
+		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceGroupId != nil {
+			deviceGroupIds = append(deviceGroupIds, *element.MessageEvent.Selection.SelectedDeviceGroupId)
 		}
 	}
-	access, err := this.devices.CheckAccess(token, ids)
+
+	deviceaccess, err := this.devices.CheckAccess(token, "devices", deviceIds)
 	if err != nil {
 		return err, http.StatusInternalServerError
 	}
-	for _, access := range access {
+	for _, access := range deviceaccess {
 		if !access {
-			return errors.New("access denied"), http.StatusForbidden
+			return errors.New("device access denied"), http.StatusForbidden
+		}
+	}
+
+	devicegroupaccess, err := this.devices.CheckAccess(token, "device-groups", deviceGroupIds)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	for _, access := range devicegroupaccess {
+		if !access {
+			return errors.New("device-groupaccess denied"), http.StatusForbidden
 		}
 	}
 	return nil, http.StatusOK

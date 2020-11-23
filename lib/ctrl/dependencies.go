@@ -219,7 +219,7 @@ func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deploym
 	result.Events = []dependencymodel.EventDependency{}
 	result.Devices = []dependencymodel.DeviceDependency{}
 	for _, element := range deployment.Elements {
-		if element.Task != nil {
+		if element.Task != nil && element.Task.Selection.SelectedDeviceId != nil {
 			dependency := getDeviceDependencyFromSelection(element.Task.Selection)
 			dependency.BpmnResources = []dependencymodel.BpmnResource{{
 				Id: element.BpmnId,
@@ -227,7 +227,7 @@ func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deploym
 			}}
 			result.Devices = append(result.Devices, dependency)
 		}
-		if element.MessageEvent != nil {
+		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceId != nil {
 			dependency := getDeviceDependencyFromSelection(element.MessageEvent.Selection)
 			dependency.BpmnResources = []dependencymodel.BpmnResource{{
 				Id: element.BpmnId,
@@ -247,7 +247,9 @@ func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deploym
 }
 
 func getDeviceDependencyFromSelection(selection deploymentmodel2.Selection) (result dependencymodel.DeviceDependency) {
-	result.DeviceId = selection.SelectedDeviceId
+	if selection.SelectedDeviceId != nil {
+		result.DeviceId = *selection.SelectedDeviceId
+	}
 	for _, option := range selection.SelectionOptions {
 		if option.Device.Id == result.DeviceId {
 			result.Name = option.Device.Name

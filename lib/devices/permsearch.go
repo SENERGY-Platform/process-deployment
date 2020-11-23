@@ -25,13 +25,20 @@ import (
 	"runtime/debug"
 )
 
-func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (result map[string]bool, err error) {
+func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (result map[string]bool, err error) {
+	query := QueryMessage{
+		Resource: kind,
+		CheckIds: &QueryCheckIds{
+			Ids:    ids,
+			Rights: "x",
+		},
+	}
 	buff := new(bytes.Buffer)
-	err = json.NewEncoder(buff).Encode(ids)
+	err = json.NewEncoder(buff).Encode(query)
 	if err != nil {
 		return result, err
 	}
-	req, err := http.NewRequest("POST", this.config.PermSearchUrl+"/ids/check/devices/x", buff)
+	req, err := http.NewRequest("POST", this.config.PermSearchUrl+"/v2/query", buff)
 	if err != nil {
 		debug.PrintStack()
 		return result, err
@@ -55,4 +62,56 @@ func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, ids []
 		return result, err
 	}
 	return result, nil
+}
+
+type QueryMessage struct {
+	Resource string         `json:"resource"`
+	Find     *QueryFind     `json:"find"`
+	ListIds  *QueryListIds  `json:"list_ids"`
+	CheckIds *QueryCheckIds `json:"check_ids"`
+}
+type QueryFind struct {
+	QueryListCommons
+	Search string     `json:"search"`
+	Filter *Selection `json:"filter"`
+}
+
+type QueryListIds struct {
+	QueryListCommons
+	Ids []string `json:"ids"`
+}
+
+type QueryCheckIds struct {
+	Ids    []string `json:"ids"`
+	Rights string   `json:"rights"`
+}
+
+type QueryListCommons struct {
+	Limit    int    `json:"limit"`
+	Offset   int    `json:"offset"`
+	Rights   string `json:"rights"`
+	SortBy   string `json:"sort_by"`
+	SortDesc bool   `json:"sort_desc"`
+}
+
+type QueryOperationType string
+
+const (
+	QueryEqualOperation             QueryOperationType = "=="
+	QueryUnequalOperation           QueryOperationType = "!="
+	QueryAnyValueInFeatureOperation QueryOperationType = "any_value_in_feature"
+)
+
+type ConditionConfig struct {
+	Feature   string             `json:"feature"`
+	Operation QueryOperationType `json:"operation"`
+	Value     interface{}        `json:"value"`
+	Ref       string             `json:"ref"`
+}
+
+type Selection struct {
+	And       []Selection     `json:"and"`
+	Or        []Selection     `json:"or"`
+	Not       *Selection      `json:"not"`
+	Condition ConditionConfig `json:"condition"`
 }

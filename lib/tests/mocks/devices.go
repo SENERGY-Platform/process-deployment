@@ -73,7 +73,7 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string) (map[string]bool, error) {
+func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (map[string]bool, error) {
 	return map[string]bool{}, nil
 }
 

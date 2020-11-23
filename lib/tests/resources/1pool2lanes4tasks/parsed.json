@@ -28,8 +28,8 @@
             "aspect_id":null
           },
           "selection_options": null,
-          "selected_device_id": "",
-          "selected_service_id": ""
+          "selected_device_id": null,
+          "selected_service_id": null
         }
       }
     },
@@ -57,8 +57,8 @@
             "aspect_id":null
           },
           "selection_options": null,
-          "selected_device_id": "",
-          "selected_service_id": ""
+          "selected_device_id": null,
+          "selected_service_id": null
         }
       }
     },
@@ -82,8 +82,8 @@
             "aspect_id":null
           },
           "selection_options": null,
-          "selected_device_id": "",
-          "selected_service_id": ""
+          "selected_device_id": null,
+          "selected_service_id": null
         }
       }
     },
@@ -107,8 +107,8 @@
             "aspect_id":null
           },
           "selection_options": null,
-          "selected_device_id": "",
-          "selected_service_id": ""
+          "selected_device_id": null,
+          "selected_service_id": null
         }
       }
     }

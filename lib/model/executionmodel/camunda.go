@@ -30,9 +30,10 @@ type Task struct {
 	Aspect      *devicemodel.Aspect      `json:"aspect,omitempty"`
 
 	//deployment time
-	DeviceId   string `json:"device_id,omitempty"`
-	ServiceId  string `json:"service_id,omitempty"`
-	ProtocolId string `json:"protocol_id,omitempty"`
+	DeviceGroupId string `json:"device_group_id,omitempty"`
+	DeviceId      string `json:"device_id,omitempty"`
+	ServiceId     string `json:"service_id,omitempty"`
+	ProtocolId    string `json:"protocol_id,omitempty"`
 
 	Configurables        []Configurable `json:"configurables,omitempty"`
 	ContentVariableHints []string       `json:"content_variable_hints,omitempty"`

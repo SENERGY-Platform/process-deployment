@@ -28,8 +28,8 @@
             "aspect_id": "urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6"
           },
           "selection_options": null,
-          "selected_device_id": "",
-          "selected_service_id": ""
+          "selected_device_id": null,
+          "selected_service_id": null
         }
       }
     },

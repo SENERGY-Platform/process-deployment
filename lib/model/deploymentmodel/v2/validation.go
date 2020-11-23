@@ -93,16 +93,16 @@ func (this Element) Validate(kind ValidationKind) error {
 	if this.BpmnId == "" {
 		return errors.New("missing bpmn element id")
 	}
-	if this.Task != nil && this.Task.Selection.SelectedDeviceId == "" {
+	if this.Task != nil && this.Task.Selection.SelectedDeviceId == nil {
 		return errors.New("missing device selection in task")
 	}
-	if this.Task != nil && this.Task.Selection.SelectedServiceId == "" {
+	if this.Task != nil && this.Task.Selection.SelectedServiceId == nil {
 		return errors.New("missing service selection in task")
 	}
-	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedDeviceId == "" {
+	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedDeviceId == nil {
 		return errors.New("missing device selection in event")
 	}
-	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedServiceId == "" {
+	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedServiceId == nil {
 		return errors.New("missing service selection in event")
 	}
 	return nil

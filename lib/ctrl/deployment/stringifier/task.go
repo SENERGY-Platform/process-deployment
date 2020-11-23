@@ -74,8 +74,15 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	command.Input = cmd.Input
 	command.Output = cmd.Output
 
-	command.DeviceId = task.Selection.SelectedDeviceId
-	command.ServiceId = task.Selection.SelectedServiceId
+	if task.Selection.SelectedDeviceId != nil {
+		command.DeviceId = *task.Selection.SelectedDeviceId
+	}
+	if task.Selection.SelectedServiceId != nil {
+		command.ServiceId = *task.Selection.SelectedServiceId
+	}
+	if task.Selection.SelectedDeviceGroupId != nil {
+		command.DeviceGroupId = *task.Selection.SelectedDeviceGroupId
+	}
 
 	commandStr, err := json.MarshalIndent(command, "", "\t")
 

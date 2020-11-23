@@ -21,18 +21,25 @@ import (
 )
 
 type Selection struct {
-	FilterCriteria    FilterCriteria    `json:"filter_criteria"`
-	SelectionOptions  []SelectionOption `json:"selection_options"`
-	SelectedDeviceId  string            `json:"selected_device_id"`
-	SelectedServiceId string            `json:"selected_service_id"`
+	FilterCriteria        FilterCriteria    `json:"filter_criteria"`
+	SelectionOptions      []SelectionOption `json:"selection_options"`
+	SelectedDeviceId      *string           `json:"selected_device_id"`
+	SelectedServiceId     *string           `json:"selected_service_id"`
+	SelectedDeviceGroupId *string           `json:"selected_group_id"`
 }
 
 type SelectionOption struct {
-	Device   Device    `json:"device"`
+	Device   *Device   `json:"device"`
 	Services []Service `json:"services"`
+	Group    *Group    `json:"group"`
 }
 
 type Device struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Group struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
