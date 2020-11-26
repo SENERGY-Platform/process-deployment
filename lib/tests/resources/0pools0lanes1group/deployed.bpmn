@@ -13,6 +13,7 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
+                        "version": 2,
                         "function": {
                             "id": "urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9",
                             "name": "",

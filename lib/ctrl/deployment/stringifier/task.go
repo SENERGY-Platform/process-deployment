@@ -73,6 +73,7 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 
 	command.Input = cmd.Input
 	command.Output = cmd.Output
+	command.Version = cmd.Version
 
 	if task.Selection.SelectedDeviceId != nil {
 		command.DeviceId = *task.Selection.SelectedDeviceId

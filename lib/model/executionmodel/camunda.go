@@ -21,6 +21,8 @@ import (
 )
 
 type Task struct {
+	Version int `json:"version,omitempty"`
+
 	//modeling time
 	Function         devicemodel.Function `json:"function"`
 	CharacteristicId string               `json:"characteristic_id"`
