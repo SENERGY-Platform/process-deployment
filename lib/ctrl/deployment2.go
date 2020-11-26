@@ -137,6 +137,7 @@ func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmod
 					Id:                element.BpmnId,
 					FilterInteraction: &useEventFilter,
 					Criteria:          deviceselectionmodel.FilterCriteriaAndSet{element.Task.Selection.FilterCriteria.ToDeviceTypeFilter()},
+					IncludeGroups:     this.config.EnableDeviceGroupsForTasks,
 				})
 			} else {
 				taskGroups[*element.Group] = append(taskGroups[*element.Group], index)
@@ -144,8 +145,9 @@ func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmod
 		}
 		if element.MessageEvent != nil {
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
-				Id:       element.BpmnId,
-				Criteria: deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
+				Id:            element.BpmnId,
+				Criteria:      deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
+				IncludeGroups: this.config.EnableDeviceGroupsForEvents,
 			})
 		}
 	}

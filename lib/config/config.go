@@ -44,6 +44,9 @@ type ConfigStruct struct {
 	ConnectivityTest            bool   `json:"connectivity_test"`
 	DeploymentTopic             string `json:"deployment_topic"`
 	NotificationUrl             string `json:"notification_url"`
+
+	EnableDeviceGroupsForTasks  bool `json:"enable_device_groups_for_tasks"`
+	EnableDeviceGroupsForEvents bool `json:"enable_device_groups_for_events"`
 }
 
 type Config = *ConfigStruct
