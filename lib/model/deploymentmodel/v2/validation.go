@@ -97,7 +97,6 @@ func (this Element) Validate(kind ValidationKind) error {
 		if this.Task.Selection.SelectedDeviceGroupId == nil && this.Task.Selection.SelectedDeviceId == nil {
 			return errors.New("missing device/device-group selection in task")
 		}
-		return errors.New("missing device selection in task")
 	}
 	if this.Task != nil && this.Task.Selection.SelectedServiceId == nil {
 		return errors.New("missing service selection in task")
