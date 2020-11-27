@@ -25,13 +25,13 @@ type Selection struct {
 	SelectionOptions      []SelectionOption `json:"selection_options"`
 	SelectedDeviceId      *string           `json:"selected_device_id"`
 	SelectedServiceId     *string           `json:"selected_service_id"`
-	SelectedDeviceGroupId *string           `json:"selected_group_id"`
+	SelectedDeviceGroupId *string           `json:"selected_device_group_id"`
 }
 
 type SelectionOption struct {
-	Device   *Device   `json:"device"`
-	Services []Service `json:"services"`
-	Group    *Group    `json:"group"`
+	Device      *Device      `json:"device"`
+	Services    []Service    `json:"services"`
+	DeviceGroup *DeviceGroup `json:"device_group"`
 }
 
 type Device struct {
@@ -39,7 +39,7 @@ type Device struct {
 	Name string `json:"name"`
 }
 
-type Group struct {
+type DeviceGroup struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
