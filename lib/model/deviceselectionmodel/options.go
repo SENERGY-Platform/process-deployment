@@ -19,8 +19,9 @@ package deviceselectionmodel
 import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 
 type Selectable struct {
-	Device   devicemodel.Device    `json:"device"`
-	Services []devicemodel.Service `json:"services"`
+	Device      *devicemodel.Device      `json:"device"`
+	Services    []devicemodel.Service    `json:"services"`
+	DeviceGroup *devicemodel.DeviceGroup `json:"device_group,omitempty"`
 }
 
 type FilterCriteriaAndSet []FilterCriteria

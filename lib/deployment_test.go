@@ -147,7 +147,7 @@ func ExampleCtrl_Deployment_RealMongo() {
 	}
 	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "foo",
 			},
 			Services: []devicemodel.Service{
@@ -375,7 +375,7 @@ func ExampleCtrl_Deployment() {
 	}
 	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "foo",
 			},
 			Services: []devicemodel.Service{
@@ -856,7 +856,7 @@ func ExampleCtrl_DeploymentEmptyLane() {
 func prepareMockRepos() {
 	mocks.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "device1",
 			},
 			Services: []devicemodel.Service{

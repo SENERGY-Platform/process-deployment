@@ -177,20 +177,33 @@ func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmod
 func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption) {
 	for _, selectable := range selectables {
 		serviceDesc := []deploymentmodel.Service{}
-		for _, service := range selectable.Services {
-			if serviceMatchesCriteria(service, criteria) {
-				serviceDesc = append(serviceDesc, deploymentmodel.Service{
-					Id:   service.Id,
-					Name: service.Name,
-				})
+		var device *deploymentmodel.Device
+		var devicegroup *deploymentmodel.DeviceGroup
+		if selectable.DeviceGroup != nil {
+			devicegroup = &deploymentmodel.DeviceGroup{
+				Id:   selectable.DeviceGroup.Id,
+				Name: selectable.DeviceGroup.Name,
 			}
 		}
-		result = append(result, deploymentmodel.SelectionOption{
-			Device: &deploymentmodel.Device{
+		if selectable.Device != nil {
+			for _, service := range selectable.Services {
+				if serviceMatchesCriteria(service, criteria) {
+					serviceDesc = append(serviceDesc, deploymentmodel.Service{
+						Id:   service.Id,
+						Name: service.Name,
+					})
+				}
+			}
+			device = &deploymentmodel.Device{
 				Id:   selectable.Device.Id,
 				Name: selectable.Device.Name,
-			},
-			Services: serviceDesc,
+			}
+		}
+
+		result = append(result, deploymentmodel.SelectionOption{
+			Device:      device,
+			DeviceGroup: devicegroup,
+			Services:    serviceDesc,
 		})
 	}
 	return result

@@ -78,7 +78,7 @@ func ExampleCtrl_PrepareDeploymentById() {
 
 	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "device1",
 			},
 			Services: []devicemodel.Service{
@@ -165,7 +165,7 @@ func ExampleCtrl_PrepareDeployment() {
 
 	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "device1",
 			},
 			Services: []devicemodel.Service{
@@ -267,7 +267,7 @@ func ExampleCtrl_PrepareDeployment2() {
 
 	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "device1",
 			},
 			Services: []devicemodel.Service{
@@ -376,7 +376,7 @@ func ExampleCtrl_PrepareDeployment3() {
 
 	mock.Devices.SetOptions([]deviceselectionmodel.Selectable{
 		{
-			Device: devicemodel.Device{
+			Device: &devicemodel.Device{
 				Id: "device1",
 			},
 			Services: []devicemodel.Service{
