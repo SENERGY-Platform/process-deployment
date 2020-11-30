@@ -75,13 +75,13 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	command.Output = cmd.Output
 	command.Version = cmd.Version
 
-	if task.Selection.SelectedDeviceId != nil {
+	if task.Selection.SelectedDeviceId != nil && *task.Selection.SelectedDeviceId != "" {
 		command.DeviceId = *task.Selection.SelectedDeviceId
 	}
-	if task.Selection.SelectedServiceId != nil {
+	if task.Selection.SelectedServiceId != nil && *task.Selection.SelectedServiceId != "" {
 		command.ServiceId = *task.Selection.SelectedServiceId
 	}
-	if task.Selection.SelectedDeviceGroupId != nil {
+	if task.Selection.SelectedDeviceGroupId != nil && *task.Selection.SelectedDeviceGroupId != "" {
 		command.DeviceGroupId = *task.Selection.SelectedDeviceGroupId
 	}
 

@@ -94,17 +94,18 @@ func (this Element) Validate(kind ValidationKind) error {
 		return errors.New("missing bpmn element id")
 	}
 	if this.Task != nil {
-		if this.Task.Selection.SelectedDeviceGroupId == nil && this.Task.Selection.SelectedDeviceId == nil {
+		if (this.Task.Selection.SelectedDeviceGroupId == nil || *this.Task.Selection.SelectedDeviceGroupId == "") &&
+			(this.Task.Selection.SelectedDeviceId == nil || *this.Task.Selection.SelectedDeviceId == "") {
 			return errors.New("missing device/device-group selection in task")
 		}
 	}
-	if this.Task != nil && this.Task.Selection.SelectedServiceId == nil {
+	if this.Task != nil && (this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in task")
 	}
-	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedDeviceId == nil {
+	if this.MessageEvent != nil && (this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "") {
 		return errors.New("missing device selection in event")
 	}
-	if this.MessageEvent != nil && this.MessageEvent.Selection.SelectedServiceId == nil {
+	if this.MessageEvent != nil && (this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in event")
 	}
 	return nil
