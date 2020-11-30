@@ -99,7 +99,10 @@ func (this Element) Validate(kind ValidationKind) error {
 			return errors.New("missing device/device-group selection in task")
 		}
 	}
-	if this.Task != nil && (this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
+	if this.Task != nil &&
+		this.Task.Selection.SelectedDeviceId != nil &&
+		*this.Task.Selection.SelectedDeviceId == "" &&
+		(this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in task")
 	}
 	if this.MessageEvent != nil && (this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "") {
