@@ -105,11 +105,19 @@ func (this Element) Validate(kind ValidationKind) error {
 		(this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in task")
 	}
-	if this.MessageEvent != nil && (this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "") {
-		return errors.New("missing device selection in event")
-	}
-	if this.MessageEvent != nil && (this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "") {
-		return errors.New("missing service selection in event")
+	if this.MessageEvent != nil {
+		if this.MessageEvent.Selection.SelectedDeviceGroupId != nil {
+			if *this.MessageEvent.Selection.SelectedDeviceGroupId == "" {
+				return errors.New("invalid device-group selection in event")
+			}
+		} else {
+			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
+				return errors.New("missing device selection in event")
+			}
+			if this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "" {
+				return errors.New("missing service selection in event")
+			}
+		}
 	}
 	return nil
 }
