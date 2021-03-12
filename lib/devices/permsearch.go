@@ -26,6 +26,9 @@ import (
 )
 
 func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (result map[string]bool, err error) {
+	if len(ids) == 0 {
+		return map[string]bool{}, nil
+	}
 	query := QueryMessage{
 		Resource: kind,
 		CheckIds: &QueryCheckIds{
