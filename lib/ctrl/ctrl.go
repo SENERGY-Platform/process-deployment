@@ -35,14 +35,16 @@ type Ctrl struct {
 	processrepo           interfaces.ProcessRepo
 	deploymentParser      interfaces.DeploymentParser
 	deploymentStringifier interfaces.DeploymentStringifier
+	imports               interfaces.Imports
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo, imports interfaces.Imports) (result *Ctrl, err error) {
 	result = &Ctrl{
 		config:                config,
 		db:                    db,
 		devices:               devices,
 		processrepo:           processrepo,
+		imports:               imports,
 		deploymentParser:      parser.New(config),
 		deploymentStringifier: stringifier.New(config),
 	}

@@ -22,6 +22,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 )
@@ -145,9 +146,10 @@ func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmod
 		}
 		if element.MessageEvent != nil {
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
-				Id:            element.BpmnId,
-				Criteria:      deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
-				IncludeGroups: this.config.EnableDeviceGroupsForEvents,
+				Id:             element.BpmnId,
+				Criteria:       deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
+				IncludeGroups:  this.config.EnableDeviceGroupsForEvents,
+				IncludeImports: this.config.EnableImportsForEvents,
 			})
 		}
 	}
@@ -179,6 +181,8 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 		serviceDesc := []deploymentmodel.Service{}
 		var device *deploymentmodel.Device
 		var devicegroup *deploymentmodel.DeviceGroup
+		var selectableImport *importmodel.Import
+		var importType *importmodel.ImportType
 		if selectable.DeviceGroup != nil {
 			devicegroup = &deploymentmodel.DeviceGroup{
 				Id:   selectable.DeviceGroup.Id,
@@ -199,11 +203,17 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 				Name: selectable.Device.Name,
 			}
 		}
+		if selectable.Import != nil && selectable.ImportType != nil {
+			selectableImport = selectable.Import
+			importType = selectable.ImportType
+		}
 
 		result = append(result, deploymentmodel.SelectionOption{
 			Device:      device,
 			DeviceGroup: devicegroup,
 			Services:    serviceDesc,
+			Import:      selectableImport,
+			ImportType:  importType,
 		})
 	}
 	return result
@@ -233,7 +243,7 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 	}
 
 	//ensure selected devices and services exist and have the given content and are executable for the requesting user (if not using id ref)
-	err, code = this.ensureDeploymentSelectionAccess(jwt.Impersonate, &deployment)
+	err, code = this.EnsureDeploymentSelectionAccess(jwt.Impersonate, &deployment)
 	if err != nil {
 		return deployment, err, code
 	}
@@ -255,9 +265,10 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 }
 
 //ensures selection correctness
-func (this *Ctrl) ensureDeploymentSelectionAccess(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
+func (this *Ctrl) EnsureDeploymentSelectionAccess(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
 	deviceIds := []string{}
 	deviceGroupIds := []string{}
+	importIds := []string{}
 	for _, element := range deployment.Elements {
 		if element.Task != nil && element.Task.Selection.SelectedDeviceId != nil {
 			deviceIds = append(deviceIds, *element.Task.Selection.SelectedDeviceId)
@@ -270,6 +281,9 @@ func (this *Ctrl) ensureDeploymentSelectionAccess(token jwt_http_router.JwtImper
 		}
 		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceGroupId != nil {
 			deviceGroupIds = append(deviceGroupIds, *element.MessageEvent.Selection.SelectedDeviceGroupId)
+		}
+		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedImportId != nil {
+			importIds = append(importIds, *element.MessageEvent.Selection.SelectedImportId)
 		}
 	}
 
@@ -291,6 +305,14 @@ func (this *Ctrl) ensureDeploymentSelectionAccess(token jwt_http_router.JwtImper
 		if !access {
 			return errors.New("device-groupaccess denied"), http.StatusForbidden
 		}
+	}
+
+	importaccess, err := this.imports.CheckAccess(token, importIds, false)
+	if err != nil {
+		return err, http.StatusInternalServerError
+	}
+	for !importaccess {
+		return errors.New("import access denied"), http.StatusForbidden
 	}
 	return nil, http.StatusOK
 }

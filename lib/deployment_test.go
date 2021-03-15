@@ -82,7 +82,7 @@ func ExampleCtrl_Deployment_RealMongo() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, db.Factory, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, db.Factory, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -225,7 +225,7 @@ func ExampleCtrl_Deployment_sourceGenerated() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -310,7 +310,7 @@ func ExampleCtrl_Deployment() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -453,7 +453,7 @@ func ExampleCtrl_noEngineAccess() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -570,7 +570,7 @@ func ExampleCtrl_Hints1() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -635,7 +635,7 @@ func ExampleCtrl_Hints2() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -700,7 +700,7 @@ func ExampleCtrl_DeploymentEventCast() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -765,7 +765,7 @@ func ExampleCtrl_DeploymentEmptyLane() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return

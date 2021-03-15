@@ -18,20 +18,26 @@ package deploymentmodel
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 )
 
 type Selection struct {
-	FilterCriteria        FilterCriteria    `json:"filter_criteria"`
-	SelectionOptions      []SelectionOption `json:"selection_options"`
-	SelectedDeviceId      *string           `json:"selected_device_id"`
-	SelectedServiceId     *string           `json:"selected_service_id"`
-	SelectedDeviceGroupId *string           `json:"selected_device_group_id"`
+	FilterCriteria           FilterCriteria    `json:"filter_criteria"`
+	SelectionOptions         []SelectionOption `json:"selection_options"`
+	SelectedDeviceId         *string           `json:"selected_device_id"`
+	SelectedServiceId        *string           `json:"selected_service_id"`
+	SelectedDeviceGroupId    *string           `json:"selected_device_group_id"`
+	SelectedImportId         *string           `json:"selected_import_id"`
+	SelectedPath             *string           `json:"selected_path"`
+	SelectedCharacteristicId *string           `json:"selected_characteristic_id"`
 }
 
 type SelectionOption struct {
-	Device      *Device      `json:"device"`
-	Services    []Service    `json:"services"`
-	DeviceGroup *DeviceGroup `json:"device_group"`
+	Device      *Device                 `json:"device"`
+	Services    []Service               `json:"services"`
+	DeviceGroup *DeviceGroup            `json:"device_group"`
+	Import      *importmodel.Import     `json:"import"`
+	ImportType  *importmodel.ImportType `json:"importType"`
 }
 
 type Device struct {

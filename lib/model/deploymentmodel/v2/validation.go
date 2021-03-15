@@ -110,6 +110,16 @@ func (this Element) Validate(kind ValidationKind) error {
 			if *this.MessageEvent.Selection.SelectedDeviceGroupId == "" {
 				return errors.New("invalid device-group selection in event")
 			}
+		} else if this.MessageEvent.Selection.SelectedImportId != nil {
+			if *this.MessageEvent.Selection.SelectedImportId == "" {
+				return errors.New("invalid import selection in event")
+			}
+			if this.MessageEvent.Selection.SelectedPath == nil || *this.MessageEvent.Selection.SelectedPath == "" {
+				return errors.New("missing selected_path, but import selected in event")
+			}
+			if this.MessageEvent.Selection.SelectedCharacteristicId == nil || *this.MessageEvent.Selection.SelectedCharacteristicId == "" {
+				return errors.New("missing selected_characteristic_id, but import selected in event")
+			}
 		} else {
 			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")

@@ -51,7 +51,7 @@ func ExampleKeepRetries() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo)
+	err = Start(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return

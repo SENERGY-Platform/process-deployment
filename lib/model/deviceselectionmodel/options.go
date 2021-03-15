@@ -16,12 +16,17 @@
 
 package deviceselectionmodel
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
+)
 
 type Selectable struct {
 	Device      *devicemodel.Device      `json:"device"`
 	Services    []devicemodel.Service    `json:"services"`
 	DeviceGroup *devicemodel.DeviceGroup `json:"device_group,omitempty"`
+	Import      *importmodel.Import      `json:"import,omitempty"`
+	ImportType  *importmodel.ImportType  `json:"importType,omitempty"`
 }
 
 type FilterCriteriaAndSet []FilterCriteria
@@ -40,6 +45,7 @@ type BulkRequestElement struct {
 	FilterProtocols   []string                 `json:"filter_protocols"`
 	Criteria          FilterCriteriaAndSet     `json:"criteria"`
 	IncludeGroups     bool                     `json:"include_groups"`
+	IncludeImports    bool                     `json:"include_imports"`
 }
 
 type BulkRequest []BulkRequestElement

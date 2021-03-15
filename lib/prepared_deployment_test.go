@@ -59,7 +59,7 @@ func ExampleCtrl_PrepareDeploymentById() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo, mock.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -149,7 +149,7 @@ func ExampleCtrl_PrepareDeployment() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo, mock.Imports)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -249,7 +249,7 @@ func ExampleCtrl_PrepareDeployment2() {
 
 	//time.Sleep(1 * time.Second)
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo, mock.Imports)
 	if err != nil {
 		debug.PrintStack()
 		fmt.Println(err)
@@ -358,7 +358,7 @@ func ExampleCtrl_PrepareDeployment3() {
 
 	//time.Sleep(1 * time.Second)
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo, mock.Imports)
 	if err != nil {
 		debug.PrintStack()
 		fmt.Println(err)
@@ -463,7 +463,7 @@ func ExampleCtrl_PrepareDeploymentOfEmptyLane() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo)
+	err = Start(ctx, config, mock.Kafka, mock.Database, mock.Devices, mock.ProcessModelRepo, mock.Imports)
 	if err != nil {
 		fmt.Println(err)
 		debug.PrintStack()

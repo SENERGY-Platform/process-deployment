@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2021 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package devices
+package interfaces
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/util"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-func (this *Repository) CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (result map[string]bool, err error) {
-	if len(ids) == 0 {
-		return map[string]bool{}, nil
-	}
-	return util.CheckAccess(this.config.PermSearchUrl, token, kind, ids)
+type ImportsFactory interface {
+	New(config config.Config) (Imports, error)
+}
+
+type Imports interface {
+	CheckAccess(token jwt_http_router.JwtImpersonate, ids []string, alsoCheckTypes bool) (bool, error)
 }

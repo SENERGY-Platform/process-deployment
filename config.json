@@ -14,7 +14,9 @@
   "device_selection_url": "http://device-selection:8080",
   "perm_search_url": "http://permission-search:8080",
   "notification_url": "http://notification-service:5000",
+  "import_deploy_url": "http://import-deploy:8080",
 
   "enable_device_groups_for_tasks": false,
-  "enable_device_groups_for_events": false
+  "enable_device_groups_for_events": false,
+  "enable_imports_for_events": false
 }
