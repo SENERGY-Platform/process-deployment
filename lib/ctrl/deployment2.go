@@ -209,11 +209,12 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 		}
 
 		result = append(result, deploymentmodel.SelectionOption{
-			Device:      device,
-			DeviceGroup: devicegroup,
-			Services:    serviceDesc,
-			Import:      selectableImport,
-			ImportType:  importType,
+			Device:             device,
+			DeviceGroup:        devicegroup,
+			Services:           serviceDesc,
+			Import:             selectableImport,
+			ImportType:         importType,
+			ServicePathOptions: selectable.ServicePathOptions,
 		})
 	}
 	return result

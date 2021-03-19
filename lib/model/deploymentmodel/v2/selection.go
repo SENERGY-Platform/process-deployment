@@ -33,11 +33,12 @@ type Selection struct {
 }
 
 type SelectionOption struct {
-	Device      *Device                 `json:"device"`
-	Services    []Service               `json:"services"`
-	DeviceGroup *DeviceGroup            `json:"device_group"`
-	Import      *importmodel.Import     `json:"import"`
-	ImportType  *importmodel.ImportType `json:"importType"`
+	Device             *Device                                                    `json:"device"`
+	Services           []Service                                                  `json:"services"`
+	DeviceGroup        *DeviceGroup                                               `json:"device_group"`
+	Import             *importmodel.Import                                        `json:"import"`
+	ImportType         *importmodel.ImportType                                    `json:"importType"`
+	ServicePathOptions map[string][]deviceselectionmodel.PathCharacteristicIdPair `json:"servicePathOptions,omitempty"`
 }
 
 type Device struct {

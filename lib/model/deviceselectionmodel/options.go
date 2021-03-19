@@ -22,11 +22,12 @@ import (
 )
 
 type Selectable struct {
-	Device      *devicemodel.Device      `json:"device"`
-	Services    []devicemodel.Service    `json:"services"`
-	DeviceGroup *devicemodel.DeviceGroup `json:"device_group,omitempty"`
-	Import      *importmodel.Import      `json:"import,omitempty"`
-	ImportType  *importmodel.ImportType  `json:"importType,omitempty"`
+	Device             *devicemodel.Device                   `json:"device"`
+	Services           []devicemodel.Service                 `json:"services"`
+	DeviceGroup        *devicemodel.DeviceGroup              `json:"device_group,omitempty"`
+	Import             *importmodel.Import                   `json:"import,omitempty"`
+	ImportType         *importmodel.ImportType               `json:"importType,omitempty"`
+	ServicePathOptions map[string][]PathCharacteristicIdPair `json:"servicePathOptions,omitempty"`
 }
 
 type FilterCriteriaAndSet []FilterCriteria
@@ -55,4 +56,9 @@ type BulkResult []BulkResultElement
 type BulkResultElement struct {
 	Id          string       `json:"id"`
 	Selectables []Selectable `json:"selectables"`
+}
+
+type PathCharacteristicIdPair struct {
+	Path             string `json:"path"`
+	CharacteristicId string `json:"characteristicId"`
 }
