@@ -81,7 +81,7 @@ func (this *Repository) GetBulkDeviceSelection(token jwt_http_router.JwtImperson
 		return result, err, http.StatusInternalServerError
 	}
 
-	path := "/bulk/selectables"
+	path := "/bulk/selectables?complete_services=true"
 	req, err := http.NewRequest(
 		"POST",
 		this.config.DeviceSelectionUrl+path,
