@@ -31,6 +31,7 @@ type DevicesFactory interface {
 type Devices interface {
 	GetDevice(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Device, error, int)
 	GetService(token jwt_http_router.JwtImpersonate, id string) (devicemodel.Service, error, int)
+	GetDeviceGroup(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.DeviceGroup, err error, code int)
 	CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (map[string]bool, error)
 	GetDeviceSelection(token jwt_http_router.JwtImpersonate, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int)
 	GetBulkDeviceSelection(token jwt_http_router.JwtImpersonate, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int)

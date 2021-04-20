@@ -40,6 +40,11 @@ func (this *Repository) GetService(token jwt_http_router.JwtImpersonate, id stri
 	return
 }
 
+func (this *Repository) GetDeviceGroup(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.DeviceGroup, err error, code int) {
+	err, code = this.get(string(token), "device-groups", id, &result)
+	return
+}
+
 func (this *Repository) get(token string, resource string, id string, result interface{}) (error, int) {
 	temp, err := this.l1.Get([]byte(resource + "." + id))
 	if err != nil && this.config.Debug {

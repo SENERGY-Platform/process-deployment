@@ -73,6 +73,10 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
+func (this *DeviceRepoMock) GetDeviceGroup(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.DeviceGroup, err error, code int) {
+	panic("not implemented")
+}
+
 func (this *DeviceRepoMock) CheckAccess(token jwt_http_router.JwtImpersonate, kind string, ids []string) (map[string]bool, error) {
 	return map[string]bool{}, nil
 }
