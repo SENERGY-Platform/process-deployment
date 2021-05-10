@@ -1,5 +1,5 @@
 {
-  "zookeeper_url": "zk",
+  "kafka_url": "kafka:9092",
   "mongo_url": "mongo",
   "consumer_group": "process-deployment",
   "debug": false,

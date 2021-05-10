@@ -30,7 +30,7 @@ import (
 type ConfigStruct struct {
 	LogLevel                    string `json:"log_level"`
 	ApiPort                     string `json:"api_port"`
-	ZookeeperUrl                string `json:"zookeeper_url"`
+	KafkaUrl                    string `json:"kafka_url"`
 	DeviceRepoUrl               string `json:"device_repo_url"`
 	ProcessRepoUrl              string `json:"process_repo_url"`
 	PermSearchUrl               string `json:"perm_search_url"`

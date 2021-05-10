@@ -17,22 +17,64 @@
 package kafka
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/kafka/topicconfig"
+	"github.com/segmentio/kafka-go"
+	"net"
+	"strconv"
 )
 
-func InitTopic(zkUrl string, topics ...string) (err error) {
-	for _, topic := range topics {
-		err = topicconfig.EnsureWithZk(zkUrl, topic, map[string]string{
-			"retention.ms":              "-1",
-			"retention.bytes":           "-1",
-			"cleanup.policy":            "compact",
-			"delete.retention.ms":       "86400000",
-			"segment.ms":                "604800000",
-			"min.cleanable.dirty.ratio": "0.1",
-		})
-		if err != nil {
-			return err
-		}
+func InitTopic(bootstrapUrl string, topics ...string) (err error) {
+	conn, err := kafka.Dial("tcp", bootstrapUrl)
+	if err != nil {
+		return err
 	}
-	return nil
+	defer conn.Close()
+
+	controller, err := conn.Controller()
+	if err != nil {
+		return err
+	}
+	var controllerConn *kafka.Conn
+	controllerConn, err = kafka.Dial("tcp", net.JoinHostPort(controller.Host, strconv.Itoa(controller.Port)))
+	if err != nil {
+		return err
+	}
+	defer controllerConn.Close()
+
+	topicConfigs := []kafka.TopicConfig{}
+
+	for _, topic := range topics {
+		topicConfigs = append(topicConfigs, kafka.TopicConfig{
+			Topic:             topic,
+			NumPartitions:     1,
+			ReplicationFactor: 1,
+			ConfigEntries: []kafka.ConfigEntry{
+				{
+					ConfigName:  "retention.ms",
+					ConfigValue: "-1",
+				},
+				{
+					ConfigName:  "retention.bytes",
+					ConfigValue: "-1",
+				},
+				{
+					ConfigName:  "cleanup.policy",
+					ConfigValue: "compact",
+				},
+				{
+					ConfigName:  "delete.retention.ms",
+					ConfigValue: "86400000",
+				},
+				{
+					ConfigName:  "segment.ms",
+					ConfigValue: "604800000",
+				},
+				{
+					ConfigName:  "min.cleanable.dirty.ratio",
+					ConfigValue: "0.1",
+				},
+			},
+		})
+	}
+
+	return controllerConn.CreateTopics(topicConfigs...)
 }
