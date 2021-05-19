@@ -17,15 +17,10 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
-	"log"
 	"net/http"
-	"time"
 )
 
 func init() {
@@ -34,95 +29,26 @@ func init() {
 
 func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
 	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		msg := messages.PrepareRequest{}
-		err := json.NewDecoder(request.Body).Decode(&msg)
-		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
-			return
-		}
-		result, err, code := ctrl.PrepareDeploymentV1(jwt.Impersonate, msg.Xml, msg.Svg)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(result)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
 	router.GET("/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		id := params.ByName("modelId")
-		process, err, code := ctrl.GetProcessModel(jwt.Impersonate, id)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		start := time.Now()
-		result, err, code := ctrl.PrepareDeploymentV1(jwt.Impersonate, process.BpmnXml, process.SvgXml)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		dur := time.Now().Sub(start)
-		log.Println("DEBUG: prepare deployment complete time:", dur, dur.Milliseconds())
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(result)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
 	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		deployment := deploymentmodel.Deployment{}
-		source := request.URL.Query().Get("source")
-		err := json.NewDecoder(request.Body).Decode(&deployment)
-		if err != nil {
-			log.Println("ERROR: unable to parse request", err)
-			http.Error(writer, err.Error(), http.StatusBadRequest)
-			return
-		}
-		result, err, code := ctrl.CreateDeploymentV1(jwt, deployment, source)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(result)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
 	router.PUT("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		source := request.URL.Query().Get("source")
-		id := params.ByName("id")
-		deployment := deploymentmodel.Deployment{}
-		err := json.NewDecoder(request.Body).Decode(&deployment)
-		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
-			return
-		}
-		result, err, code := ctrl.UpdateDeploymentV1(jwt, id, deployment, source)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(result)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
 	router.GET("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		id := params.ByName("id")
-		result, err, code := ctrl.GetDeploymentV1(jwt, id)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(result)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
 	router.DELETE("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
-		id := params.ByName("id")
-		err, code := ctrl.RemoveDeploymentV1(jwt, id)
-		if err != nil {
-			http.Error(writer, err.Error(), code)
-			return
-		}
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(writer).Encode(true)
+		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 }
