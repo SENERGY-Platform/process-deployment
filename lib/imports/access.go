@@ -17,15 +17,32 @@
 package imports
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/util"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"net/http"
 )
 
-func (check *Check) CheckAccess(token jwt_http_router.JwtImpersonate, ids []string, alsoCheckTypes bool) (b bool, err error) {
+func (check *Check) CheckAccess(token string, ids []string, alsoCheckTypes bool) (b bool, err error) {
 	typeIds := make([]string, len(ids))
 	var imports []importmodel.Import
-	err = token.GetJSON(check.config.ImportDeployUrl+"/instances", &imports)
+	req, err := http.NewRequest("GET", check.config.ImportDeployUrl+"/instances", nil)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Set("Authorization", token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+	if resp.StatusCode >= 300 {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		return false, errors.New(buf.String())
+	}
+	err = json.NewDecoder(resp.Body).Decode(&imports)
 	if err != nil {
 		return
 	}

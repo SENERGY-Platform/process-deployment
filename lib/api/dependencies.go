@@ -18,10 +18,11 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,7 +32,7 @@ func init() {
 	endpoints = append(endpoints, DependenciesEndpoints)
 }
 
-func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
+func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
 
 	/*
 		query-parameter:
@@ -41,7 +42,7 @@ func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config,
 			limit
 			offset
 	*/
-	router.GET("/dependencies", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/dependencies", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		result := []dependencymodel.Dependencies{}
 		var err error
 		var code int
@@ -49,7 +50,7 @@ func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config,
 		idstring := request.URL.Query().Get("ids")
 		if idstring != "" {
 			ids := strings.Split(strings.Replace(idstring, " ", "", -1), ",")
-			result, err, code = ctrl.GetSelectedDependencies(jwt, ids)
+			result, err, code = ctrl.GetSelectedDependencies(util.GetAuthToken(request), ids)
 		} else {
 			var limit int = 100
 			var offset int = 0
@@ -69,7 +70,7 @@ func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config,
 					return
 				}
 			}
-			result, err, code = ctrl.GetDependenciesList(jwt, limit, offset)
+			result, err, code = ctrl.GetDependenciesList(util.GetAuthToken(request), limit, offset)
 		}
 		if err != nil {
 			http.Error(writer, err.Error(), code)
@@ -79,9 +80,9 @@ func DependenciesEndpoints(router *jwt_http_router.Router, config config.Config,
 		json.NewEncoder(writer).Encode(result)
 	})
 
-	router.GET("/dependencies/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/dependencies/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		id := params.ByName("id")
-		result, err, code := ctrl.GetDependencies(jwt, id)
+		result, err, code := ctrl.GetDependencies(util.GetAuthToken(request), id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return

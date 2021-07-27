@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 InfAI (CC SES)
+ * Copyright 2021 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package devices
+package util
 
-import (
-	"github.com/SENERGY-Platform/process-deployment/lib/util"
-)
+import "net/http"
 
-func (this *Repository) CheckAccess(token string, kind string, ids []string) (result map[string]bool, err error) {
-	if len(ids) == 0 {
-		return map[string]bool{}, nil
-	}
-	return util.CheckAccess(this.config.PermSearchUrl, token, kind, ids)
+func GetAuthToken(req *http.Request) string {
+	return req.Header.Get("Authorization")
 }

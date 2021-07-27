@@ -18,7 +18,6 @@ package interfaces
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
 type ImportsFactory interface {
@@ -26,5 +25,5 @@ type ImportsFactory interface {
 }
 
 type Imports interface {
-	CheckAccess(token jwt_http_router.JwtImpersonate, ids []string, alsoCheckTypes bool) (bool, error)
+	CheckAccess(token string, ids []string, alsoCheckTypes bool) (bool, error)
 }

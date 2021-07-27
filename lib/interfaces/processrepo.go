@@ -20,7 +20,6 @@ import (
 	"context"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
 type ProcessRepoFactory interface {
@@ -28,5 +27,5 @@ type ProcessRepoFactory interface {
 }
 
 type ProcessRepo interface {
-	GetProcessModel(impersonate jwt_http_router.JwtImpersonate, id string) (result processmodel.ProcessModel, err error, errCode int)
+	GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int)
 }

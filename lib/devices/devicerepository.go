@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	"github.com/SmartEnergyPlatform/jwt-http-router"
 	"github.com/coocood/freecache"
 	"io/ioutil"
 	"log"
@@ -30,18 +29,18 @@ import (
 	"time"
 )
 
-func (this *Repository) GetDevice(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.Device, err error, code int) {
-	err, code = this.get(string(token), "devices", id, &result)
+func (this *Repository) GetDevice(token string, id string) (result devicemodel.Device, err error, code int) {
+	err, code = this.get(token, "devices", id, &result)
 	return
 }
 
-func (this *Repository) GetService(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.Service, err error, code int) {
-	err, code = this.get(string(token), "services", id, &result)
+func (this *Repository) GetService(token string, id string) (result devicemodel.Service, err error, code int) {
+	err, code = this.get(token, "services", id, &result)
 	return
 }
 
-func (this *Repository) GetDeviceGroup(token jwt_http_router.JwtImpersonate, id string) (result devicemodel.DeviceGroup, err error, code int) {
-	err, code = this.get(string(token), "device-groups", id, &result)
+func (this *Repository) GetDeviceGroup(token string, id string) (result devicemodel.DeviceGroup, err error, code int) {
+	err, code = this.get(token, "device-groups", id, &result)
 	return
 }
 

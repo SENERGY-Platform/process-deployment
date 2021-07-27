@@ -18,9 +18,8 @@ package ctrl
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
-func (this *Ctrl) GetProcessModel(impersonate jwt_http_router.JwtImpersonate, id string) (result processmodel.ProcessModel, err error, errCode int) {
+func (this *Ctrl) GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	return this.processrepo.GetProcessModel(impersonate, id)
 }

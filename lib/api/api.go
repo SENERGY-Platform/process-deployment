@@ -21,7 +21,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 	"reflect"
@@ -29,18 +29,18 @@ import (
 	"time"
 )
 
-var endpoints []func(*jwt_http_router.Router, config.Config, *ctrl.Ctrl)
+var endpoints []func(*httprouter.Router, config.Config, *ctrl.Ctrl)
 
 func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	log.Println("start api")
-	router := jwt_http_router.New(jwt_http_router.JwtConfig{ForceAuth: true, ForceUser: true})
+	router := httprouter.New()
 	for _, e := range endpoints {
 		log.Println("add endpoints: " + runtime.FuncForPC(reflect.ValueOf(e).Pointer()).Name())
 		e(router, config, ctrl)
 	}
 	log.Println("add logging and cors")
 	corsHandler := util.NewCors(router)
-	logger := util.NewLogger(corsHandler, config.LogLevel)
+	logger := util.NewLogger(corsHandler)
 	server := &http.Server{Addr: ":" + config.ApiPort, Handler: logger, WriteTimeout: 10 * time.Second, ReadTimeout: 2 * time.Second, ReadHeaderTimeout: 2 * time.Second}
 	go func() {
 		log.Println("Listening on ", server.Addr)

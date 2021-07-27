@@ -20,12 +20,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 	"runtime/debug"
 )
 
-func CheckAccess(permSearchUrl string, token jwt_http_router.JwtImpersonate, kind string, ids []string) (result map[string]bool, err error) {
+func CheckAccess(permSearchUrl string, token string, kind string, ids []string) (result map[string]bool, err error) {
 	if len(ids) == 0 {
 		return map[string]bool{}, nil
 	}
@@ -46,7 +45,7 @@ func CheckAccess(permSearchUrl string, token jwt_http_router.JwtImpersonate, kin
 		debug.PrintStack()
 		return result, err
 	}
-	req.Header.Set("Authorization", string(token))
+	req.Header.Set("Authorization", token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()

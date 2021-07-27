@@ -3,14 +3,15 @@ module github.com/SENERGY-Platform/process-deployment
 go 1.15
 
 require (
-	github.com/SmartEnergyPlatform/jwt-http-router v0.0.0-20190722084820-0e1fe0dc7a07
 	github.com/beevik/etree v1.1.0
 	github.com/cenkalti/backoff v2.0.0+incompatible // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/coocood/freecache v1.1.0
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.11.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.0.0 // indirect

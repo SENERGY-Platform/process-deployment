@@ -21,20 +21,19 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"sort"
 )
 
-func (this *Ctrl) GetDependencies(jwt jwt_http_router.Jwt, id string) (dependencymodel.Dependencies, error, int) {
-	return this.db.GetDependencies(jwt.UserId, id)
+func (this *Ctrl) GetDependencies(token string, id string) (dependencymodel.Dependencies, error, int) {
+	return this.db.GetDependencies(GetUserId(token), id)
 }
 
-func (this *Ctrl) GetDependenciesList(jwt jwt_http_router.Jwt, limit int, offset int) ([]dependencymodel.Dependencies, error, int) {
-	return this.db.GetDependenciesList(jwt.UserId, limit, offset)
+func (this *Ctrl) GetDependenciesList(token string, limit int, offset int) ([]dependencymodel.Dependencies, error, int) {
+	return this.db.GetDependenciesList(GetUserId(token), limit, offset)
 }
 
-func (this *Ctrl) GetSelectedDependencies(jwt jwt_http_router.Jwt, ids []string) ([]dependencymodel.Dependencies, error, int) {
-	return this.db.GetSelectedDependencies(jwt.UserId, ids)
+func (this *Ctrl) GetSelectedDependencies(token string, ids []string) ([]dependencymodel.Dependencies, error, int) {
+	return this.db.GetSelectedDependencies(GetUserId(token), ids)
 }
 
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {

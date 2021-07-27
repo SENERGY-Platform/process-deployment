@@ -23,7 +23,6 @@ import (
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 )
 
 func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
@@ -110,7 +109,7 @@ func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 	return this.deploymentPublisher.Produce(id, msg)
 }
 
-func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
+func (this *Ctrl) getCachedDevice(token string, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
 	if result, ok := (*cache)[id]; ok {
 		return &result, nil, 200
 	}
@@ -122,7 +121,7 @@ func (this *Ctrl) getCachedDevice(token jwt_http_router.JwtImpersonate, cache *m
 	return &result, nil, 200
 }
 
-func (this *Ctrl) getCachedService(token jwt_http_router.JwtImpersonate, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
+func (this *Ctrl) getCachedService(token string, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
 	if result, ok := (*cache)[id]; ok {
 		return &result, nil, 200
 	}

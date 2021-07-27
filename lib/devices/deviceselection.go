@@ -22,14 +22,14 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+
 	"net/http"
 	"net/url"
 	"runtime/debug"
 	"time"
 )
 
-func (this *Repository) GetDeviceSelection(token jwt_http_router.JwtImpersonate, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
+func (this *Repository) GetDeviceSelection(token string, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -53,7 +53,7 @@ func (this *Repository) GetDeviceSelection(token jwt_http_router.JwtImpersonate,
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", string(token))
+	req.Header.Set("Authorization", token)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -69,7 +69,7 @@ func (this *Repository) GetDeviceSelection(token jwt_http_router.JwtImpersonate,
 	return result, err, resp.StatusCode
 }
 
-func (this *Repository) GetBulkDeviceSelection(token jwt_http_router.JwtImpersonate, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
+func (this *Repository) GetBulkDeviceSelection(token string, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -91,7 +91,7 @@ func (this *Repository) GetBulkDeviceSelection(token jwt_http_router.JwtImperson
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", string(token))
+	req.Header.Set("Authorization", token)
 
 	resp, err := client.Do(req)
 	if err != nil {

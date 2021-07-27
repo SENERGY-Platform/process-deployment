@@ -28,7 +28,6 @@ import (
 )
 
 type ConfigStruct struct {
-	LogLevel                    string `json:"log_level"`
 	ApiPort                     string `json:"api_port"`
 	KafkaUrl                    string `json:"kafka_url"`
 	DeviceRepoUrl               string `json:"device_repo_url"`

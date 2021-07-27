@@ -22,7 +22,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
-	"github.com/SmartEnergyPlatform/jwt-http-router"
+
 	"net/http"
 	"sync"
 )
@@ -38,7 +38,7 @@ func (this *ProcessModelRepoMock) New(ctx context.Context, config config.Config)
 	return this, nil
 }
 
-func (this *ProcessModelRepoMock) GetProcessModel(impersonate jwt_http_router.JwtImpersonate, id string) (result processmodel.ProcessModel, err error, errCode int) {
+func (this *ProcessModelRepoMock) GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	if result, ok := this.models[id]; ok {

@@ -23,11 +23,10 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
 	"net/http"
 )
 
-func (this *Ctrl) PrepareDeploymentV2(token jwt_http_router.JwtImpersonate, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeploymentV2(token string, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
@@ -41,8 +40,8 @@ func (this *Ctrl) PrepareDeploymentV2(token jwt_http_router.JwtImpersonate, xml 
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) GetDeploymentV2(jwt jwt_http_router.Jwt, id string) (result deploymentmodel.Deployment, err error, code int) {
-	_, temp, err, code := this.db.GetDeployment(jwt.UserId, id)
+func (this *Ctrl) GetDeploymentV2(token string, id string) (result deploymentmodel.Deployment, err error, code int) {
+	_, temp, err, code := this.db.GetDeployment(GetUserId(token), id)
 	if err != nil {
 		return result, err, code
 	}
@@ -50,38 +49,38 @@ func (this *Ctrl) GetDeploymentV2(jwt jwt_http_router.Jwt, id string) (result de
 		return result, errors.New("found deployment is not of requested version"), http.StatusBadRequest
 	}
 	result = *temp
-	err = this.SetDeploymentOptionsV2(jwt.Impersonate, &result)
+	err = this.SetDeploymentOptionsV2(token, &result)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
 	return
 }
 
-func (this *Ctrl) CreateDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeploymentV2(token string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeploymentV2(jwt, deployment, source)
+	return this.setDeploymentV2(token, deployment, source)
 }
 
-func (this *Ctrl) UpdateDeploymentV2(jwt jwt_http_router.Jwt, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeploymentV2(token string, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
 
-	err, code = this.db.CheckDeploymentAccess(jwt.UserId, id)
+	err, code = this.db.CheckDeploymentAccess(GetUserId(token), id)
 	if err != nil {
 		return result, err, code
 	}
 
-	return this.setDeploymentV2(jwt, deployment, source)
+	return this.setDeploymentV2(token, deployment, source)
 }
 
-func (this *Ctrl) RemoveDeploymentV2(jwt jwt_http_router.Jwt, id string) (err error, code int) {
-	err, code = this.db.CheckDeploymentAccess(jwt.UserId, id)
+func (this *Ctrl) RemoveDeploymentV2(token string, id string) (err error, code int) {
+	err, code = this.db.CheckDeploymentAccess(GetUserId(token), id)
 	if err != nil {
 		return err, code
 	}
 
-	err = this.publishDeploymentDelete(jwt.UserId, id)
+	err = this.publishDeploymentDelete(GetUserId(token), id)
 	if err != nil {
 		return err, http.StatusInternalServerError
 	}
@@ -103,7 +102,7 @@ func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
 	return
 }
 
-func (this *Ctrl) SetDeploymentOptionsV2(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error) {
+func (this *Ctrl) SetDeploymentOptionsV2(token string, deployment *deploymentmodel.Deployment) (err error) {
 	bulk := this.getDeploymentV2BulkSelectableRequest(deployment)
 	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
 	if err != nil {
@@ -238,13 +237,13 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) setDeploymentV2(token string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(deploymentmodel.ValidateRequest); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
 
 	//ensure selected devices and services exist and have the given content and are executable for the requesting user (if not using id ref)
-	err, code = this.EnsureDeploymentSelectionAccess(jwt.Impersonate, &deployment)
+	err, code = this.EnsureDeploymentSelectionAccess(token, &deployment)
 	if err != nil {
 		return deployment, err, code
 	}
@@ -254,19 +253,21 @@ func (this *Ctrl) setDeploymentV2(jwt jwt_http_router.Jwt, deployment deployment
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	deployment.Diagram.XmlDeployed, err = this.deploymentStringifier.Deployment(deployment, jwt.UserId)
+	userid := GetUserId(token)
+
+	deployment.Diagram.XmlDeployed, err = this.deploymentStringifier.Deployment(deployment, userid)
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	if err = this.publishDeploymentV2(jwt.UserId, deployment.Id, deployment, source); err != nil {
+	if err = this.publishDeploymentV2(userid, deployment.Id, deployment, source); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200
 }
 
 //ensures selection correctness
-func (this *Ctrl) EnsureDeploymentSelectionAccess(token jwt_http_router.JwtImpersonate, deployment *deploymentmodel.Deployment) (err error, code int) {
+func (this *Ctrl) EnsureDeploymentSelectionAccess(token string, deployment *deploymentmodel.Deployment) (err error, code int) {
 	deviceIds := []string{}
 	deviceGroupIds := []string{}
 	importIds := []string{}

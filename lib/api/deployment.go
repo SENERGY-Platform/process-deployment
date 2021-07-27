@@ -19,7 +19,7 @@ package api
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
@@ -27,28 +27,28 @@ func init() {
 	endpoints = append(endpoints, DeploymentsEndpoints)
 }
 
-func DeploymentsEndpoints(router *jwt_http_router.Router, config config.Config, ctrl *ctrl.Ctrl) {
-	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
+	router.POST("/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
-	router.GET("/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
-	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.POST("/deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
-	router.PUT("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.PUT("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
-	router.GET("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.GET("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 
-	router.DELETE("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params jwt_http_router.Params, jwt jwt_http_router.Jwt) {
+	router.DELETE("/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		http.Error(writer, "use /v2 endpoints", http.StatusGone)
 	})
 }

@@ -25,7 +25,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
-	jwt_http_router "github.com/SmartEnergyPlatform/jwt-http-router"
+	"github.com/golang-jwt/jwt"
+	"log"
+	"strings"
+	"time"
+
 	"io/ioutil"
 	"reflect"
 	"runtime/debug"
@@ -240,7 +244,13 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 		return
 	}
 
-	dependencies, err, _ := ctrl.GetDependencies(jwt_http_router.Jwt{UserId: userId}, deployment.Id)
+	usertoken, err := ForgeUserToken(userId)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	dependencies, err, _ := ctrl.GetDependencies(usertoken, deployment.Id)
 	if err != nil {
 		t.Error(err)
 		return
@@ -253,4 +263,23 @@ func checkDependencies(t *testing.T, actual dependencymodel.Dependencies, expect
 	if !reflect.DeepEqual(actual, expected) {
 		t.Error("\n", actual, "\n\n", expected)
 	}
+}
+
+func ForgeUserToken(user string) (token string, err error) {
+	// Create the Claims
+	claims := jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
+		Issuer:    "test",
+		Subject:   user,
+	}
+
+	jwtoken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	unsignedTokenString, err := jwtoken.SigningString()
+	if err != nil {
+		log.Println("ERROR: GetUserToken::SigningString()", err)
+		return token, err
+	}
+	tokenString := strings.Join([]string{unsignedTokenString, ""}, ".")
+	token = "Bearer " + tokenString
+	return token, err
 }
