@@ -19,6 +19,7 @@ package devices
 import (
 	"context"
 	"encoding/json"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"net/http"
@@ -53,7 +54,7 @@ func TestCaching(t *testing.T) {
 		return
 	}
 
-	service, err, _ := repo.GetService("foobar", "s1")
+	service, err, _ := repo.GetService(auth.Token{}, "s1")
 	if err != nil {
 		t.Error(err)
 		return
@@ -64,7 +65,7 @@ func TestCaching(t *testing.T) {
 		return
 	}
 
-	service, err, _ = repo.GetService("foobar", "s1")
+	service, err, _ = repo.GetService(auth.Token{}, "s1")
 	if err != nil {
 		t.Error(err)
 		return
@@ -75,7 +76,7 @@ func TestCaching(t *testing.T) {
 		return
 	}
 
-	service, err, _ = repo.GetService("foobar", "s1")
+	service, err, _ = repo.GetService(auth.Token{}, "s1")
 	if err != nil {
 		t.Error(err)
 		return

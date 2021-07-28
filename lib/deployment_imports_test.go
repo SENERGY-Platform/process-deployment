@@ -19,6 +19,7 @@ package lib
 import (
 	"context"
 	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
@@ -95,7 +96,7 @@ func TestImportDeployments(t *testing.T) {
 		if err != nil {
 			t.Error(err.Error())
 		}
-		err, _ = control.EnsureDeploymentSelectionAccess("", &deployment)
+		err, _ = control.EnsureDeploymentSelectionAccess(auth.Token{}, &deployment)
 		if err == nil {
 			t.Error("Allowed deploying import with no access to")
 		}
@@ -110,7 +111,7 @@ func TestImportDeployments(t *testing.T) {
 			Id:           "urn:infai:ses:import:123",
 			ImportTypeId: "urn:infai:ses:import-type:321",
 		}})
-		err, _ = control.EnsureDeploymentSelectionAccess("", &deployment)
+		err, _ = control.EnsureDeploymentSelectionAccess(auth.Token{}, &deployment)
 		if err != nil {
 			t.Error(err.Error())
 		}

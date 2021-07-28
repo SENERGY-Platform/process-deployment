@@ -20,19 +20,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/util"
 	"net/http"
 )
 
-func (check *Check) CheckAccess(token string, ids []string, alsoCheckTypes bool) (b bool, err error) {
+func (check *Check) CheckAccess(token auth.Token, ids []string, alsoCheckTypes bool) (b bool, err error) {
 	typeIds := make([]string, len(ids))
 	var imports []importmodel.Import
 	req, err := http.NewRequest("GET", check.config.ImportDeployUrl+"/instances", nil)
 	if err != nil {
 		return false, err
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return false, err

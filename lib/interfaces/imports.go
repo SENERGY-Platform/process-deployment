@@ -17,6 +17,7 @@
 package interfaces
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 )
 
@@ -25,5 +26,5 @@ type ImportsFactory interface {
 }
 
 type Imports interface {
-	CheckAccess(token string, ids []string, alsoCheckTypes bool) (bool, error)
+	CheckAccess(token auth.Token, ids []string, alsoCheckTypes bool) (bool, error)
 }

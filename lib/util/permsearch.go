@@ -20,11 +20,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"net/http"
 	"runtime/debug"
 )
 
-func CheckAccess(permSearchUrl string, token string, kind string, ids []string) (result map[string]bool, err error) {
+func CheckAccess(permSearchUrl string, token auth.Token, kind string, ids []string) (result map[string]bool, err error) {
 	if len(ids) == 0 {
 		return map[string]bool{}, nil
 	}
@@ -45,7 +46,7 @@ func CheckAccess(permSearchUrl string, token string, kind string, ids []string) 
 		debug.PrintStack()
 		return result, err
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()

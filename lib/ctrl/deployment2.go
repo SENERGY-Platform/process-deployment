@@ -18,6 +18,7 @@ package ctrl
 
 import (
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
@@ -26,7 +27,7 @@ import (
 	"net/http"
 )
 
-func (this *Ctrl) PrepareDeploymentV2(token string, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeploymentV2(token auth.Token, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
@@ -40,8 +41,8 @@ func (this *Ctrl) PrepareDeploymentV2(token string, xml string, svg string) (res
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) GetDeploymentV2(token string, id string) (result deploymentmodel.Deployment, err error, code int) {
-	_, temp, err, code := this.db.GetDeployment(GetUserId(token), id)
+func (this *Ctrl) GetDeploymentV2(token auth.Token, id string) (result deploymentmodel.Deployment, err error, code int) {
+	_, temp, err, code := this.db.GetDeployment(token.GetUserId(), id)
 	if err != nil {
 		return result, err, code
 	}
@@ -56,17 +57,17 @@ func (this *Ctrl) GetDeploymentV2(token string, id string) (result deploymentmod
 	return
 }
 
-func (this *Ctrl) CreateDeploymentV2(token string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeploymentV2(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
 	return this.setDeploymentV2(token, deployment, source)
 }
 
-func (this *Ctrl) UpdateDeploymentV2(token string, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeploymentV2(token auth.Token, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
 
-	err, code = this.db.CheckDeploymentAccess(GetUserId(token), id)
+	err, code = this.db.CheckDeploymentAccess(token.GetUserId(), id)
 	if err != nil {
 		return result, err, code
 	}
@@ -74,13 +75,13 @@ func (this *Ctrl) UpdateDeploymentV2(token string, id string, deployment deploym
 	return this.setDeploymentV2(token, deployment, source)
 }
 
-func (this *Ctrl) RemoveDeploymentV2(token string, id string) (err error, code int) {
-	err, code = this.db.CheckDeploymentAccess(GetUserId(token), id)
+func (this *Ctrl) RemoveDeploymentV2(token auth.Token, id string) (err error, code int) {
+	err, code = this.db.CheckDeploymentAccess(token.GetUserId(), id)
 	if err != nil {
 		return err, code
 	}
 
-	err = this.publishDeploymentDelete(GetUserId(token), id)
+	err = this.publishDeploymentDelete(token.GetUserId(), id)
 	if err != nil {
 		return err, http.StatusInternalServerError
 	}
@@ -102,7 +103,7 @@ func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
 	return
 }
 
-func (this *Ctrl) SetDeploymentOptionsV2(token string, deployment *deploymentmodel.Deployment) (err error) {
+func (this *Ctrl) SetDeploymentOptionsV2(token auth.Token, deployment *deploymentmodel.Deployment) (err error) {
 	bulk := this.getDeploymentV2BulkSelectableRequest(deployment)
 	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
 	if err != nil {
@@ -237,7 +238,7 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func (this *Ctrl) setDeploymentV2(token string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) setDeploymentV2(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(deploymentmodel.ValidateRequest); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
@@ -253,7 +254,7 @@ func (this *Ctrl) setDeploymentV2(token string, deployment deploymentmodel.Deplo
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	userid := GetUserId(token)
+	userid := token.GetUserId()
 
 	deployment.Diagram.XmlDeployed, err = this.deploymentStringifier.Deployment(deployment, userid)
 	if err != nil {
@@ -267,7 +268,7 @@ func (this *Ctrl) setDeploymentV2(token string, deployment deploymentmodel.Deplo
 }
 
 //ensures selection correctness
-func (this *Ctrl) EnsureDeploymentSelectionAccess(token string, deployment *deploymentmodel.Deployment) (err error, code int) {
+func (this *Ctrl) EnsureDeploymentSelectionAccess(token auth.Token, deployment *deploymentmodel.Deployment) (err error, code int) {
 	deviceIds := []string{}
 	deviceGroupIds := []string{}
 	importIds := []string{}

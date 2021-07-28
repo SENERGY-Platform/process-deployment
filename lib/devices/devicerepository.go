@@ -19,6 +19,7 @@ package devices
 import (
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/coocood/freecache"
 	"io/ioutil"
@@ -29,22 +30,22 @@ import (
 	"time"
 )
 
-func (this *Repository) GetDevice(token string, id string) (result devicemodel.Device, err error, code int) {
+func (this *Repository) GetDevice(token auth.Token, id string) (result devicemodel.Device, err error, code int) {
 	err, code = this.get(token, "devices", id, &result)
 	return
 }
 
-func (this *Repository) GetService(token string, id string) (result devicemodel.Service, err error, code int) {
+func (this *Repository) GetService(token auth.Token, id string) (result devicemodel.Service, err error, code int) {
 	err, code = this.get(token, "services", id, &result)
 	return
 }
 
-func (this *Repository) GetDeviceGroup(token string, id string) (result devicemodel.DeviceGroup, err error, code int) {
+func (this *Repository) GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int) {
 	err, code = this.get(token, "device-groups", id, &result)
 	return
 }
 
-func (this *Repository) get(token string, resource string, id string, result interface{}) (error, int) {
+func (this *Repository) get(token auth.Token, resource string, id string, result interface{}) (error, int) {
 	temp, err := this.l1.Get([]byte(resource + "." + id))
 	if err != nil && this.config.Debug {
 		if err == freecache.ErrNotFound {
@@ -75,7 +76,7 @@ func (this *Repository) get(token string, resource string, id string, result int
 			debug.PrintStack()
 			return err, http.StatusInternalServerError
 		}
-		req.Header.Set("Authorization", token)
+		req.Header.Set("Authorization", token.Token)
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -107,7 +108,7 @@ func (this *Repository) get(token string, resource string, id string, result int
 	}
 }
 
-func (this *Repository) getUncachedList(token string, resource string, result interface{}) (error, int) {
+func (this *Repository) getUncachedList(token auth.Token, resource string, result interface{}) (error, int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -121,7 +122,7 @@ func (this *Repository) getUncachedList(token string, resource string, result in
 		debug.PrintStack()
 		return err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 
 	resp, err := client.Do(req)
 	if err != nil {

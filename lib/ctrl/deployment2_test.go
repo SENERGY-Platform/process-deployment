@@ -19,6 +19,7 @@ package ctrl
 import (
 	"context"
 	"encoding/json"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
@@ -265,7 +266,7 @@ func checkDependencies(t *testing.T, actual dependencymodel.Dependencies, expect
 	}
 }
 
-func ForgeUserToken(user string) (token string, err error) {
+func ForgeUserToken(user string) (token auth.Token, err error) {
 	// Create the Claims
 	claims := jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
@@ -280,6 +281,7 @@ func ForgeUserToken(user string) (token string, err error) {
 		return token, err
 	}
 	tokenString := strings.Join([]string{unsignedTokenString, ""}, ".")
-	token = "Bearer " + tokenString
+	token.Token = "Bearer " + tokenString
+	token.Sub = user
 	return token, err
 }

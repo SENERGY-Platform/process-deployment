@@ -18,6 +18,7 @@ package interfaces
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
@@ -28,10 +29,10 @@ type DevicesFactory interface {
 }
 
 type Devices interface {
-	GetDevice(token string, id string) (devicemodel.Device, error, int)
-	GetService(token string, id string) (devicemodel.Service, error, int)
-	GetDeviceGroup(token string, id string) (result devicemodel.DeviceGroup, err error, code int)
-	CheckAccess(token string, kind string, ids []string) (map[string]bool, error)
-	GetDeviceSelection(token string, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int)
-	GetBulkDeviceSelection(token string, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int)
+	GetDevice(token auth.Token, id string) (devicemodel.Device, error, int)
+	GetService(token auth.Token, id string) (devicemodel.Service, error, int)
+	GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int)
+	CheckAccess(token auth.Token, kind string, ids []string) (map[string]bool, error)
+	GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int)
+	GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int)
 }

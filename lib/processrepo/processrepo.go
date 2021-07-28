@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
@@ -44,7 +45,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 
 var Factory = &RepositoryFactory{}
 
-func (this *Repository) GetProcessModel(token string, id string) (result processmodel.ProcessModel, err error, errCode int) {
+func (this *Repository) GetProcessModel(token auth.Token, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -57,7 +58,7 @@ func (this *Repository) GetProcessModel(token string, id string) (result process
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 
 	resp, err := client.Do(req)
 	if err != nil {

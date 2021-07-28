@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 
@@ -29,7 +30,7 @@ import (
 	"time"
 )
 
-func (this *Repository) GetDeviceSelection(token string, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
+func (this *Repository) GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -53,7 +54,7 @@ func (this *Repository) GetDeviceSelection(token string, descriptions devicesele
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -69,7 +70,7 @@ func (this *Repository) GetDeviceSelection(token string, descriptions devicesele
 	return result, err, resp.StatusCode
 }
 
-func (this *Repository) GetBulkDeviceSelection(token string, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
+func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -91,7 +92,7 @@ func (this *Repository) GetBulkDeviceSelection(token string, bulk deviceselectio
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
 	}
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", token.Token)
 
 	resp, err := client.Do(req)
 	if err != nil {

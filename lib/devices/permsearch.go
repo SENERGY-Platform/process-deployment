@@ -17,10 +17,11 @@
 package devices
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/util"
 )
 
-func (this *Repository) CheckAccess(token string, kind string, ids []string) (result map[string]bool, err error) {
+func (this *Repository) CheckAccess(token auth.Token, kind string, ids []string) (result map[string]bool, err error) {
 	if len(ids) == 0 {
 		return map[string]bool{}, nil
 	}

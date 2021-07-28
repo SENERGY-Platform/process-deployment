@@ -14,48 +14,62 @@
  * limitations under the License.
  */
 
-package ctrl
+package auth
 
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"net/http"
 	"strings"
 )
 
-type Claims struct {
+func GetAuthToken(req *http.Request) string {
+	return req.Header.Get("Authorization")
+}
+
+func GetParsedToken(req *http.Request) (token Token, err error) {
+	return parse(GetAuthToken(req))
+}
+
+type Token struct {
+	Token       string              `json:"-"`
 	Sub         string              `json:"sub,omitempty"`
 	RealmAccess map[string][]string `json:"realm_access,omitempty"`
 }
 
-func (this *Claims) Valid() error {
+func (this *Token) String() string {
+	return this.Token
+}
+
+func (this *Token) Jwt() string {
+	return this.Token
+}
+
+func (this *Token) Valid() error {
 	if this.Sub == "" {
 		return errors.New("missing subject")
 	}
 	return nil
 }
 
-func parse(token string) (claims Claims, err error) {
+func parse(token string) (claims Token, err error) {
+	orig := token
 	if strings.HasPrefix(token, "Bearer ") {
 		token = token[7:]
 	}
 	_, _, err = new(jwt.Parser).ParseUnverified(token, &claims)
+	if err == nil {
+		claims.Token = orig
+	}
 	return
 }
 
-func IsAdmin(token string) bool {
-	claims, err := parse(token)
-	if err != nil {
-		panic(err)
-	}
-	return contains(claims.RealmAccess["roles"], "admin")
+func (this *Token) IsAdmin() bool {
+	return contains(this.RealmAccess["roles"], "admin")
 }
 
-func GetUserId(token string) string {
-	claims, err := parse(token)
-	if err != nil {
-		panic(err)
-	}
-	return claims.Sub
+func (this *Token) GetUserId() string {
+	return this.Sub
 }
 
 func contains(s []string, e string) bool {

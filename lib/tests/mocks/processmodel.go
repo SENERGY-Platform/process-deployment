@@ -19,6 +19,7 @@ package mocks
 import (
 	"context"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
@@ -38,7 +39,7 @@ func (this *ProcessModelRepoMock) New(ctx context.Context, config config.Config)
 	return this, nil
 }
 
-func (this *ProcessModelRepoMock) GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int) {
+func (this *ProcessModelRepoMock) GetProcessModel(impersonate auth.Token, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	if result, ok := this.models[id]; ok {

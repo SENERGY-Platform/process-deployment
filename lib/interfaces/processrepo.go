@@ -18,6 +18,7 @@ package interfaces
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 )
@@ -27,5 +28,5 @@ type ProcessRepoFactory interface {
 }
 
 type ProcessRepo interface {
-	GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int)
+	GetProcessModel(impersonate auth.Token, id string) (result processmodel.ProcessModel, err error, errCode int)
 }

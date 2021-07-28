@@ -17,6 +17,7 @@
 package mocks
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
@@ -36,7 +37,7 @@ func (this *ImportsMock) New(_ config.Config) (interfaces.Imports, error) {
 	return Imports, nil
 }
 
-func (this *ImportsMock) CheckAccess(_ string, ids []string, alsoCheckTypes bool) (b bool, err error) {
+func (this *ImportsMock) CheckAccess(_ auth.Token, ids []string, alsoCheckTypes bool) (b bool, err error) {
 	typeIds := make([]string, len(ids))
 IDLOOP:
 	for i, id := range ids {

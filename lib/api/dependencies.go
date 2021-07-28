@@ -18,7 +18,7 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
@@ -46,11 +46,15 @@ func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl
 		result := []dependencymodel.Dependencies{}
 		var err error
 		var code int
-
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
 		idstring := request.URL.Query().Get("ids")
 		if idstring != "" {
 			ids := strings.Split(strings.Replace(idstring, " ", "", -1), ",")
-			result, err, code = ctrl.GetSelectedDependencies(util.GetAuthToken(request), ids)
+			result, err, code = ctrl.GetSelectedDependencies(token, ids)
 		} else {
 			var limit int = 100
 			var offset int = 0
@@ -70,7 +74,7 @@ func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl
 					return
 				}
 			}
-			result, err, code = ctrl.GetDependenciesList(util.GetAuthToken(request), limit, offset)
+			result, err, code = ctrl.GetDependenciesList(token, limit, offset)
 		}
 		if err != nil {
 			http.Error(writer, err.Error(), code)
@@ -82,7 +86,12 @@ func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl
 
 	router.GET("/dependencies/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		id := params.ByName("id")
-		result, err, code := ctrl.GetDependencies(util.GetAuthToken(request), id)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.GetDependencies(token, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return

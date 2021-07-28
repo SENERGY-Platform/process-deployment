@@ -17,6 +17,7 @@
 package ctrl
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
@@ -24,16 +25,16 @@ import (
 	"sort"
 )
 
-func (this *Ctrl) GetDependencies(token string, id string) (dependencymodel.Dependencies, error, int) {
-	return this.db.GetDependencies(GetUserId(token), id)
+func (this *Ctrl) GetDependencies(token auth.Token, id string) (dependencymodel.Dependencies, error, int) {
+	return this.db.GetDependencies(token.GetUserId(), id)
 }
 
-func (this *Ctrl) GetDependenciesList(token string, limit int, offset int) ([]dependencymodel.Dependencies, error, int) {
-	return this.db.GetDependenciesList(GetUserId(token), limit, offset)
+func (this *Ctrl) GetDependenciesList(token auth.Token, limit int, offset int) ([]dependencymodel.Dependencies, error, int) {
+	return this.db.GetDependenciesList(token.GetUserId(), limit, offset)
 }
 
-func (this *Ctrl) GetSelectedDependencies(token string, ids []string) ([]dependencymodel.Dependencies, error, int) {
-	return this.db.GetSelectedDependencies(GetUserId(token), ids)
+func (this *Ctrl) GetSelectedDependencies(token auth.Token, ids []string) ([]dependencymodel.Dependencies, error, int) {
+	return this.db.GetSelectedDependencies(token.GetUserId(), ids)
 }
 
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {

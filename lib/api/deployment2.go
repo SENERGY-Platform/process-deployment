@@ -18,7 +18,7 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
@@ -41,7 +41,12 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.PrepareDeploymentV2(util.GetAuthToken(request), msg.Xml, msg.Svg)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.PrepareDeploymentV2(token, msg.Xml, msg.Svg)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -52,13 +57,18 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 
 	router.GET("/v2/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		id := params.ByName("modelId")
-		process, err, code := ctrl.GetProcessModel(util.GetAuthToken(request), id)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		process, err, code := ctrl.GetProcessModel(token, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
 		}
 		start := time.Now()
-		result, err, code := ctrl.PrepareDeploymentV2(util.GetAuthToken(request), process.BpmnXml, process.SvgXml)
+		result, err, code := ctrl.PrepareDeploymentV2(token, process.BpmnXml, process.SvgXml)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -78,7 +88,12 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.CreateDeploymentV2(util.GetAuthToken(request), deployment, source)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.CreateDeploymentV2(token, deployment, source)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -96,7 +111,12 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.UpdateDeploymentV2(util.GetAuthToken(request), id, deployment, source)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.UpdateDeploymentV2(token, id, deployment, source)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -107,7 +127,12 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 
 	router.GET("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		id := params.ByName("id")
-		result, err, code := ctrl.GetDeploymentV2(util.GetAuthToken(request), id)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.GetDeploymentV2(token, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -118,7 +143,12 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 
 	router.DELETE("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		id := params.ByName("id")
-		err, code := ctrl.RemoveDeploymentV2(util.GetAuthToken(request), id)
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		err, code := ctrl.RemoveDeploymentV2(token, id)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return

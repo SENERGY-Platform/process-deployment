@@ -19,6 +19,7 @@ package ctrl
 import (
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
@@ -109,7 +110,7 @@ func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 	return this.deploymentPublisher.Produce(id, msg)
 }
 
-func (this *Ctrl) getCachedDevice(token string, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
+func (this *Ctrl) getCachedDevice(token auth.Token, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
 	if result, ok := (*cache)[id]; ok {
 		return &result, nil, 200
 	}
@@ -121,7 +122,7 @@ func (this *Ctrl) getCachedDevice(token string, cache *map[string]devicemodel.De
 	return &result, nil, 200
 }
 
-func (this *Ctrl) getCachedService(token string, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
+func (this *Ctrl) getCachedService(token auth.Token, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
 	if result, ok := (*cache)[id]; ok {
 		return &result, nil, 200
 	}

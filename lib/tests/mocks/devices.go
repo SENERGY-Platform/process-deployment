@@ -19,6 +19,7 @@ package mocks
 import (
 	"context"
 	"errors"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
@@ -41,7 +42,7 @@ func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (inte
 	return this, nil
 }
 
-func (this *DeviceRepoMock) GetDevice(token string, id string) (devicemodel.Device, error, int) {
+func (this *DeviceRepoMock) GetDevice(token auth.Token, id string) (devicemodel.Device, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	if result, ok := this.devices[id]; ok {
@@ -57,7 +58,7 @@ func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device) {
 	this.devices[id] = device
 }
 
-func (this *DeviceRepoMock) GetService(token string, id string) (devicemodel.Service, error, int) {
+func (this *DeviceRepoMock) GetService(token auth.Token, id string) (devicemodel.Service, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	if result, ok := this.services[id]; ok {
@@ -73,11 +74,11 @@ func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.services[id] = service
 }
 
-func (this *DeviceRepoMock) GetDeviceGroup(token string, id string) (result devicemodel.DeviceGroup, err error, code int) {
+func (this *DeviceRepoMock) GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int) {
 	panic("not implemented")
 }
 
-func (this *DeviceRepoMock) CheckAccess(token string, kind string, ids []string) (map[string]bool, error) {
+func (this *DeviceRepoMock) CheckAccess(token auth.Token, kind string, ids []string) (map[string]bool, error) {
 	return map[string]bool{}, nil
 }
 
@@ -87,13 +88,13 @@ func (this *DeviceRepoMock) SetOptions(options []deviceselectionmodel.Selectable
 	this.options = options
 }
 
-func (this *DeviceRepoMock) GetDeviceSelection(token string, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
+func (this *DeviceRepoMock) GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	return this.options, nil, 200
 }
 
-func (this *DeviceRepoMock) GetBulkDeviceSelection(token string, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
+func (this *DeviceRepoMock) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	for _, element := range bulk {

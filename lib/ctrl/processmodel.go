@@ -17,9 +17,10 @@
 package ctrl
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 )
 
-func (this *Ctrl) GetProcessModel(impersonate string, id string) (result processmodel.ProcessModel, err error, errCode int) {
+func (this *Ctrl) GetProcessModel(impersonate auth.Token, id string) (result processmodel.ProcessModel, err error, errCode int) {
 	return this.processrepo.GetProcessModel(impersonate, id)
 }
