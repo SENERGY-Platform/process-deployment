@@ -33,6 +33,7 @@ type Database interface {
 	DeleteDeployment(id string) error
 	GetDeployment(user string, deploymentId string) (deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment, err error, code int)
 	SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error
+	GetDeploymentIds(user string) (deployments []string, err error)
 	GetDependencies(user string, deploymentId string) (dependencymodel.Dependencies, error, int)
 	GetDependenciesList(user string, limit int, offset int) ([]dependencymodel.Dependencies, error, int)
 	GetSelectedDependencies(user string, ids []string) ([]dependencymodel.Dependencies, error, int)

@@ -29,3 +29,8 @@ type DeploymentCommand struct {
 	DeploymentV2 *deploymentmodel2.Deployment `json:"deployment_v2,omitempty"`
 	Source       string                       `json:"source,omitempty"`
 }
+
+type UserCommandMsg struct {
+	Command string `json:"command"`
+	Id      string `json:"id"`
+}

@@ -30,14 +30,14 @@ import (
 )
 
 type DatabaseMock struct {
-	deployments  map[string]messages.DeploymentCommand
-	dependencies map[string]dependencymodel.Dependencies
+	Deployments  map[string]messages.DeploymentCommand
+	Dependencies map[string]dependencymodel.Dependencies
 	mux          sync.Mutex
 }
 
 var Database = &DatabaseMock{
-	deployments:  map[string]messages.DeploymentCommand{},
-	dependencies: map[string]dependencymodel.Dependencies{},
+	Deployments:  map[string]messages.DeploymentCommand{},
+	Dependencies: map[string]dependencymodel.Dependencies{},
 }
 
 func (this *DatabaseMock) New(ctx context.Context, config config.Config) (interfaces.Database, error) {
@@ -48,10 +48,21 @@ func (this *DatabaseMock) CheckDeploymentAccess(user string, deploymentId string
 	return nil, 200
 }
 
+func (this *DatabaseMock) GetDeploymentIds(user string) (deployments []string, err error) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	for _, depl := range this.Deployments {
+		if depl.Owner == user {
+			deployments = append(deployments, depl.Id)
+		}
+	}
+	return
+}
+
 func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment, err error, code int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	deployment, ok := this.deployments[deploymentId]
+	deployment, ok := this.Deployments[deploymentId]
 	if !ok {
 		return nil, nil, errors.New("deployment not found"), http.StatusNotFound
 	}
@@ -64,21 +75,21 @@ func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deplo
 func (this *DatabaseMock) DeleteDeployment(id string) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	delete(this.deployments, id)
+	delete(this.Deployments, id)
 	return nil
 }
 
 func (this *DatabaseMock) SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	this.deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deploymentV1, DeploymentV2: deploymentV2}
+	this.Deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deploymentV1, DeploymentV2: deploymentV2}
 	return nil
 }
 
 func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (dependencymodel.Dependencies, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	dependencies, ok := this.dependencies[deploymentId]
+	dependencies, ok := this.Dependencies[deploymentId]
 	if !ok {
 		return dependencymodel.Dependencies{}, errors.New("dependencies not found"), http.StatusNotFound
 	}
@@ -90,7 +101,7 @@ func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (dep
 
 func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int) (result []dependencymodel.Dependencies, err error, code int) {
 	count := 0
-	for _, dependencie := range this.dependencies {
+	for _, dependencie := range this.Dependencies {
 		if dependencie.Owner == user {
 			if count >= (limit + offset) {
 				return result, nil, 200
@@ -106,7 +117,7 @@ func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int
 
 func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (result []dependencymodel.Dependencies, err error, code int) {
 	for _, id := range ids {
-		dependency, ok := this.dependencies[id]
+		dependency, ok := this.Dependencies[id]
 		if !ok {
 			return result, errors.New("unknown id"), http.StatusNotFound
 		}
@@ -123,13 +134,13 @@ func (this *DatabaseMock) GetSelectedDependencies(user string, ids []string) (re
 func (this *DatabaseMock) SetDependencies(dependencies dependencymodel.Dependencies) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	this.dependencies[dependencies.DeploymentId] = dependencies
+	this.Dependencies[dependencies.DeploymentId] = dependencies
 	return nil
 }
 
 func (this *DatabaseMock) DeleteDependencies(id string) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	delete(this.dependencies, id)
+	delete(this.Dependencies, id)
 	return nil
 }

@@ -6,6 +6,7 @@
   "log_level": "CALL",
   "api_port": "8080",
   "connectivity_test": true,
+  "users_topic": "user",
   "deployment_topic": "deployments",
   "mongo_table": "processdeployment",
   "mongo_deployment_collection": "deployments",

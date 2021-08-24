@@ -25,12 +25,12 @@ import (
 	"sync"
 )
 
-var Kafka = &KafkaMock{Produced: map[string][]string{}, listeners: map[string][]func(msg []byte) error{}}
+var Kafka = &KafkaMock{Produced: map[string][]string{}, Listeners: map[string][]func(msg []byte) error{}}
 
 type KafkaMock struct {
 	mux       sync.Mutex
 	Produced  map[string][]string
-	listeners map[string][]func(msg []byte) error
+	Listeners map[string][]func(msg []byte) error
 }
 
 type Producer struct {
@@ -41,12 +41,12 @@ type Producer struct {
 func (this *KafkaMock) NewConsumer(ctx context.Context, config config.Config, topic string, listener func(delivery []byte) error) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	this.listeners[topic] = append(this.listeners[topic], listener)
+	this.Listeners[topic] = append(this.Listeners[topic], listener)
 	go func() {
 		<-ctx.Done()
 		this.mux.Lock()
 		defer this.mux.Unlock()
-		this.listeners[topic] = []func(msg []byte) error{}
+		this.Listeners[topic] = []func(msg []byte) error{}
 	}()
 	return nil
 }
@@ -67,12 +67,14 @@ func (this *Producer) Produce(key string, message []byte) error {
 	this.Kafka.mux.Lock()
 	defer this.Kafka.mux.Unlock()
 	this.Kafka.Produced[this.Topic] = append(this.Kafka.Produced[this.Topic], string(message))
-	for _, l := range this.Kafka.listeners[this.Topic] {
-		err := l(message)
-		if err != nil {
-			log.Println(err)
-			debug.PrintStack()
-		}
+	for _, l := range this.Kafka.Listeners[this.Topic] {
+		go func(listener func(msg []byte) error) {
+			err := listener(message)
+			if err != nil {
+				log.Println(err)
+				debug.PrintStack()
+			}
+		}(l)
 	}
 	return nil
 }

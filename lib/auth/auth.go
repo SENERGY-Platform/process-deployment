@@ -21,6 +21,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func GetAuthToken(req *http.Request) string {
@@ -32,9 +33,13 @@ func GetParsedToken(req *http.Request) (token Token, err error) {
 }
 
 type Token struct {
-	Token       string              `json:"-"`
-	Sub         string              `json:"sub,omitempty"`
-	RealmAccess map[string][]string `json:"realm_access,omitempty"`
+	Token       string      `json:"-"`
+	Sub         string      `json:"sub,omitempty"`
+	RealmAccess RealmAccess `json:"realm_access,omitempty"`
+}
+
+type RealmAccess struct {
+	Roles []string `json:"roles"`
 }
 
 func (this *Token) String() string {
@@ -65,7 +70,7 @@ func parse(token string) (claims Token, err error) {
 }
 
 func (this *Token) IsAdmin() bool {
-	return contains(this.RealmAccess["roles"], "admin")
+	return contains(this.RealmAccess.Roles, "admin")
 }
 
 func (this *Token) GetUserId() string {
@@ -79,4 +84,36 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+type KeycloakClaims struct {
+	RealmAccess RealmAccess `json:"realm_access"`
+	jwt.StandardClaims
+}
+
+func CreateToken(issuer string, userId string) (token Token, err error) {
+	return CreateTokenWithRoles(issuer, userId, []string{})
+}
+
+func CreateTokenWithRoles(issuer string, userId string, roles []string) (token Token, err error) {
+	realmAccess := RealmAccess{Roles: roles}
+	claims := KeycloakClaims{
+		realmAccess,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),
+			Issuer:    issuer,
+			Subject:   userId,
+		},
+	}
+
+	jwtoken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	unsignedTokenString, err := jwtoken.SigningString()
+	if err != nil {
+		return token, err
+	}
+	tokenString := strings.Join([]string{unsignedTokenString, ""}, ".")
+	token.Token = "Bearer " + tokenString
+	token.Sub = userId
+	token.RealmAccess = realmAccess
+	return token, nil
 }

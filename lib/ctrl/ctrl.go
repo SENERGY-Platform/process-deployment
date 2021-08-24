@@ -61,5 +61,20 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		}
 		return result.HandleDeployment(deployment)
 	})
+	if err != nil {
+		return result, err
+	}
+	err = sourcing.NewConsumer(ctx, config, config.UsersTopic, func(delivery []byte) error {
+		msg := messages.UserCommandMsg{}
+		err := json.Unmarshal(delivery, &msg)
+		if err != nil {
+			debug.PrintStack()
+			return err
+		}
+		return result.HandleUsersCommand(msg)
+	})
+	if err != nil {
+		return result, err
+	}
 	return result, err
 }

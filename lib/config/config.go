@@ -42,6 +42,7 @@ type ConfigStruct struct {
 	Debug                       bool   `json:"debug"`
 	ConnectivityTest            bool   `json:"connectivity_test"`
 	DeploymentTopic             string `json:"deployment_topic"`
+	UsersTopic                  string `json:"users_topic"`
 	NotificationUrl             string `json:"notification_url"`
 	ImportDeployUrl             string `json:"import_deploy_url"`
 

@@ -17,6 +17,7 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
@@ -104,6 +105,24 @@ func (this *Mongo) GetDeployment(user string, deploymentId string) (deploymentV1
 	}
 
 	return wrapper.Deployment, wrapper.DeploymentV2, nil, 200
+}
+
+func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err error) {
+	ctx, _ := getTimeoutContext()
+	cursor, err := this.deploymentsCollection().Find(ctx, bson.M{deploymentOwnerKey: user})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(context.Background()) {
+		deployment := messages.DeploymentCommand{}
+		err = cursor.Decode(&deployment)
+		if err != nil {
+			return nil, err
+		}
+		deployments = append(deployments, deployment.Id)
+	}
+	err = cursor.Err()
+	return
 }
 
 func (this *Mongo) SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error {
