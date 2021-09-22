@@ -27,21 +27,23 @@ import (
 	"net/http"
 )
 
-func (this *Ctrl) PrepareDeploymentV2(token auth.Token, xml string, svg string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeploymentV2(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
-	err = this.SetDeploymentOptionsV2(token, &result)
-	if err != nil {
-		return result, err, http.StatusInternalServerError
+	if withOptions {
+		err = this.SetDeploymentOptionsV2(token, &result)
+		if err != nil {
+			return result, err, http.StatusInternalServerError
+		}
 	}
 	result.Diagram.Svg = svg
 	this.SetExecutableFlagV2(&result)
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) GetDeploymentV2(token auth.Token, id string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) GetDeploymentV2(token auth.Token, id string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
 	_, temp, err, code := this.db.GetDeployment(token.GetUserId(), id)
 	if err != nil {
 		return result, err, code
@@ -50,9 +52,11 @@ func (this *Ctrl) GetDeploymentV2(token auth.Token, id string) (result deploymen
 		return result, errors.New("found deployment is not of requested version"), http.StatusBadRequest
 	}
 	result = *temp
-	err = this.SetDeploymentOptionsV2(token, &result)
-	if err != nil {
-		return result, err, http.StatusInternalServerError
+	if withOptions {
+		err = this.SetDeploymentOptionsV2(token, &result)
+		if err != nil {
+			return result, err, http.StatusInternalServerError
+		}
 	}
 	return
 }

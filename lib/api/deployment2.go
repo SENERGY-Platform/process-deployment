@@ -26,6 +26,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -35,8 +36,17 @@ func init() {
 
 func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
 	router.POST("/v2/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		withOptionsStr := request.URL.Query().Get("with_options")
+		if withOptionsStr == "" {
+			withOptionsStr = "true"
+		}
+		withOptions, err := strconv.ParseBool(withOptionsStr)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
 		msg := messages.PrepareRequest{}
-		err := json.NewDecoder(request.Body).Decode(&msg)
+		err = json.NewDecoder(request.Body).Decode(&msg)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
@@ -46,7 +56,7 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.PrepareDeploymentV2(token, msg.Xml, msg.Svg)
+		result, err, code := ctrl.PrepareDeploymentV2(token, msg.Xml, msg.Svg, withOptions)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -56,6 +66,15 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 	})
 
 	router.GET("/v2/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		withOptionsStr := request.URL.Query().Get("with_options")
+		if withOptionsStr == "" {
+			withOptionsStr = "true"
+		}
+		withOptions, err := strconv.ParseBool(withOptionsStr)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
 		id := params.ByName("modelId")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
@@ -68,7 +87,7 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 			return
 		}
 		start := time.Now()
-		result, err, code := ctrl.PrepareDeploymentV2(token, process.BpmnXml, process.SvgXml)
+		result, err, code := ctrl.PrepareDeploymentV2(token, process.BpmnXml, process.SvgXml, withOptions)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -126,13 +145,22 @@ func Deployments2Endpoints(router *httprouter.Router, config config.Config, ctrl
 	})
 
 	router.GET("/v2/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		withOptionsStr := request.URL.Query().Get("with_options")
+		if withOptionsStr == "" {
+			withOptionsStr = "true"
+		}
+		withOptions, err := strconv.ParseBool(withOptionsStr)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
 		id := params.ByName("id")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.GetDeploymentV2(token, id)
+		result, err, code := ctrl.GetDeploymentV2(token, id, withOptions)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
