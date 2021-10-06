@@ -27,7 +27,6 @@ import (
 	"net/http"
 	"net/url"
 	"runtime/debug"
-	"time"
 )
 
 func (this *Repository) GetDevice(token auth.Token, id string) (result devicemodel.Device, err error, code int) {
@@ -63,10 +62,6 @@ func (this *Repository) get(token auth.Token, resource string, id string, result
 			return nil, 200
 		}
 	} else {
-		client := http.Client{
-			Timeout: 5 * time.Second,
-		}
-
 		req, err := http.NewRequest(
 			"GET",
 			this.config.DeviceRepoUrl+"/"+resource+"/"+url.PathEscape(id),
@@ -78,7 +73,7 @@ func (this *Repository) get(token auth.Token, resource string, id string, result
 		}
 		req.Header.Set("Authorization", token.Token)
 
-		resp, err := client.Do(req)
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			debug.PrintStack()
 			return err, http.StatusInternalServerError
@@ -109,10 +104,6 @@ func (this *Repository) get(token auth.Token, resource string, id string, result
 }
 
 func (this *Repository) getUncachedList(token auth.Token, resource string, result interface{}) (error, int) {
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
-
 	req, err := http.NewRequest(
 		"GET",
 		this.config.DeviceRepoUrl+"/"+resource,
@@ -124,7 +115,7 @@ func (this *Repository) getUncachedList(token auth.Token, resource string, resul
 	}
 	req.Header.Set("Authorization", token.Token)
 
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()
 		return err, http.StatusInternalServerError

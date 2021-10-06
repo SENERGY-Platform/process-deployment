@@ -33,6 +33,19 @@ var endpoints []func(*httprouter.Router, config.Config, *ctrl.Ctrl)
 
 func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	log.Println("start api")
+
+	timeout, err := time.ParseDuration(config.HttpServerTimeout)
+	if err != nil {
+		log.Println("WARNING: invalid http server timeout --> no timeouts\n", err)
+		err = nil
+	}
+
+	readtimeout, err := time.ParseDuration(config.HttpServerReadTimeout)
+	if err != nil {
+		log.Println("WARNING: invalid http server read timeout --> no timeouts\n", err)
+		err = nil
+	}
+
 	router := httprouter.New()
 	for _, e := range endpoints {
 		log.Println("add endpoints: " + runtime.FuncForPC(reflect.ValueOf(e).Pointer()).Name())
@@ -41,7 +54,7 @@ func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 	log.Println("add logging and cors")
 	corsHandler := util.NewCors(router)
 	logger := util.NewLogger(corsHandler)
-	server := &http.Server{Addr: ":" + config.ApiPort, Handler: logger, WriteTimeout: 10 * time.Second, ReadTimeout: 2 * time.Second, ReadHeaderTimeout: 2 * time.Second}
+	server := &http.Server{Addr: ":" + config.ApiPort, Handler: logger, WriteTimeout: timeout, ReadTimeout: readtimeout}
 	go func() {
 		log.Println("Listening on ", server.Addr)
 		if err := server.ListenAndServe(); err != nil {

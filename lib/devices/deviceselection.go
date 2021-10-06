@@ -27,13 +27,9 @@ import (
 	"net/http"
 	"net/url"
 	"runtime/debug"
-	"time"
 )
 
 func (this *Repository) GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
 	payload, err := json.Marshal(descriptions)
 	if err != nil {
 		debug.PrintStack()
@@ -56,7 +52,7 @@ func (this *Repository) GetDeviceSelection(token auth.Token, descriptions device
 	}
 	req.Header.Set("Authorization", token.Token)
 
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
@@ -71,10 +67,6 @@ func (this *Repository) GetDeviceSelection(token auth.Token, descriptions device
 }
 
 func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
-
 	buff := new(bytes.Buffer)
 	err = json.NewEncoder(buff).Encode(bulk)
 	if err != nil {
@@ -94,7 +86,7 @@ func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk devicesele
 	}
 	req.Header.Set("Authorization", token.Token)
 
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError

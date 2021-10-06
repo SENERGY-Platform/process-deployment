@@ -28,7 +28,6 @@ import (
 	"net/http"
 	"net/url"
 	"runtime/debug"
-	"time"
 )
 
 type RepositoryFactory struct{}
@@ -46,9 +45,6 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 var Factory = &RepositoryFactory{}
 
 func (this *Repository) GetProcessModel(token auth.Token, id string) (result processmodel.ProcessModel, err error, errCode int) {
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
 	req, err := http.NewRequest(
 		"GET",
 		this.config.ProcessRepoUrl+"/processes/"+url.PathEscape(id),
@@ -60,7 +56,7 @@ func (this *Repository) GetProcessModel(token auth.Token, id string) (result pro
 	}
 	req.Header.Set("Authorization", token.Token)
 
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		debug.PrintStack()
 		return result, err, http.StatusInternalServerError
