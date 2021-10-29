@@ -21,8 +21,11 @@ import (
 	"fmt"
 	"github.com/beevik/etree"
 	"log"
+	"regexp"
 	"runtime/debug"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type ValidationKind = bool
@@ -105,6 +108,20 @@ func (this Element) Validate(kind ValidationKind) error {
 		(this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in task")
 	}
+	if this.TimeEvent != nil {
+		if this.TimeEvent.Type == "timeDuration" {
+			if this.TimeEvent.Time == "" {
+				return errors.New("missing time event duration")
+			}
+			d, err := ParseIsoDuration(this.TimeEvent.Time)
+			if err != nil {
+				return errors.New("time-event: " + err.Error())
+			}
+			if d.Seconds() < 5 {
+				return errors.New("time-event duration below 5s")
+			}
+		}
+	}
 	if this.MessageEvent != nil {
 		if this.MessageEvent.Selection.SelectedDeviceGroupId != nil {
 			if *this.MessageEvent.Selection.SelectedDeviceGroupId == "" {
@@ -130,4 +147,34 @@ func (this Element) Validate(kind ValidationKind) error {
 		}
 	}
 	return nil
+}
+
+func ParseIsoDuration(str string) (result time.Duration, err error) {
+	durationRegex := regexp.MustCompile(`P(?P<years>\d+Y)?(?P<months>\d+M)?(?P<days>\d+D)?T?(?P<hours>\d+H)?(?P<minutes>\d+M)?(?P<seconds>\d+S)?`)
+	matches := durationRegex.FindStringSubmatch(str)
+	if len(matches) < 7 {
+		return result, errors.New("invalid iso duration")
+	}
+	years := ParseIsoDurationInt64(matches[1])
+	months := ParseIsoDurationInt64(matches[2])
+	days := ParseIsoDurationInt64(matches[3])
+	hours := ParseIsoDurationInt64(matches[4])
+	minutes := ParseIsoDurationInt64(matches[5])
+	seconds := ParseIsoDurationInt64(matches[6])
+
+	hour := int64(time.Hour)
+	minute := int64(time.Minute)
+	second := int64(time.Second)
+	return time.Duration(years*24*365*hour + months*30*24*hour + days*24*hour + hours*hour + minutes*minute + seconds*second), nil
+}
+
+func ParseIsoDurationInt64(value string) int64 {
+	if len(value) == 0 {
+		return 0
+	}
+	parsed, err := strconv.Atoi(value[:len(value)-1])
+	if err != nil {
+		return 0
+	}
+	return int64(parsed)
 }
