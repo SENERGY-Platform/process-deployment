@@ -25,6 +25,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"net/http"
+	"strings"
 )
 
 func (this *Ctrl) PrepareDeploymentV2(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
@@ -195,7 +196,7 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 		}
 		if selectable.Device != nil {
 			for _, service := range selectable.Services {
-				if serviceMatchesCriteria(service, criteria) {
+				if serviceMatchesCriteria(service, criteria, selectable.ServicePathOptions) {
 					serviceDesc = append(serviceDesc, deploymentmodel.Service{
 						Id:   service.Id,
 						Name: service.Name,
@@ -224,22 +225,36 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 	return result
 }
 
-func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria) bool {
+func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria, servicePathOptions map[string][]deviceselectionmodel.PathCharacteristicIdPair) bool {
 	implementsFunction := false
 	matchesAspect := false
-	for _, function := range service.FunctionIds {
-		if criteria.FunctionId != nil && *criteria.FunctionId == function {
-			implementsFunction = true
-			break
-		}
+	pathOptions, ok := servicePathOptions[service.Id]
+	if !ok {
+		return false
 	}
-	for _, aspect := range service.AspectIds {
-		if criteria.AspectId != nil && *criteria.AspectId == aspect {
-			matchesAspect = true
-			break
+	for _, option := range pathOptions {
+		aspects := append(option.AspectNode.AncestorIds, option.AspectNode.Id)
+		for _, aspect := range aspects {
+			if criteria.AspectId != nil && *criteria.AspectId == aspect {
+				matchesAspect = true
+				break
+			}
+		}
+		if criteria.FunctionId != nil && *criteria.FunctionId == option.FunctionId {
+			implementsFunction = true
+		}
+		if (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction) {
+			return true
 		}
 	}
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
+}
+
+func isControllingFunction(functionId string) bool {
+	if strings.HasPrefix(functionId, devicemodel.CONTROLLING_FUNCTION_PREFIX) {
+		return true
+	}
+	return false
 }
 
 func (this *Ctrl) setDeploymentV2(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
