@@ -20,32 +20,31 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"net/http"
-	"strings"
 )
 
-func (this *Ctrl) PrepareDeploymentV2(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) PrepareDeployment(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError
 	}
 	if withOptions {
-		err = this.SetDeploymentOptionsV2(token, &result)
+		err = this.SetDeploymentOptions(token, &result)
 		if err != nil {
 			return result, err, http.StatusInternalServerError
 		}
 	}
 	result.Diagram.Svg = svg
-	this.SetExecutableFlagV2(&result)
+	this.SetExecutableFlag(&result)
 	return result, nil, http.StatusOK
 }
 
-func (this *Ctrl) GetDeploymentV2(token auth.Token, id string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
-	_, temp, err, code := this.db.GetDeployment(token.GetUserId(), id)
+func (this *Ctrl) GetDeployment(token auth.Token, id string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
+	temp, err, code := this.db.GetDeployment(token.GetUserId(), id)
 	if err != nil {
 		return result, err, code
 	}
@@ -54,7 +53,7 @@ func (this *Ctrl) GetDeploymentV2(token auth.Token, id string, withOptions bool)
 	}
 	result = *temp
 	if withOptions {
-		err = this.SetDeploymentOptionsV2(token, &result)
+		err = this.SetDeploymentOptions(token, &result)
 		if err != nil {
 			return result, err, http.StatusInternalServerError
 		}
@@ -62,12 +61,12 @@ func (this *Ctrl) GetDeploymentV2(token auth.Token, id string, withOptions bool)
 	return
 }
 
-func (this *Ctrl) CreateDeploymentV2(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeploymentV2(token, deployment, source)
+	return this.setDeployment(token, deployment, source)
 }
 
-func (this *Ctrl) UpdateDeploymentV2(token auth.Token, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
@@ -77,10 +76,10 @@ func (this *Ctrl) UpdateDeploymentV2(token auth.Token, id string, deployment dep
 		return result, err, code
 	}
 
-	return this.setDeploymentV2(token, deployment, source)
+	return this.setDeployment(token, deployment, source)
 }
 
-func (this *Ctrl) RemoveDeploymentV2(token auth.Token, id string) (err error, code int) {
+func (this *Ctrl) RemoveDeployment(token auth.Token, id string) (err error, code int) {
 	err, code = this.db.CheckDeploymentAccess(token.GetUserId(), id)
 	if err != nil {
 		return err, code
@@ -93,7 +92,7 @@ func (this *Ctrl) RemoveDeploymentV2(token auth.Token, id string) (err error, co
 	return nil, 200
 }
 
-func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
+func (this *Ctrl) SetExecutableFlag(deployment *deploymentmodel.Deployment) {
 	deployment.Executable = true
 	for _, element := range deployment.Elements {
 		if element.Task != nil && len(element.Task.Selection.SelectionOptions) == 0 {
@@ -108,8 +107,8 @@ func (this *Ctrl) SetExecutableFlagV2(deployment *deploymentmodel.Deployment) {
 	return
 }
 
-func (this *Ctrl) SetDeploymentOptionsV2(token auth.Token, deployment *deploymentmodel.Deployment) (err error) {
-	bulk := this.getDeploymentV2BulkSelectableRequest(deployment)
+func (this *Ctrl) SetDeploymentOptions(token auth.Token, deployment *deploymentmodel.Deployment) (err error) {
+	bulk := this.getDeploymentBulkSelectableRequest(deployment)
 	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
 	if err != nil {
 		return err
@@ -133,7 +132,7 @@ func (this *Ctrl) SetDeploymentOptionsV2(token auth.Token, deployment *deploymen
 	return nil
 }
 
-func (this *Ctrl) getDeploymentV2BulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
+func (this *Ctrl) getDeploymentBulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
 	useEventFilter := devicemodel.EVENT
 	taskGroups := map[string][]int{}
 	for index, element := range deployment.Elements {
@@ -214,18 +213,18 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 		}
 
 		result = append(result, deploymentmodel.SelectionOption{
-			Device:             device,
-			DeviceGroup:        devicegroup,
-			Services:           serviceDesc,
-			Import:             selectableImport,
-			ImportType:         importType,
-			ServicePathOptions: selectable.ServicePathOptions,
+			Device:      device,
+			DeviceGroup: devicegroup,
+			Services:    serviceDesc,
+			Import:      selectableImport,
+			ImportType:  importType,
+			PathOptions: selectable.ServicePathOptions,
 		})
 	}
 	return result
 }
 
-func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria, servicePathOptions map[string][]deviceselectionmodel.PathCharacteristicIdPair) bool {
+func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria, servicePathOptions map[string][]deviceselectionmodel.PathOption) bool {
 	implementsFunction := false
 	matchesAspect := false
 	pathOptions, ok := servicePathOptions[service.Id]
@@ -250,14 +249,7 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func isControllingFunction(functionId string) bool {
-	if strings.HasPrefix(functionId, devicemodel.CONTROLLING_FUNCTION_PREFIX) {
-		return true
-	}
-	return false
-}
-
-func (this *Ctrl) setDeploymentV2(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
 	if err := deployment.Validate(deploymentmodel.ValidateRequest); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
@@ -268,19 +260,19 @@ func (this *Ctrl) setDeploymentV2(token auth.Token, deployment deploymentmodel.D
 		return deployment, err, code
 	}
 
-	err = this.completeEventsV2(&deployment)
+	err = this.completeEvents(&deployment)
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 
 	userid := token.GetUserId()
 
-	deployment.Diagram.XmlDeployed, err = this.deploymentStringifier.Deployment(deployment, userid)
+	deployment.Diagram.XmlDeployed, err = this.deploymentStringifier.Deployment(deployment, userid, token)
 	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	if err = this.publishDeploymentV2(userid, deployment.Id, deployment, source); err != nil {
+	if err = this.publishDeployment(userid, deployment.Id, deployment, source); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200

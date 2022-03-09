@@ -17,7 +17,8 @@
 package interfaces
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 )
 
 type DeploymentParser interface {
@@ -25,5 +26,5 @@ type DeploymentParser interface {
 }
 
 type DeploymentStringifier interface {
-	Deployment(deployment deploymentmodel.Deployment, userId string) (string, error)
+	Deployment(deployment deploymentmodel.Deployment, userId string, token auth.Token) (string, error)
 }

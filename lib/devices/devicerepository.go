@@ -29,6 +29,11 @@ import (
 	"runtime/debug"
 )
 
+func (this *Repository) GetAspectNode(token auth.Token, id string) (result devicemodel.AspectNode, err error) {
+	err, _ = this.get(token, "aspect-nodes", id, &result)
+	return
+}
+
 func (this *Repository) GetDevice(token auth.Token, id string) (result devicemodel.Device, err error, code int) {
 	err, code = this.get(token, "devices", id, &result)
 	return

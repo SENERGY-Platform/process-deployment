@@ -21,39 +21,46 @@ import (
 	"fmt"
 	"github.com/beevik/etree"
 	"log"
+	"regexp"
 	"runtime/debug"
+	"strconv"
 	"strings"
+	"time"
+)
+
+type ValidationKind = bool
+
+const (
+	ValidatePublish ValidationKind = true
+	ValidateRequest ValidationKind = false
 )
 
 //strict for cqrs; else for user
-func (this Deployment) Validate(strict bool) (err error) {
+func (this Deployment) Validate(kind ValidationKind) (err error) {
+	if this.Version != CurrentVersion {
+		return errors.New("unexpected deployment version")
+	}
 	if this.Id == "" {
 		return errors.New("missing deployment id")
 	}
 	if this.Name == "" {
 		return errors.New("missing deployment name")
 	}
-	if this.XmlRaw == "" {
+	if this.Diagram.XmlRaw == "" {
 		return errors.New("missing deployment xml_raw")
 	}
-	engineAccess, err := xmlContainsEngineAccess(this.XmlRaw)
+	engineAccess, err := xmlContainsEngineAccess(this.Diagram.XmlRaw)
 	if err != nil {
 		return err
 	}
 	if engineAccess {
 		return errors.New("process tries to access execution engine")
 	}
-	if strict && this.Xml == "" {
+	if kind == ValidatePublish && this.Diagram.XmlDeployed == "" {
 		return errors.New("missing deployment xml")
 	}
 	for _, element := range this.Elements {
-		err = element.Validate(strict)
-		if err != nil {
-			return err
-		}
-	}
-	for _, lane := range this.Lanes {
-		err = lane.Validate(strict)
+		err = element.Validate(kind)
 		if err != nil {
 			return err
 		}
@@ -88,207 +95,89 @@ func xmlContainsEngineAccess(xml string) (triesAccess bool, err error) {
 	return false, nil
 }
 
-func (this Element) Validate(strict bool) error {
-	if err := this.Task.Validate(strict); err != nil {
-		return err
+func (this Element) Validate(kind ValidationKind) error {
+	if this.BpmnId == "" {
+		return errors.New("missing bpmn element id")
 	}
-	if err := this.MultiTask.Validate(strict); err != nil {
-		return err
-	}
-	if err := this.TimeEvent.Validate(strict); err != nil {
-		return err
-	}
-	if err := this.MsgEvent.Validate(strict); err != nil {
-		return err
-	}
-	if err := this.ReceiveTaskEvent.Validate(strict); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (this *Task) Validate(strict bool) error {
-	if this == nil {
-		return nil
-	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing task bpmn id")
-	}
-	if err := this.Selection.Validate(strict); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (this *MultiTask) Validate(strict bool) error {
-	if this == nil {
-		return nil
-	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing multi task bpmn id")
-	}
-	if len(this.Selections) == 0 {
-		return errors.New("expect at least one device selected for multi task")
-	}
-	for _, selection := range this.Selections {
-		if err := selection.Validate(strict); err != nil {
-			return err
+	if this.Task != nil {
+		if (this.Task.Selection.SelectedDeviceGroupId == nil || *this.Task.Selection.SelectedDeviceGroupId == "") &&
+			(this.Task.Selection.SelectedDeviceId == nil || *this.Task.Selection.SelectedDeviceId == "") {
+			return errors.New("missing device/device-group selection in task")
 		}
 	}
-	return nil
-}
-
-func (this *TimeEvent) Validate(strict bool) error {
-	if this == nil {
-		return nil
+	if this.Task != nil &&
+		this.Task.Selection.SelectedDeviceId != nil &&
+		*this.Task.Selection.SelectedDeviceId == "" &&
+		(this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
+		return errors.New("missing service selection in task")
 	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing time event bpmn id")
-	}
-	if this.Kind == "" {
-		return errors.New("missing time event kind")
-	}
-	if this.Time == "" {
-		return errors.New("missing time event time")
-	}
-	return nil
-}
-
-func (this *MsgEvent) Validate(strict bool) error {
-	if this == nil {
-		return nil
-	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing msg event bpmn id")
-	}
-	if this.Device == nil {
-		return errors.New("missing msg event device selection")
-	}
-	if this.Service == nil {
-		return errors.New("missing msg event service selection")
-	}
-	if this.Device.Id == "" {
-		return errors.New("missing msg event device id in selection")
-	}
-	if this.Service.Id == "" {
-		return errors.New("missing msg event service id in selection")
-	}
-	if strict && this.EventId == "" {
-		return errors.New("missing msg event id")
-	}
-	if this.Path == "" {
-		return errors.New("missing msg event path")
-	}
-	if this.Operation == "" {
-		return errors.New("missing msg event operation")
-	}
-	if this.TriggerConversion != nil && strict {
-		if this.TriggerConversion.From == "" {
-			return errors.New("missing msg event cast from")
-		}
-		if this.TriggerConversion.To == "" {
-			return errors.New("missing msg event cast to")
-		}
-	}
-	return nil
-}
-
-func (this LaneElement) Validate(strict bool) error {
-	if err := this.Lane.Validate(strict); err != nil {
-		return err
-	}
-	if err := this.MultiLane.Validate(strict); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (this *Lane) Validate(strict bool) error {
-	if this == nil {
-		return nil
-	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing lane bpmn id")
-	}
-	if this.Selection == nil || this.Selection.Id == "" {
-		for _, element := range this.Elements {
-			if element.LaneTask != nil {
-				return errors.New("missing lane device selection")
+	if this.TimeEvent != nil {
+		if this.TimeEvent.Type == "timeDuration" {
+			if this.TimeEvent.Time == "" {
+				return errors.New("missing time event duration")
+			}
+			d, err := ParseIsoDuration(this.TimeEvent.Time)
+			if err != nil {
+				return errors.New("time-event: " + err.Error())
+			}
+			if d.Seconds() < 5 {
+				return errors.New("time-event duration below 5s")
 			}
 		}
 	}
-	for _, element := range this.Elements {
-		if err := element.Validate(strict); err != nil {
-			return err
+	if this.MessageEvent != nil {
+		if this.MessageEvent.Selection.SelectedDeviceGroupId != nil {
+			if *this.MessageEvent.Selection.SelectedDeviceGroupId == "" {
+				return errors.New("invalid device-group selection in event")
+			}
+		} else if this.MessageEvent.Selection.SelectedImportId != nil {
+			if *this.MessageEvent.Selection.SelectedImportId == "" {
+				return errors.New("invalid import selection in event")
+			}
+			if this.MessageEvent.Selection.SelectedPath == nil || this.MessageEvent.Selection.SelectedPath.Path == "" {
+				return errors.New("missing selected_path, but import selected in event")
+			}
+			if this.MessageEvent.Selection.SelectedPath.CharacteristicId == "" {
+				return errors.New("missing selected_path.characteristicId, but import selected in event")
+			}
+		} else {
+			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
+				return errors.New("missing device selection in event")
+			}
+			if this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "" {
+				return errors.New("missing service selection in event")
+			}
 		}
 	}
 	return nil
 }
 
-func (this *MultiLane) Validate(strict bool) error {
-	if this == nil {
-		return nil
+func ParseIsoDuration(str string) (result time.Duration, err error) {
+	durationRegex := regexp.MustCompile(`P(?P<years>\d+Y)?(?P<months>\d+M)?(?P<days>\d+D)?T?(?P<hours>\d+H)?(?P<minutes>\d+M)?(?P<seconds>\d+S)?`)
+	matches := durationRegex.FindStringSubmatch(str)
+	if len(matches) < 7 {
+		return result, errors.New("invalid iso duration")
 	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing lane bpmn id")
-	}
-	if len(this.Selections) == 0 {
-		return errors.New("expect at least one device selected for multi lane")
-	}
-	for _, selection := range this.Selections {
-		if selection.Id == "" {
-			return errors.New("missing multi lane selection device id")
-		}
-	}
-	for _, element := range this.Elements {
-		if err := element.Validate(strict); err != nil {
-			return err
-		}
-	}
-	return nil
+	years := ParseIsoDurationInt64(matches[1])
+	months := ParseIsoDurationInt64(matches[2])
+	days := ParseIsoDurationInt64(matches[3])
+	hours := ParseIsoDurationInt64(matches[4])
+	minutes := ParseIsoDurationInt64(matches[5])
+	seconds := ParseIsoDurationInt64(matches[6])
+
+	hour := int64(time.Hour)
+	minute := int64(time.Minute)
+	second := int64(time.Second)
+	return time.Duration(years*24*365*hour + months*30*24*hour + days*24*hour + hours*hour + minutes*minute + seconds*second), nil
 }
 
-func (this LaneSubElement) Validate(strict bool) error {
-	if err := this.LaneTask.Validate(strict); err != nil {
-		return err
+func ParseIsoDurationInt64(value string) int64 {
+	if len(value) == 0 {
+		return 0
 	}
-	if err := this.TimeEvent.Validate(strict); err != nil {
-		return err
+	parsed, err := strconv.Atoi(value[:len(value)-1])
+	if err != nil {
+		return 0
 	}
-	if err := this.MsgEvent.Validate(strict); err != nil {
-		return err
-	}
-	if err := this.ReceiveTaskEvent.Validate(strict); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (this *LaneTask) Validate(strict bool) error {
-	if this == nil {
-		return nil
-	}
-	if this.BpmnElementId == "" {
-		return errors.New("missing task bpmn id")
-	}
-	if this.SelectedService == nil || this.SelectedService.Id == "" {
-		return errors.New("missing lane task service selection id")
-	}
-	return nil
-}
-
-func (this Selection) Validate(strict bool) error {
-	if this.Device == nil {
-		return errors.New("missing device selection")
-	}
-	if this.Service == nil {
-		return errors.New("missing service selection")
-	}
-	if this.Device.Id == "" {
-		return errors.New("missing device id in selection")
-	}
-	if this.Service.Id == "" {
-		return errors.New("missing service id in selection")
-	}
-	return nil
+	return int64(parsed)
 }

@@ -22,12 +22,12 @@ import (
 )
 
 type Selectable struct {
-	Device             *devicemodel.Device                   `json:"device"`
-	Services           []devicemodel.Service                 `json:"services"`
-	DeviceGroup        *devicemodel.DeviceGroup              `json:"device_group,omitempty"`
-	Import             *importmodel.Import                   `json:"import,omitempty"`
-	ImportType         *importmodel.ImportType               `json:"importType,omitempty"`
-	ServicePathOptions map[string][]PathCharacteristicIdPair `json:"servicePathOptions,omitempty"`
+	Device             *devicemodel.Device      `json:"device"`
+	Services           []devicemodel.Service    `json:"services"`
+	DeviceGroup        *devicemodel.DeviceGroup `json:"device_group,omitempty"`
+	Import             *importmodel.Import      `json:"import,omitempty"`
+	ImportType         *importmodel.ImportType  `json:"importType,omitempty"`
+	ServicePathOptions map[string][]PathOption  `json:"servicePathOptions,omitempty"`
 }
 
 type FilterCriteriaAndSet []FilterCriteria
@@ -58,9 +58,22 @@ type BulkResultElement struct {
 	Selectables []Selectable `json:"selectables"`
 }
 
-type PathCharacteristicIdPair struct {
+type PathOption struct {
 	Path             string                 `json:"path"`
 	CharacteristicId string                 `json:"characteristicId"`
 	AspectNode       devicemodel.AspectNode `json:"aspectNode"`
 	FunctionId       string                 `json:"functionId"`
+	IsVoid           bool                   `json:"isVoid"`
+	Value            interface{}            `json:"value,omitempty"`
+	Type             string                 `json:"type,omitempty"`
+	Configurables    []Configurable         `json:"configurables,omitempty"`
+}
+
+type Configurable struct {
+	Path             string                 `json:"path"`
+	CharacteristicId string                 `json:"characteristic_id"`
+	AspectNode       devicemodel.AspectNode `json:"aspect_node"`
+	FunctionId       string                 `json:"function_id"`
+	Value            interface{}            `json:"value,omitempty"`
+	Type             string                 `json:"type,omitempty"`
 }

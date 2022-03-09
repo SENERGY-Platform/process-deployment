@@ -18,8 +18,10 @@ package stringifier
 
 import (
 	"encoding/json"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/helper"
 	"io/ioutil"
 	"runtime/debug"
@@ -70,7 +72,9 @@ func testDeployment(t *testing.T, exampleName string) {
 		t.Error(err)
 		return
 	}
-	stringifier := New(conf)
+	stringifier := New(conf, func(token auth.Token, aspectNodeId string) (aspectNode devicemodel.AspectNode, err error) {
+		return devicemodel.AspectNode{Id: aspectNodeId}, nil
+	})
 	deploymentJson, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/selected.json")
 	if err != nil {
 		t.Error(err)
@@ -90,7 +94,7 @@ func testDeployment(t *testing.T, exampleName string) {
 	}
 	deployment.Diagram.XmlRaw = string(raw)
 
-	actual, err := stringifier.Deployment(deployment, "user1")
+	actual, err := stringifier.Deployment(deployment, "user1", auth.Token{})
 	if err != nil {
 		t.Error(err)
 		return

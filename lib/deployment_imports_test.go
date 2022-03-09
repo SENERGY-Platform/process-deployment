@@ -22,7 +22,8 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"os"
@@ -71,7 +72,10 @@ func TestImportDeployments(t *testing.T) {
 			t.Error(err.Error())
 		}
 		emptyString := ""
-		deployment.Elements[0].MessageEvent.Selection.SelectedPath = &emptyString
+		if deployment.Elements[0].MessageEvent.Selection.SelectedPath == nil {
+			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
+		}
+		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
 		err = deployment.Validate(deploymentmodel.ValidateRequest)
 		if err == nil {
 			t.Error("Did not detect missing path")
@@ -84,7 +88,10 @@ func TestImportDeployments(t *testing.T) {
 			t.Error(err.Error())
 		}
 		emptyString := ""
-		deployment.Elements[0].MessageEvent.Selection.SelectedCharacteristicId = &emptyString
+		if deployment.Elements[0].MessageEvent.Selection.SelectedPath == nil {
+			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
+		}
+		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
 		err = deployment.Validate(deploymentmodel.ValidateRequest)
 		if err == nil {
 			t.Error("Did not detect missing characteristic")
@@ -132,6 +139,7 @@ func getValidImportDeployment() (deploymentmodel.Deployment, error) {
 	}
 	xmlRawString := string(xmlRaw)
 	return deploymentmodel.Deployment{
+		Version: deploymentmodel.CurrentVersion,
 		Id:      "deployment-import-id",
 		Diagram: deploymentmodel.Diagram{XmlRaw: xmlRawString},
 		Name:    "testEvent",
@@ -146,9 +154,11 @@ func getValidImportDeployment() (deploymentmodel.Deployment, error) {
 						FunctionId:       &functionId,
 						AspectId:         &aspectId,
 					},
-					SelectedImportId:         &selectedImportId,
-					SelectedCharacteristicId: &selectedCharacteristicId,
-					SelectedPath:             &selectedPath,
+					SelectedImportId: &selectedImportId,
+					SelectedPath: &deviceselectionmodel.PathOption{
+						Path:             selectedPath,
+						CharacteristicId: selectedCharacteristicId,
+					},
 				},
 			},
 		},

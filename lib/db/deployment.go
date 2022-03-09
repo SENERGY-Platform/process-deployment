@@ -21,7 +21,6 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -90,21 +89,30 @@ func (this *Mongo) DeleteDeployment(id string) error {
 	return err
 }
 
-func (this *Mongo) GetDeployment(user string, deploymentId string) (deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment, err error, code int) {
+func (this *Mongo) GetDeployment(user string, deploymentId string) (deployment *deploymentmodel.Deployment, err error, code int) {
 	ctx, _ := getTimeoutContext()
-	wrapper := messages.DeploymentCommand{}
-	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
+	response := this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId})
+
+	//first decode to check version to prevent crash in second decode
+
+	versionWrapper := DeploymentCommandIdVersionWrapper{}
+	err = response.Decode(&versionWrapper)
 	if err == mongo.ErrNoDocuments {
-		return nil, nil, errors.New("not found"), http.StatusNotFound
+		return nil, errors.New("not found"), http.StatusNotFound
 	}
 	if err != nil {
-		return nil, nil, err, http.StatusInternalServerError
+		return nil, err, http.StatusInternalServerError
 	}
-	if wrapper.Owner != user {
-		return nil, nil, errors.New("access denied"), http.StatusForbidden
+	if versionWrapper.Owner != user {
+		return nil, errors.New("access denied"), http.StatusForbidden
 	}
 
-	return wrapper.Deployment, wrapper.DeploymentV2, nil, 200
+	wrapper := messages.DeploymentCommand{}
+	err = response.Decode(&wrapper)
+	if err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+	return wrapper.Deployment, nil, 200
 }
 
 func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err error) {
@@ -114,7 +122,7 @@ func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err erro
 		return nil, err
 	}
 	for cursor.Next(context.Background()) {
-		deployment := messages.DeploymentCommand{}
+		deployment := DeploymentCommandIdVersionWrapper{}
 		err = cursor.Decode(&deployment)
 		if err != nil {
 			return nil, err
@@ -125,8 +133,19 @@ func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err erro
 	return
 }
 
-func (this *Mongo) SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error {
+var ErrorUnexpectedDeploymentVersion = errors.New("unexpected deployment version")
+
+func (this *Mongo) SetDeployment(id string, owner string, deployment *deploymentmodel.Deployment) error {
+	if deployment.Version != deploymentmodel.CurrentVersion {
+		return ErrorUnexpectedDeploymentVersion
+	}
 	ctx, _ := getTimeoutContext()
-	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deploymentV1, DeploymentV2: deploymentV2}, options.Replace().SetUpsert(true))
+	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment, Version: deployment.Version}, options.Replace().SetUpsert(true))
 	return err
+}
+
+type DeploymentCommandIdVersionWrapper struct {
+	Id      string `json:"id"`
+	Owner   string `json:"owner"`
+	Version int64  `json:"version"`
 }

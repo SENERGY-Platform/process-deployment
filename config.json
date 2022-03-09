@@ -7,7 +7,7 @@
   "api_port": "8080",
   "connectivity_test": true,
   "users_topic": "user",
-  "deployment_topic": "deployments",
+  "deployment_topic": "deployments_v3",
   "mongo_table": "processdeployment",
   "mongo_deployment_collection": "deployments",
   "mongo_dependencies_collection": "dependencies",

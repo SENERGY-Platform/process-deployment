@@ -21,7 +21,6 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 )
@@ -58,11 +57,11 @@ func (this *Ctrl) DeleteDeployment(command messages.DeploymentCommand) error {
 }
 
 func (this *Ctrl) SaveDeployment(command messages.DeploymentCommand) error {
-	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment, command.DeploymentV2)
+	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment)
 }
 
-func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploymentmodel.Deployment, source string) error {
-	if err := deployment.Validate(true); err != nil {
+func (this *Ctrl) publishDeployment(owner string, id string, deployment deploymentmodel.Deployment, source string) error {
+	if err := deployment.Validate(deploymentmodel.ValidatePublish); err != nil {
 		return err
 	}
 	cmd := messages.DeploymentCommand{
@@ -71,24 +70,7 @@ func (this *Ctrl) publishDeploymentV1(owner string, id string, deployment deploy
 		Owner:      owner,
 		Deployment: &deployment,
 		Source:     source,
-	}
-	msg, err := json.Marshal(cmd)
-	if err != nil {
-		return err
-	}
-	return this.deploymentPublisher.Produce(id, msg)
-}
-
-func (this *Ctrl) publishDeploymentV2(owner string, id string, deployment deploymentmodel2.Deployment, source string) error {
-	if err := deployment.Validate(true); err != nil {
-		return err
-	}
-	cmd := messages.DeploymentCommand{
-		Command:      "PUT",
-		Id:           id,
-		Owner:        owner,
-		DeploymentV2: &deployment,
-		Source:       source,
+		Version:    deployment.Version,
 	}
 	msg, err := json.Marshal(cmd)
 	if err != nil {

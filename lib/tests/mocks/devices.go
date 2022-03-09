@@ -36,6 +36,11 @@ type DeviceRepoMock struct {
 	options  []deviceselectionmodel.Selectable
 }
 
+func (this *DeviceRepoMock) GetAspectNode(token auth.Token, id string) (aspectNode devicemodel.AspectNode, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 var Devices = &DeviceRepoMock{devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
 
 func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {

@@ -19,22 +19,27 @@ package stringifier
 import (
 	"errors"
 	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
 )
 
 type Stringifier struct {
-	conf config.Config
+	conf               config.Config
+	aspectNodeProvider AspectNodeProvider
 }
 
-func New(conf config.Config) *Stringifier {
-	return &Stringifier{conf: conf}
+type AspectNodeProvider func(token auth.Token, aspectNodeId string) (aspectNode devicemodel.AspectNode, err error)
+
+func New(conf config.Config, aspectNodeProvider AspectNodeProvider) *Stringifier {
+	return &Stringifier{conf: conf, aspectNodeProvider: aspectNodeProvider}
 }
 
-func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string) (xml string, err error) {
+func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string, token auth.Token) (xml string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -51,7 +56,7 @@ func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userI
 	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
 
 	for _, element := range deployment.Elements {
-		err = this.Element(doc, element, userId)
+		err = this.Element(doc, element, userId, token)
 		if err != nil {
 			return "", err
 		}
@@ -61,9 +66,9 @@ func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userI
 	return
 }
 
-func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.Element, userId string) error {
+func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.Element, userId string, token auth.Token) error {
 	if element.Task != nil {
-		err := this.Task(doc, element)
+		err := this.Task(doc, element, token)
 		if err != nil {
 			return err
 		}

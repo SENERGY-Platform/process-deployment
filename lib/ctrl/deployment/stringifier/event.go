@@ -19,7 +19,7 @@ package stringifier
 import (
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
 	uuid "github.com/satori/go.uuid"
 	"log"

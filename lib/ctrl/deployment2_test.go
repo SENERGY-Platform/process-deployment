@@ -23,7 +23,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/golang-jwt/jwt"
@@ -40,7 +40,7 @@ import (
 
 const RESOURCE_BASE_DIR = "../tests/resources/"
 
-func TestDeploymentHandlerV2(t *testing.T) {
+func TestDeploymentHandler(t *testing.T) {
 	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
 	if err != nil {
 		t.Error(err)
@@ -56,7 +56,7 @@ func TestDeploymentHandlerV2(t *testing.T) {
 	}
 }
 
-func TestSetExecutableFlagV2(t *testing.T) {
+func TestSetExecutableFlag(t *testing.T) {
 	t.Run("true", testSetExecutableFlag(deploymentmodel.Deployment{}, true))
 	t.Run("task true", testSetExecutableFlag(deploymentmodel.Deployment{
 		Elements: []deploymentmodel.Element{
@@ -145,7 +145,7 @@ func TestSetExecutableFlagV2(t *testing.T) {
 
 func testSetExecutableFlag(deployment deploymentmodel.Deployment, expected bool) func(t *testing.T) {
 	return func(t *testing.T) {
-		(&Ctrl{}).SetExecutableFlagV2(&deployment)
+		(&Ctrl{}).SetExecutableFlag(&deployment)
 		if deployment.Executable != expected {
 			t.Error(deployment.Executable, expected)
 		}
@@ -233,12 +233,11 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	}
 
 	err = ctrl.HandleDeployment(messages.DeploymentCommand{
-		Command:      "PUT",
-		Id:           deploymentId,
-		Owner:        userId,
-		Deployment:   nil,
-		DeploymentV2: &deployment,
-		Source:       "test",
+		Command:    "PUT",
+		Id:         deploymentId,
+		Owner:      userId,
+		Deployment: &deployment,
+		Source:     "test",
 	})
 	if err != nil {
 		t.Error(err)

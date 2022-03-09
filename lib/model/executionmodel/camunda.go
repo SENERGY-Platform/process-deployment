@@ -18,10 +18,11 @@ package executionmodel
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 )
 
 type Task struct {
-	Version int `json:"version,omitempty"`
+	Version int64 `json:"version"`
 
 	//modeling time
 	Function         devicemodel.Function `json:"function"`
@@ -29,7 +30,7 @@ type Task struct {
 
 	//optional modeling time (used to limit/filter device and service selection in deployment)
 	DeviceClass *devicemodel.DeviceClass `json:"device_class,omitempty"`
-	Aspect      *devicemodel.Aspect      `json:"aspect,omitempty"`
+	Aspect      *devicemodel.AspectNode  `json:"aspect,omitempty"`
 
 	//deployment time
 	DeviceGroupId string `json:"device_group_id,omitempty"`
@@ -37,8 +38,10 @@ type Task struct {
 	ServiceId     string `json:"service_id,omitempty"`
 	ProtocolId    string `json:"protocol_id,omitempty"`
 
-	Configurables        []Configurable `json:"configurables,omitempty"`
-	ContentVariableHints []string       `json:"content_variable_hints,omitempty"`
+	//version >= 3
+	InputPaths      []string                            `json:"input_paths,omitempty"`
+	OutputPath      string                              `json:"output_path,omitempty"`
+	ConfigurablesV2 []deviceselectionmodel.Configurable `json:"configurables_v2,omitempty"`
 
 	//runtime
 	Input  interface{} `json:"input,omitempty"`

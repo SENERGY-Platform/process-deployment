@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package deploymentmodel
+package ctrl
 
-type NotificationPayload struct {
-	//information direct from model
-	Message string `json:"message"`
-	UserId  string `json:"userId"`
-	Title   string `json:"title"`
-	IsRead  bool   `json:"isRead"`
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	uuid "github.com/satori/go.uuid"
+)
+
+func (this *Ctrl) completeEvents(deployment *deploymentmodel.Deployment) error {
+	for index, element := range deployment.Elements {
+		if element.MessageEvent != nil {
+			element.MessageEvent.EventId = uuid.NewV4().String()
+			deployment.Elements[index] = element
+		}
+	}
+	return nil
 }

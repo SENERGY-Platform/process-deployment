@@ -25,7 +25,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"reflect"
@@ -148,9 +148,10 @@ func testDeploy(control *ctrl.Ctrl, token auth.Token, id string) func(t *testing
 			config.NewId = old
 		}()
 		process := CreateBlankProcess()
-		_, err, _ := control.CreateDeploymentV2(token, deploymentmodel.Deployment{
-			Id:   id,
-			Name: id + "_n",
+		_, err, _ := control.CreateDeployment(token, deploymentmodel.Deployment{
+			Version: deploymentmodel.CurrentVersion,
+			Id:      id,
+			Name:    id + "_n",
 			Diagram: deploymentmodel.Diagram{
 				XmlRaw:      process,
 				XmlDeployed: process,

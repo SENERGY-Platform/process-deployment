@@ -23,7 +23,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"net/http"
 	"sync"
@@ -59,17 +58,17 @@ func (this *DatabaseMock) GetDeploymentIds(user string) (deployments []string, e
 	return
 }
 
-func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment, err error, code int) {
+func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deployment *deploymentmodel.Deployment, err error, code int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	deployment, ok := this.Deployments[deploymentId]
+	temp, ok := this.Deployments[deploymentId]
 	if !ok {
-		return nil, nil, errors.New("deployment not found"), http.StatusNotFound
+		return nil, errors.New("deployment not found"), http.StatusNotFound
 	}
-	if deployment.Owner != user {
-		return nil, nil, errors.New("access denied"), http.StatusForbidden
+	if temp.Owner != user {
+		return nil, errors.New("access denied"), http.StatusForbidden
 	}
-	return deployment.Deployment, deployment.DeploymentV2, nil, 200
+	return temp.Deployment, nil, 200
 }
 
 func (this *DatabaseMock) DeleteDeployment(id string) error {
@@ -79,10 +78,10 @@ func (this *DatabaseMock) DeleteDeployment(id string) error {
 	return nil
 }
 
-func (this *DatabaseMock) SetDeployment(id string, owner string, deploymentV1 *deploymentmodel.Deployment, deploymentV2 *deploymentmodel2.Deployment) error {
+func (this *DatabaseMock) SetDeployment(id string, owner string, deployment *deploymentmodel.Deployment) error {
 	this.mux.Lock()
 	defer this.mux.Unlock()
-	this.Deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deploymentV1, DeploymentV2: deploymentV2}
+	this.Deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}
 	return nil
 }
 

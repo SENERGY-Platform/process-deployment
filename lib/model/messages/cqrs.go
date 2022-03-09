@@ -18,16 +18,15 @@ package messages
 
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 )
 
 type DeploymentCommand struct {
-	Command      string                       `json:"command"`
-	Id           string                       `json:"id"`
-	Owner        string                       `json:"owner"`
-	Deployment   *deploymentmodel.Deployment  `json:"deployment"`
-	DeploymentV2 *deploymentmodel2.Deployment `json:"deployment_v2,omitempty"`
-	Source       string                       `json:"source,omitempty"`
+	Command    string                      `json:"command"`
+	Id         string                      `json:"id"`
+	Owner      string                      `json:"owner"`
+	Deployment *deploymentmodel.Deployment `json:"deployment"`
+	Source     string                      `json:"source,omitempty"`
+	Version    int64                       `json:"version"`
 }
 
 type UserCommandMsg struct {

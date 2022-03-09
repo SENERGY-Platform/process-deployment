@@ -20,7 +20,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"sort"
 )
@@ -40,12 +39,7 @@ func (this *Ctrl) GetSelectedDependencies(token auth.Token, ids []string) ([]dep
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {
 	var dependencies dependencymodel.Dependencies
 	var err error
-	if command.Deployment != nil {
-		dependencies, err = this.deploymentToDependenciesV1(*command.Deployment)
-	}
-	if command.DeploymentV2 != nil {
-		dependencies, err = this.deploymentToDependenciesV2(*command.DeploymentV2)
-	}
+	dependencies, err = this.deploymentToDependencies(*command.Deployment)
 	if err != nil {
 		return err
 	}
@@ -57,164 +51,7 @@ func (this *Ctrl) DeleteDependencies(command messages.DeploymentCommand) error {
 	return this.db.DeleteDependencies(command.Id)
 }
 
-func (this *Ctrl) deploymentToDependenciesV1(deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
-	result.DeploymentId = deployment.Id
-	for _, lane := range deployment.Lanes {
-		if lane.Lane != nil && lane.Lane.Selection != nil && lane.Lane.Selection.Id != "" {
-			dependencie := dependencymodel.DeviceDependency{
-				DeviceId: lane.Lane.Selection.Id,
-				Name:     lane.Lane.Selection.Name,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: lane.Lane.BpmnElementId,
-				}},
-			}
-			for _, element := range lane.Lane.Elements {
-				if element.LaneTask != nil {
-					dependencie.BpmnResources = append(dependencie.BpmnResources, dependencymodel.BpmnResource{Id: element.LaneTask.BpmnElementId})
-				}
-				if element.MsgEvent != nil {
-					result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-						DeviceId: element.MsgEvent.Device.Id,
-						Name:     element.MsgEvent.Device.Name,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.MsgEvent.BpmnElementId,
-						}},
-					})
-					result.Events = append(result.Events, dependencymodel.EventDependency{
-						EventId: element.MsgEvent.EventId,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.MsgEvent.BpmnElementId,
-						}},
-					})
-				}
-				if element.ReceiveTaskEvent != nil {
-					result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-						DeviceId: element.ReceiveTaskEvent.Device.Id,
-						Name:     element.ReceiveTaskEvent.Device.Name,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.ReceiveTaskEvent.BpmnElementId,
-						}},
-					})
-					result.Events = append(result.Events, dependencymodel.EventDependency{
-						EventId: element.ReceiveTaskEvent.EventId,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.ReceiveTaskEvent.BpmnElementId,
-						}},
-					})
-				}
-			}
-			result.Devices = append(result.Devices, dependencie)
-		}
-		if lane.MultiLane != nil {
-			for _, selection := range lane.MultiLane.Selections {
-				dependencie := dependencymodel.DeviceDependency{
-					DeviceId: selection.Id,
-					Name:     selection.Name,
-					BpmnResources: []dependencymodel.BpmnResource{{
-						Id: lane.MultiLane.BpmnElementId,
-					}},
-				}
-				for _, element := range lane.MultiLane.Elements {
-					if element.LaneTask != nil {
-						dependencie.BpmnResources = append(dependencie.BpmnResources, dependencymodel.BpmnResource{Id: element.LaneTask.BpmnElementId})
-					}
-				}
-				result.Devices = append(result.Devices, dependencie)
-			}
-			for _, element := range lane.MultiLane.Elements {
-				if element.MsgEvent != nil {
-					result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-						DeviceId: element.MsgEvent.Device.Id,
-						Name:     element.MsgEvent.Device.Name,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.MsgEvent.BpmnElementId,
-						}},
-					})
-					result.Events = append(result.Events, dependencymodel.EventDependency{
-						EventId: element.MsgEvent.EventId,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.MsgEvent.BpmnElementId,
-						}},
-					})
-				}
-				if element.ReceiveTaskEvent != nil {
-					result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-						DeviceId: element.ReceiveTaskEvent.Device.Id,
-						Name:     element.ReceiveTaskEvent.Device.Name,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.ReceiveTaskEvent.BpmnElementId,
-						}},
-					})
-					result.Events = append(result.Events, dependencymodel.EventDependency{
-						EventId: element.ReceiveTaskEvent.EventId,
-						BpmnResources: []dependencymodel.BpmnResource{{
-							Id: element.ReceiveTaskEvent.BpmnElementId,
-						}},
-					})
-				}
-			}
-		}
-	}
-
-	for _, element := range deployment.Elements {
-		if element.Task != nil {
-			result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-				DeviceId: element.Task.Selection.Device.Id,
-				Name:     element.Task.Selection.Device.Name,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: element.Task.BpmnElementId,
-				}},
-			})
-		}
-		if element.MultiTask != nil {
-			for _, selection := range element.MultiTask.Selections {
-				result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-					DeviceId: selection.Device.Id,
-					Name:     selection.Device.Name,
-					BpmnResources: []dependencymodel.BpmnResource{{
-						Id: element.MultiTask.BpmnElementId,
-					}},
-				})
-			}
-		}
-		if element.MsgEvent != nil {
-			result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-				DeviceId: element.MsgEvent.Device.Id,
-				Name:     element.MsgEvent.Device.Name,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: element.MsgEvent.BpmnElementId,
-				}},
-			})
-			result.Events = append(result.Events, dependencymodel.EventDependency{
-				EventId: element.MsgEvent.EventId,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: element.MsgEvent.BpmnElementId,
-				}},
-			})
-		}
-		if element.ReceiveTaskEvent != nil {
-			result.Devices = append(result.Devices, dependencymodel.DeviceDependency{
-				DeviceId: element.ReceiveTaskEvent.Device.Id,
-				Name:     element.ReceiveTaskEvent.Device.Name,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: element.ReceiveTaskEvent.BpmnElementId,
-				}},
-			})
-			result.Events = append(result.Events, dependencymodel.EventDependency{
-				EventId: element.ReceiveTaskEvent.EventId,
-				BpmnResources: []dependencymodel.BpmnResource{{
-					Id: element.ReceiveTaskEvent.BpmnElementId,
-				}},
-			})
-		}
-	}
-	result.Devices = reduceDeviceDependencies(result.Devices)
-	sort.Sort(DeviceDependenciesByDeviceId(result.Devices))
-	sort.Sort(EventDependenciesByEventId(result.Events))
-	return result, nil
-}
-
-func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deployment) (result dependencymodel.Dependencies, err error) {
+func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
 	result.DeploymentId = deployment.Id
 	result.Events = []dependencymodel.EventDependency{}
 	result.Devices = []dependencymodel.DeviceDependency{}
@@ -246,7 +83,7 @@ func (this *Ctrl) deploymentToDependenciesV2(deployment deploymentmodel2.Deploym
 	return
 }
 
-func getDeviceDependencyFromSelection(selection deploymentmodel2.Selection) (result dependencymodel.DeviceDependency) {
+func getDeviceDependencyFromSelection(selection deploymentmodel.Selection) (result dependencymodel.DeviceDependency) {
 	if selection.SelectedDeviceId != nil {
 		result.DeviceId = *selection.SelectedDeviceId
 	}

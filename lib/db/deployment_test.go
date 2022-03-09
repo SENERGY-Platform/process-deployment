@@ -22,7 +22,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	deploymentmodel2 "github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/ory/dockertest/v3"
 	"runtime/debug"
@@ -75,7 +74,7 @@ func TestDeploymentsV1(t *testing.T) {
 	err = db.SetDeployment("id1", "user1", &deploymentmodel.Deployment{
 		Id:   "id1",
 		Name: "name1",
-	}, nil)
+	})
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
@@ -85,7 +84,7 @@ func TestDeploymentsV1(t *testing.T) {
 	err = db.SetDeployment("id2", "user1", &deploymentmodel.Deployment{
 		Id:   "id2",
 		Name: "name2",
-	}, nil)
+	})
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
@@ -95,7 +94,7 @@ func TestDeploymentsV1(t *testing.T) {
 	err = db.SetDeployment("id3", "user2", &deploymentmodel.Deployment{
 		Id:   "id3",
 		Name: "name3",
-	}, nil)
+	})
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
@@ -195,7 +194,7 @@ func TestDeploymentsV2(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id1", "user1", nil, &deploymentmodel2.Deployment{
+	err = db.SetDeployment("id1", "user1", &deploymentmodel.Deployment{
 		Id:   "id1",
 		Name: "name1",
 	})
@@ -205,7 +204,7 @@ func TestDeploymentsV2(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id2", "user1", nil, &deploymentmodel2.Deployment{
+	err = db.SetDeployment("id2", "user1", &deploymentmodel.Deployment{
 		Id:   "id2",
 		Name: "name2",
 	})
@@ -215,7 +214,7 @@ func TestDeploymentsV2(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id3", "user2", nil, &deploymentmodel2.Deployment{
+	err = db.SetDeployment("id3", "user2", &deploymentmodel.Deployment{
 		Id:   "id3",
 		Name: "name3",
 	})
@@ -277,15 +276,15 @@ func TestDeploymentsV2(t *testing.T) {
 }
 
 func testGetDeploymentV1(db interfaces.Database, userId string, deploymentId string) (deployment deploymentmodel.Deployment, err error, code int) {
-	temp, _, err, code := db.GetDeployment(userId, deploymentId)
+	temp, err, code := db.GetDeployment(userId, deploymentId)
 	if temp != nil {
 		deployment = *temp
 	}
 	return deployment, err, code
 }
 
-func testGetDeploymentV2(db interfaces.Database, userId string, deploymentId string) (deployment deploymentmodel2.Deployment, err error, code int) {
-	_, temp, err, code := db.GetDeployment(userId, deploymentId)
+func testGetDeploymentV2(db interfaces.Database, userId string, deploymentId string) (deployment deploymentmodel.Deployment, err error, code int) {
+	temp, err, code := db.GetDeployment(userId, deploymentId)
 	if temp != nil {
 		deployment = *temp
 	}

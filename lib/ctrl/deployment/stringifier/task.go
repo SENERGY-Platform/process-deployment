@@ -20,15 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel/v2"
+	"github.com/SENERGY-Platform/process-deployment/lib/auth"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
+	"strings"
 )
 
-func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Element) (err error) {
+func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Element, token auth.Token) (err error) {
 	task := element.Task
 	if task == nil {
 		return nil
@@ -42,10 +44,16 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 
 	command := executionmodel.Task{
 		Retries: task.Retries,
+		Version: deploymentmodel.CurrentVersion,
 	}
 
-	if task.Selection.FilterCriteria.FunctionId != nil {
-		command.Function = devicemodel.Function{Id: *task.Selection.FilterCriteria.FunctionId}
+	if task.Selection.SelectedPath != nil {
+		command.ConfigurablesV2 = task.Selection.SelectedPath.Configurables
+		if isControllingFunction(task.Selection.SelectedPath.FunctionId) {
+			command.InputPaths = []string{task.Selection.SelectedPath.Path}
+		} else {
+			command.OutputPath = task.Selection.SelectedPath.Path
+		}
 	}
 
 	if task.Selection.FilterCriteria.CharacteristicId != nil {
@@ -57,10 +65,13 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	}
 
 	if task.Selection.FilterCriteria.AspectId != nil {
-		command.Aspect = &devicemodel.Aspect{Id: *task.Selection.FilterCriteria.AspectId}
+		temp, err := this.aspectNodeProvider(token, *task.Selection.FilterCriteria.AspectId)
+		if err != nil {
+			log.Println("ERROR: unable to load aspect node", task.Selection.FilterCriteria.AspectId, err)
+			return err
+		}
+		command.Aspect = &temp
 	}
-
-	command.Configurables = task.Configurables
 
 	xpath := "//bpmn:serviceTask[@id='" + element.BpmnId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
 
@@ -73,7 +84,6 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 
 	command.Input = cmd.Input
 	command.Output = cmd.Output
-	command.Version = cmd.Version
 
 	if task.Selection.SelectedDeviceId != nil && *task.Selection.SelectedDeviceId != "" {
 		command.DeviceId = *task.Selection.SelectedDeviceId
@@ -98,4 +108,8 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 		doc.FindElement(xpath).SetText(value)
 	}
 	return nil
+}
+
+func isControllingFunction(functionId string) bool {
+	return strings.HasPrefix(functionId, devicemodel.CONTROLLING_FUNCTION_PREFIX)
 }
