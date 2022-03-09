@@ -60,6 +60,10 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 		command.CharacteristicId = *task.Selection.FilterCriteria.CharacteristicId
 	}
 
+	if task.Selection.FilterCriteria.FunctionId != nil {
+		command.Function = devicemodel.Function{Id: *task.Selection.FilterCriteria.FunctionId}
+	}
+
 	if task.Selection.FilterCriteria.DeviceClassId != nil {
 		command.DeviceClass = &devicemodel.DeviceClass{Id: *task.Selection.FilterCriteria.DeviceClassId}
 	}

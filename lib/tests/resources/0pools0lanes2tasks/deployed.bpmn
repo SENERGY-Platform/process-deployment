@@ -14,6 +14,7 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
+    "version": 3,
 	"function": {
 		"id": "urn:infai:ses:measuring-function:bdb6a7c8-4a3d-4fe0-bab3-ce02e09b5869",
 		"name": "",
@@ -24,7 +25,11 @@
 	"aspect": {
 		"id": "urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6",
 		"name": "",
-		"rdf_type": ""
+		"root_id": "",
+        "parent_id": "",
+        "child_ids": null,
+        "ancestor_ids": null,
+        "descendent_ids": null
 	},
 	"device_id": "hue",
 	"service_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
@@ -43,6 +48,7 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
+    "version": 3,
 	"function": {
 		"id": "urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599",
 		"name": "",

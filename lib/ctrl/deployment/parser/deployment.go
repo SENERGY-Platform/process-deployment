@@ -23,6 +23,7 @@ import (
 )
 
 func (this *Parser) getDeployment(doc *etree.Document, diagram deploymentmodel.Diagram) (result deploymentmodel.Deployment, err error) {
+	result.Version = deploymentmodel.CurrentVersion
 	result.Diagram = diagram
 	result.Name, err = getDeploymentName(doc)
 	if err != nil {

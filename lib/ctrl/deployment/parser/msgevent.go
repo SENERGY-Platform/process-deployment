@@ -69,12 +69,12 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 	}
 
 	function := element.SelectAttr("function")
-	if aspect != nil {
+	if function != nil {
 		filterCriteria.FunctionId = &function.Value
 	}
 
 	characteristic := element.SelectAttr("characteristic")
-	if aspect != nil {
+	if characteristic != nil {
 		filterCriteria.CharacteristicId = &characteristic.Value
 	}
 
