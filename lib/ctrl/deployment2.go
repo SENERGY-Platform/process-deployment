@@ -125,11 +125,28 @@ func (this *Ctrl) SetDeploymentOptions(token auth.Token, deployment *deploymentm
 		}
 		if element.MessageEvent != nil {
 			selectable := selectableIndex[element.BpmnId]
-			element.MessageEvent.Selection.SelectionOptions = getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria)
+			element.MessageEvent.Selection.SelectionOptions = removeConfigurables(getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria))
 		}
 		deployment.Elements[index] = element
 	}
 	return nil
+}
+
+func removeConfigurables(options []deploymentmodel.SelectionOption) (result []deploymentmodel.SelectionOption) {
+	for _, option := range options {
+		optionCopy := option
+		newPathOptions := map[string][]deviceselectionmodel.PathOption{}
+		for serviceId, pathOptionList := range optionCopy.PathOptions {
+			for _, pathOption := range pathOptionList {
+				pathOptionCopy := pathOption
+				pathOptionCopy.Configurables = nil
+				newPathOptions[serviceId] = append(newPathOptions[serviceId], pathOptionCopy)
+			}
+		}
+		optionCopy.PathOptions = newPathOptions
+		result = append(result, optionCopy)
+	}
+	return
 }
 
 func (this *Ctrl) getDeploymentBulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
