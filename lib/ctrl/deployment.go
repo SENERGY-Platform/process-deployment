@@ -84,6 +84,7 @@ func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 		Command: "DELETE",
 		Id:      id,
 		Owner:   user,
+		Version: deploymentmodel.CurrentVersion,
 	}
 	msg, err := json.Marshal(cmd)
 	if err != nil {

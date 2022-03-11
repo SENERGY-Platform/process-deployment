@@ -23,7 +23,9 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/parser"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/stringifier"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"log"
 	"runtime/debug"
 )
 
@@ -53,9 +55,29 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		return result, err
 	}
 	err = sourcing.NewConsumer(ctx, config, config.DeploymentTopic, func(delivery []byte) error {
-		deployment := messages.DeploymentCommand{}
-		err := json.Unmarshal(delivery, &deployment)
+		version := VersionWrapper{}
+		err := json.Unmarshal(delivery, &version)
 		if err != nil {
+			log.Println("ERROR: consumed invalid message --> ignore", err)
+			debug.PrintStack()
+			return nil
+		}
+		if version.Version != deploymentmodel.CurrentVersion {
+			log.Println("ERROR: consumed unexpected deployment version", version.Version)
+			if version.Command == "DELETE" {
+				log.Println("handle legacy delete")
+				return result.HandleDeployment(messages.DeploymentCommand{
+					Command: version.Command,
+					Id:      version.Id,
+					Version: version.Version,
+				})
+			}
+			return nil
+		}
+		deployment := messages.DeploymentCommand{}
+		err = json.Unmarshal(delivery, &deployment)
+		if err != nil {
+			log.Println("ERROR: consumed invalid message --> ignore", err)
 			debug.PrintStack()
 			return err
 		}
@@ -77,4 +99,10 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		return result, err
 	}
 	return result, err
+}
+
+type VersionWrapper struct {
+	Command string `json:"command"`
+	Id      string `json:"id"`
+	Version int64  `json:"version"`
 }
