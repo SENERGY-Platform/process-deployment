@@ -67,6 +67,8 @@ func TestKafka(t *testing.T) {
 	}
 	defer closeKafka()
 
+	time.Sleep(2 * time.Second)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
