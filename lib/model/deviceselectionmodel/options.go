@@ -22,12 +22,17 @@ import (
 )
 
 type Selectable struct {
-	Device             *devicemodel.Device      `json:"device"`
+	Device             *DeviceWithDisplayName   `json:"device"`
 	Services           []devicemodel.Service    `json:"services"`
 	DeviceGroup        *devicemodel.DeviceGroup `json:"device_group,omitempty"`
 	Import             *importmodel.Import      `json:"import,omitempty"`
 	ImportType         *importmodel.ImportType  `json:"importType,omitempty"`
 	ServicePathOptions map[string][]PathOption  `json:"servicePathOptions,omitempty"`
+}
+
+type DeviceWithDisplayName struct {
+	devicemodel.Device
+	DisplayName string `json:"display_name"`
 }
 
 type FilterCriteriaAndSet []FilterCriteria

@@ -219,9 +219,13 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 					})
 				}
 			}
+			devicename := selectable.Device.DisplayName
+			if devicename == "" {
+				devicename = selectable.Device.Name
+			}
 			device = &deploymentmodel.Device{
 				Id:   selectable.Device.Id,
-				Name: selectable.Device.Name,
+				Name: devicename,
 			}
 		}
 		if selectable.Import != nil && selectable.ImportType != nil {
