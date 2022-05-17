@@ -42,8 +42,8 @@ func NewProducer(ctx context.Context, config config.Config, topic string) (inter
 		log.Println("ERROR: unable to create topic", err)
 		return nil, err
 	}
-	var logger *log.Logger = nil
 
+	var logger kafka.Logger
 	if config.Debug {
 		logger = log.New(os.Stdout, "KAFKA", 0)
 	}
