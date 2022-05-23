@@ -98,8 +98,10 @@ func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk devicesele
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
 		debug.PrintStack()
-		return result, errors.New("unexpected statuscode"), resp.StatusCode
+		return nil, errors.New(buf.String()), resp.StatusCode
 	}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	return result, err, resp.StatusCode
