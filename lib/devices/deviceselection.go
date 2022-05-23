@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
@@ -101,7 +102,7 @@ func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk devicesele
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
 		debug.PrintStack()
-		return nil, errors.New(buf.String()), resp.StatusCode
+		return nil, fmt.Errorf("unable to load selectables: %v", buf.String()), resp.StatusCode
 	}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	return result, err, resp.StatusCode
