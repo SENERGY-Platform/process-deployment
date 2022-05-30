@@ -60,8 +60,8 @@ func (this *Ctrl) SaveDeployment(command messages.DeploymentCommand) error {
 	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment)
 }
 
-func (this *Ctrl) publishDeployment(owner string, id string, deployment deploymentmodel.Deployment, source string) error {
-	if err := deployment.Validate(deploymentmodel.ValidatePublish); err != nil {
+func (this *Ctrl) publishDeployment(owner string, id string, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) error {
+	if err := deployment.Validate(deploymentmodel.ValidatePublish, optionals); err != nil {
 		return err
 	}
 	cmd := messages.DeploymentCommand{

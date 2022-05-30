@@ -49,7 +49,7 @@ func TestElement_Validate(t *testing.T) {
 				BpmnId:    "foo",
 				TimeEvent: &tt.fields,
 			}
-			if err := this.Validate(ValidateRequest); (err != nil) != tt.wantErr {
+			if err := this.Validate(ValidateRequest, map[string]bool{}); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

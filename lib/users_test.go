@@ -159,7 +159,7 @@ func testDeploy(control *ctrl.Ctrl, token auth.Token, id string) func(t *testing
 			},
 			Elements:   nil,
 			Executable: true,
-		}, "test")
+		}, "test", map[string]bool{})
 		if err != nil {
 			t.Error(err)
 			return

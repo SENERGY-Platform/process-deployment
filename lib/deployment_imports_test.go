@@ -60,7 +60,7 @@ func TestImportDeployments(t *testing.T) {
 		if err != nil {
 			t.Error(err.Error())
 		}
-		err = deployment.Validate(deploymentmodel.ValidateRequest)
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -76,7 +76,7 @@ func TestImportDeployments(t *testing.T) {
 			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
 		}
 		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
-		err = deployment.Validate(deploymentmodel.ValidateRequest)
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
 		if err == nil {
 			t.Error("Did not detect missing path")
 		}
@@ -92,7 +92,7 @@ func TestImportDeployments(t *testing.T) {
 			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
 		}
 		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
-		err = deployment.Validate(deploymentmodel.ValidateRequest)
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
 		if err == nil {
 			t.Error("Did not detect missing characteristic")
 		}

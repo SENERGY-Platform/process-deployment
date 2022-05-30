@@ -61,12 +61,12 @@ func (this *Ctrl) GetDeployment(token auth.Token, id string, withOptions bool) (
 	return
 }
 
-func (this *Ctrl) CreateDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) CreateDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeployment(token, deployment, source)
+	return this.setDeployment(token, deployment, source, optionals)
 }
 
-func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
+func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
 	if id != deployment.Id {
 		return deployment, errors.New("path id != body id"), http.StatusBadRequest
 	}
@@ -76,7 +76,7 @@ func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deplo
 		return result, err, code
 	}
 
-	return this.setDeployment(token, deployment, source)
+	return this.setDeployment(token, deployment, source, optionals)
 }
 
 func (this *Ctrl) RemoveDeployment(token auth.Token, id string) (err error, code int) {
@@ -270,8 +270,8 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string) (result deploymentmodel.Deployment, err error, code int) {
-	if err := deployment.Validate(deploymentmodel.ValidateRequest); err != nil {
+func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
+	if err := deployment.Validate(deploymentmodel.ValidateRequest, optionals); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
 
@@ -293,7 +293,7 @@ func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Dep
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	if err = this.publishDeployment(userid, deployment.Id, deployment, source); err != nil {
+	if err = this.publishDeployment(userid, deployment.Id, deployment, source, optionals); err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200

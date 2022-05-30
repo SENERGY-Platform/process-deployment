@@ -36,7 +36,7 @@ const (
 )
 
 //strict for cqrs; else for user
-func (this Deployment) Validate(kind ValidationKind) (err error) {
+func (this Deployment) Validate(kind ValidationKind, optionals map[string]bool) (err error) {
 	if this.Version != CurrentVersion {
 		return errors.New("unexpected deployment version")
 	}
@@ -60,7 +60,7 @@ func (this Deployment) Validate(kind ValidationKind) (err error) {
 		return errors.New("missing deployment xml")
 	}
 	for _, element := range this.Elements {
-		err = element.Validate(kind)
+		err = element.Validate(kind, optionals)
 		if err != nil {
 			return err
 		}
@@ -95,7 +95,7 @@ func xmlContainsEngineAccess(xml string) (triesAccess bool, err error) {
 	return false, nil
 }
 
-func (this Element) Validate(kind ValidationKind) error {
+func (this Element) Validate(kind ValidationKind, optionals map[string]bool) error {
 	if this.BpmnId == "" {
 		return errors.New("missing bpmn element id")
 	}
@@ -108,7 +108,7 @@ func (this Element) Validate(kind ValidationKind) error {
 	if this.Task != nil &&
 		this.Task.Selection.SelectedDeviceId != nil &&
 		*this.Task.Selection.SelectedDeviceId == "" &&
-		(this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
+		(!optionals["service"] && this.Task.Selection.SelectedServiceId == nil || *this.Task.Selection.SelectedServiceId == "") {
 		return errors.New("missing service selection in task")
 	}
 	if this.TimeEvent != nil {
@@ -144,7 +144,7 @@ func (this Element) Validate(kind ValidationKind) error {
 			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")
 			}
-			if this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "" {
+			if !optionals["service"] && this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "" {
 				return errors.New("missing service selection in event")
 			}
 		}

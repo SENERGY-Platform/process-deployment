@@ -112,7 +112,16 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.CreateDeployment(token, deployment, source)
+		optionals := map[string]bool{}
+		optionalServiceStr := params.ByName("optional_service_selection")
+		if optionalServiceStr != "" {
+			optionals["service"], err = strconv.ParseBool(optionalServiceStr)
+			if err != nil {
+				http.Error(writer, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+		result, err, code := ctrl.CreateDeployment(token, deployment, source, optionals)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
@@ -135,7 +144,16 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		result, err, code := ctrl.UpdateDeployment(token, id, deployment, source)
+		optionals := map[string]bool{}
+		optionalServiceStr := params.ByName("optional_service_selection")
+		if optionalServiceStr != "" {
+			optionals["service"], err = strconv.ParseBool(optionalServiceStr)
+			if err != nil {
+				http.Error(writer, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+		result, err, code := ctrl.UpdateDeployment(token, id, deployment, source, optionals)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
