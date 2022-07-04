@@ -140,6 +140,19 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 			if this.MessageEvent.Selection.SelectedPath.CharacteristicId == "" {
 				return errors.New("missing selected_path.characteristicId, but import selected in event")
 			}
+		} else if this.MessageEvent.Selection.SelectedGenericEventSource != nil {
+			if this.MessageEvent.Selection.SelectedGenericEventSource.FilterType == "" {
+				return errors.New("missing filter_type in selected_generic_source")
+			}
+			if this.MessageEvent.Selection.SelectedGenericEventSource.FilterIds == "" {
+				return errors.New("missing filter_ids in selected_generic_source")
+			}
+			if this.MessageEvent.Selection.SelectedGenericEventSource.Topic == "" {
+				return errors.New("missing topic in selected_generic_source")
+			}
+			if this.MessageEvent.Selection.SelectedPath == nil || this.MessageEvent.Selection.SelectedPath.Path == "" {
+				return errors.New("missing selected_path for selected_generic_source")
+			}
 		} else {
 			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")

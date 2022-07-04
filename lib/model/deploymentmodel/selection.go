@@ -22,13 +22,14 @@ import (
 )
 
 type Selection struct {
-	FilterCriteria        FilterCriteria                   `json:"filter_criteria"`
-	SelectionOptions      []SelectionOption                `json:"selection_options"`
-	SelectedDeviceId      *string                          `json:"selected_device_id"`
-	SelectedServiceId     *string                          `json:"selected_service_id"`
-	SelectedDeviceGroupId *string                          `json:"selected_device_group_id"`
-	SelectedImportId      *string                          `json:"selected_import_id"`
-	SelectedPath          *deviceselectionmodel.PathOption `json:"selected_path"`
+	FilterCriteria             FilterCriteria                   `json:"filter_criteria"`
+	SelectionOptions           []SelectionOption                `json:"selection_options"`
+	SelectedDeviceId           *string                          `json:"selected_device_id"`
+	SelectedServiceId          *string                          `json:"selected_service_id"`
+	SelectedDeviceGroupId      *string                          `json:"selected_device_group_id"`
+	SelectedImportId           *string                          `json:"selected_import_id"`
+	SelectedGenericEventSource *GenericEventSource              `json:"selected_generic_event_source"`
+	SelectedPath               *deviceselectionmodel.PathOption `json:"selected_path"`
 }
 
 type SelectionOption struct {
@@ -38,6 +39,12 @@ type SelectionOption struct {
 	Import      *importmodel.Import                          `json:"import"`
 	ImportType  *importmodel.ImportType                      `json:"importType"`
 	PathOptions map[string][]deviceselectionmodel.PathOption `json:"path_options,omitempty"`
+}
+
+type GenericEventSource struct {
+	FilterType string `json:"filter_type"`
+	FilterIds  string `json:"filter_ids"`
+	Topic      string `json:"topic"`
 }
 
 type Device struct {
