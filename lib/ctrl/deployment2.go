@@ -190,6 +190,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequest(deployment *deploymentmodel
 					Id:                element.BpmnId,
 					FilterInteraction: &useEventFilter,
 					Criteria:          filter,
+					IncludeGroups:     this.config.EnableDeviceGroupsForTasks,
 				})
 			}
 		}
