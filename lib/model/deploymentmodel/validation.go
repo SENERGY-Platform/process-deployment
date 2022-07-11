@@ -99,6 +99,9 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 	if this.BpmnId == "" {
 		return errors.New("missing bpmn element id")
 	}
+	if this.Task != nil && this.Task.Selection.SelectedGenericEventSource != nil {
+		return errors.New("selected_generic_event_source is not valid for tasks")
+	}
 	if this.Task != nil {
 		if (this.Task.Selection.SelectedDeviceGroupId == nil || *this.Task.Selection.SelectedDeviceGroupId == "") &&
 			(this.Task.Selection.SelectedDeviceId == nil || *this.Task.Selection.SelectedDeviceId == "") {
