@@ -51,8 +51,10 @@ func NewProducer(ctx context.Context, config config.Config, topic string) (inter
 	result.writer = &kafka.Writer{
 		Addr:        kafka.TCP(broker...),
 		Topic:       topic,
-		Async:       false,
 		Logger:      logger,
+		Async:       false,
+		BatchSize:   1,
+		Balancer:    &kafka.Hash{},
 		ErrorLogger: log.New(os.Stderr, "KAFKA", 0),
 	}
 
