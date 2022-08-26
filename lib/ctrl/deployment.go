@@ -27,6 +27,8 @@ import (
 
 func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
 	switch cmd.Command {
+	case "RIGHTS":
+		return nil
 	case "PUT":
 		err := this.SaveDependencies(cmd)
 		if err != nil {
