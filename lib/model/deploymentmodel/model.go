@@ -56,10 +56,11 @@ type Notification struct {
 }
 
 type MessageEvent struct {
-	Value     string    `json:"value"`
-	FlowId    string    `json:"flow_id"`
-	EventId   string    `json:"event_id"`
-	Selection Selection `json:"selection"`
+	Value         string    `json:"value"`
+	FlowId        string    `json:"flow_id"`
+	EventId       string    `json:"event_id"`
+	UseMarshaller bool      `json:"use_marshaller"`
+	Selection     Selection `json:"selection"`
 }
 
 type Task struct {
