@@ -35,7 +35,7 @@ const (
 	ValidateRequest ValidationKind = false
 )
 
-//strict for cqrs; else for user
+// strict for cqrs; else for user
 func (this Deployment) Validate(kind ValidationKind, optionals map[string]bool) (err error) {
 	if this.Version != CurrentVersion {
 		return errors.New("unexpected deployment version")
@@ -160,7 +160,7 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 			if this.MessageEvent.Selection.SelectedDeviceId == nil || *this.MessageEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")
 			}
-			if !optionals["service"] && this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "" {
+			if !optionals["service"] && (this.MessageEvent.Selection.SelectedServiceId == nil || *this.MessageEvent.Selection.SelectedServiceId == "") {
 				return errors.New("missing service selection in event")
 			}
 		}
