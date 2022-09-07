@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/process-deployment
 
-go 1.17
+go 1.19
 
 require (
 	github.com/beevik/etree v1.1.0

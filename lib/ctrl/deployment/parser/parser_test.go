@@ -21,6 +21,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"runtime/debug"
 	"testing"
@@ -29,7 +30,7 @@ import (
 const RESOURCE_BASE_DIR = "../../../tests/resources/"
 
 func TestParseDeployment(t *testing.T) {
-	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
+	infos, err := os.ReadDir(RESOURCE_BASE_DIR)
 	if err != nil {
 		t.Error(err)
 		return
@@ -45,7 +46,7 @@ func TestParseDeployment(t *testing.T) {
 }
 
 func isValidaForParserTest(dir string) bool {
-	infos, err := ioutil.ReadDir(dir)
+	infos, err := os.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}

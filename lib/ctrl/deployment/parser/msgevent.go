@@ -17,8 +17,10 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
+	"strconv"
 )
 
 func init() {
@@ -78,12 +80,22 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 		filterCriteria.CharacteristicId = &characteristic.Value
 	}
 
+	useMarshallerBool := false
+	useMarshaller := element.SelectAttr("use_marshaller")
+	if useMarshaller != nil {
+		useMarshallerBool, err = strconv.ParseBool(useMarshaller.Value)
+		if err != nil {
+			return result, fmt.Errorf("expect boolean in senergy:use_marshaller: %w", err)
+		}
+	}
+
 	result = deploymentmodel.Element{
 		Name:   label,
 		BpmnId: id,
 		Order:  this.getOrder(element),
 		MessageEvent: &deploymentmodel.MessageEvent{
-			EventId: "",
+			EventId:       "",
+			UseMarshaller: useMarshallerBool,
 			Selection: deploymentmodel.Selection{
 				FilterCriteria: filterCriteria,
 			},
