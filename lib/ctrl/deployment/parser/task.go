@@ -43,6 +43,19 @@ func (this *Parser) isTask(element *etree.Element) bool {
 	if topic == nil || topic.Value == "" {
 		return false
 	}
+	cmdPayload := element.FindElement(".//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']")
+	if cmdPayload == nil {
+		return false
+	}
+	cmd := executionmodel.Task{}
+	err := json.Unmarshal([]byte(cmdPayload.Text()), &cmd)
+	if err != nil {
+		return false
+	}
+	if cmd.Function.Id == "" {
+		return false
+	}
+
 	return true
 }
 
