@@ -35,6 +35,27 @@ func init() {
 }
 
 func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
+	router.GET("/v3/start-parameters/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		id := params.ByName("modelId")
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		process, err, code := ctrl.GetProcessModel(token, id)
+		if err != nil {
+			http.Error(writer, err.Error(), code)
+			return
+		}
+		result, err := ctrl.GetProcessStartParameters(process.BpmnXml)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+		json.NewEncoder(writer).Encode(result)
+	})
+
 	router.POST("/v3/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		withOptionsStr := request.URL.Query().Get("with_options")
 		if withOptionsStr == "" {

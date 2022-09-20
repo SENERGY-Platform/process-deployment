@@ -26,3 +26,10 @@ type ProcessModel struct {
 	PublishDate string `json:"publish_date" bson:"publish_date"`
 	Description string `json:"description" bson:"description"`
 }
+
+type ProcessStartParameter struct {
+	Id      string `json:"id"`
+	Label   string `json:"label"`
+	Type    string `json:"type"`
+	Default string `json:"default"`
+}

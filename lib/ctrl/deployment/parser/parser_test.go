@@ -20,10 +20,11 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"io/ioutil"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"os"
 	"reflect"
 	"runtime/debug"
+	"sort"
 	"testing"
 )
 
@@ -45,6 +46,36 @@ func TestParseDeployment(t *testing.T) {
 	}
 }
 
+func TestStartParameter(t *testing.T) {
+	infos, err := os.ReadDir(RESOURCE_BASE_DIR)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for _, info := range infos {
+		name := info.Name()
+		if info.IsDir() && isValidaForStartParameterTest(RESOURCE_BASE_DIR+name) {
+			t.Run(name, func(t *testing.T) {
+				testStartParameter(t, name)
+			})
+		}
+	}
+}
+
+func isValidaForStartParameterTest(dir string) bool {
+	infos, err := os.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+	files := map[string]bool{}
+	for _, info := range infos {
+		if !info.IsDir() {
+			files[info.Name()] = true
+		}
+	}
+	return files["raw.bpmn"] && files["expected_start_parameters.json"]
+}
+
 func isValidaForParserTest(dir string) bool {
 	infos, err := os.ReadDir(dir)
 	if err != nil {
@@ -57,6 +88,58 @@ func isValidaForParserTest(dir string) bool {
 		}
 	}
 	return files["raw.bpmn"] && files["parsed.json"]
+}
+
+func testStartParameter(t *testing.T, exampleName string) {
+	t.Parallel()
+	defer func() {
+		if r := recover(); r != nil {
+			t.Error(r, string(debug.Stack()))
+		}
+	}()
+	conf, err := config.LoadConfig("../../../../config.json")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	parser := New(conf)
+	rawBpmnFile, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/raw.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	result, err := parser.EstimateStartParameter(string(rawBpmnFile))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	expectedStr, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/expected_start_parameters.json")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	var expected []processmodel.ProcessStartParameter
+	err = json.Unmarshal(expectedStr, &expected)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	sort.Slice(expected, func(i, j int) bool {
+		return expected[i].Id < expected[j].Id
+	})
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Id < result[j].Id
+	})
+
+	if !reflect.DeepEqual(result, expected) {
+		resultJson, _ := json.Marshal(result)
+		expectedJson, _ := json.Marshal(expected)
+		t.Error(string(resultJson), "\n", string(expectedJson))
+		return
+	}
 }
 
 func testPrepareDeployment(t *testing.T, exampleName string) {
@@ -72,7 +155,7 @@ func testPrepareDeployment(t *testing.T, exampleName string) {
 		return
 	}
 	parser := New(conf)
-	rawBpmnFile, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/raw.bpmn")
+	rawBpmnFile, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/raw.bpmn")
 	if err != nil {
 		t.Error(err)
 		return
@@ -87,7 +170,7 @@ func testPrepareDeployment(t *testing.T, exampleName string) {
 		return
 	}
 	deployment.Diagram = deploymentmodel.Diagram{}
-	expectedDeployment, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/parsed.json")
+	expectedDeployment, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/parsed.json")
 	if err != nil {
 		t.Error(err)
 		return

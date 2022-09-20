@@ -1,0 +1,14 @@
+[
+    {
+        "id": "pv",
+        "label": "Photovoltaik",
+        "type": "string",
+        "default": ""
+    },
+    {
+        "id": "location",
+        "label": "Location",
+        "type": "string",
+        "default": ""
+    }
+]

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package interfaces
+package ctrl
 
-import (
-	"github.com/SENERGY-Platform/process-deployment/lib/auth"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
-)
+import "github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 
-type DeploymentParser interface {
-	PrepareDeployment(xml string) (deploymentmodel.Deployment, error)
-	EstimateStartParameter(xml string) ([]processmodel.ProcessStartParameter, error)
-}
-
-type DeploymentStringifier interface {
-	Deployment(deployment deploymentmodel.Deployment, userId string, token auth.Token) (string, error)
+func (this *Ctrl) GetProcessStartParameters(xml string) ([]processmodel.ProcessStartParameter, error) {
+	return this.deploymentParser.EstimateStartParameter(xml)
 }

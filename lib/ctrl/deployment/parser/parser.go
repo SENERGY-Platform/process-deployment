@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
@@ -47,4 +48,34 @@ func (this *Parser) PrepareDeployment(xml string) (result deploymentmodel.Deploy
 		return
 	}
 	return this.getDeployment(doc, deploymentmodel.Diagram{XmlRaw: xml})
+}
+
+func (this *Parser) EstimateStartParameter(xml string) (result []processmodel.ProcessStartParameter, err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	doc := etree.NewDocument()
+	err = doc.ReadFromString(xml)
+	if err != nil {
+		return
+	}
+	elements := doc.FindElements("//bpmn:startEvent/bpmn:extensionElements/camunda:formData/camunda:formField")
+	for _, element := range elements {
+		id := element.SelectAttrValue("id", "")
+		if id != "" {
+			label := element.SelectAttrValue("label", "")
+			paramtype := element.SelectAttrValue("type", "string")
+			defaultValue := element.SelectAttrValue("defaultValue", "")
+			result = append(result, processmodel.ProcessStartParameter{
+				Id:      id,
+				Label:   label,
+				Type:    paramtype,
+				Default: defaultValue,
+			})
+		}
+	}
+	return result, nil
 }
