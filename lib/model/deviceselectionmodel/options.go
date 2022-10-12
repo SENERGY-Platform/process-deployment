@@ -45,6 +45,11 @@ type FilterCriteria struct {
 	AspectId      string `json:"aspect_id"`
 }
 
+type FilterCriteriaWithInteraction struct {
+	FilterCriteria
+	Interaction devicemodel.Interaction `json:"interaction,omitempty"`
+}
+
 type BulkRequestElement struct {
 	Id                string                   `json:"id"`
 	FilterInteraction *devicemodel.Interaction `json:"filter_interaction"`
@@ -55,6 +60,18 @@ type BulkRequestElement struct {
 }
 
 type BulkRequest []BulkRequestElement
+
+type BulkRequestElementV2 struct {
+	Id                       string                          `json:"id"`
+	Criteria                 []FilterCriteriaWithInteraction `json:"criteria"`
+	IncludeGroups            bool                            `json:"include_groups"`
+	IncludeImports           bool                            `json:"include_imports"`
+	IncludeDevices           bool                            `json:"include_devices"`
+	IncludeIdModifiedDevices bool                            `json:"include_id_modified_devices"`
+	LocalDevices             []string                        `json:"local_devices"`
+}
+
+type BulkRequestV2 []BulkRequestElementV2
 
 type BulkResult []BulkResultElement
 

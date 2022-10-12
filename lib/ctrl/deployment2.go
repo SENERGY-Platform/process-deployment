@@ -108,8 +108,8 @@ func (this *Ctrl) SetExecutableFlag(deployment *deploymentmodel.Deployment) {
 }
 
 func (this *Ctrl) SetDeploymentOptions(token auth.Token, deployment *deploymentmodel.Deployment) (err error) {
-	bulk := this.getDeploymentBulkSelectableRequest(deployment)
-	bulkResult, err, _ := this.devices.GetBulkDeviceSelection(token, bulk)
+	bulk := this.getDeploymentBulkSelectableRequestV2(deployment)
+	bulkResult, err, _ := this.devices.GetBulkDeviceSelectionV2(token, bulk)
 	if err != nil {
 		return err
 	}
@@ -191,6 +191,67 @@ func (this *Ctrl) getDeploymentBulkSelectableRequest(deployment *deploymentmodel
 					FilterInteraction: &useEventFilter,
 					Criteria:          filter,
 					IncludeGroups:     this.config.EnableDeviceGroupsForTasks,
+				})
+			}
+		}
+	}
+	return bulk
+}
+
+func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequestV2) {
+	taskGroups := map[string][]int{}
+	for index, element := range deployment.Elements {
+		if element.Task != nil {
+			if element.Group == nil {
+				bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
+					Id: element.BpmnId,
+					Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
+						FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+						Interaction:    devicemodel.REQUEST,
+					}},
+					IncludeGroups:            this.config.EnableDeviceGroupsForTasks,
+					IncludeDevices:           true,
+					IncludeIdModifiedDevices: this.config.EnableModifiedDevicesForDeploymentOptions,
+				})
+			} else {
+				taskGroups[*element.Group] = append(taskGroups[*element.Group], index)
+			}
+		}
+		if element.MessageEvent != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
+				Id: element.BpmnId,
+				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
+					FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					Interaction:    devicemodel.EVENT,
+				}},
+				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
+				IncludeImports:           this.config.EnableImportsForEvents,
+				IncludeDevices:           true,
+				IncludeIdModifiedDevices: this.config.EnableModifiedDevicesForDeploymentOptions,
+			})
+		}
+	}
+
+	for _, indexes := range taskGroups {
+		filter := []deviceselectionmodel.FilterCriteriaWithInteraction{}
+		for _, index := range indexes {
+			element := deployment.Elements[index]
+			if element.Task != nil {
+				filter = append(filter, deviceselectionmodel.FilterCriteriaWithInteraction{
+					FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					Interaction:    devicemodel.REQUEST,
+				})
+			}
+		}
+		for _, index := range indexes {
+			element := deployment.Elements[index]
+			if element.Task != nil {
+				bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
+					Id:                       element.BpmnId,
+					Criteria:                 filter,
+					IncludeGroups:            this.config.EnableDeviceGroupsForTasks,
+					IncludeDevices:           true,
+					IncludeIdModifiedDevices: this.config.EnableModifiedDevicesForDeploymentOptions,
 				})
 			}
 		}
@@ -300,7 +361,7 @@ func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Dep
 	return deployment, nil, 200
 }
 
-//ensures selection correctness
+// ensures selection correctness
 func (this *Ctrl) EnsureDeploymentSelectionAccess(token auth.Token, deployment *deploymentmodel.Deployment) (err error, code int) {
 	deviceIds := []string{}
 	deviceGroupIds := []string{}

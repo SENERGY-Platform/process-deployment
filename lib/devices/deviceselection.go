@@ -38,7 +38,7 @@ func (this *Repository) GetDeviceSelection(token auth.Token, descriptions device
 		return result, err, http.StatusInternalServerError
 	}
 
-	path := "/selectables?json=" + url.QueryEscape(string(payload))
+	path := "/v2/selectables?include_id_modified=true&json=" + url.QueryEscape(string(payload))
 	if filterByInteraction != "" {
 		path = path + "&filter_interaction=" + url.QueryEscape(string(filterByInteraction))
 	}
@@ -81,6 +81,46 @@ func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk devicesele
 	}
 
 	path := "/bulk/selectables?complete_services=true"
+	req, err := http.NewRequest(
+		"POST",
+		this.config.DeviceSelectionUrl+path,
+		buff,
+	)
+	if err != nil {
+		debug.PrintStack()
+		return result, err, http.StatusInternalServerError
+	}
+	req.Header.Set("Authorization", token.Token)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		debug.PrintStack()
+		return result, err, http.StatusInternalServerError
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		debug.PrintStack()
+		return nil, fmt.Errorf("unable to load selectables: %v", buf.String()), resp.StatusCode
+	}
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	return result, err, resp.StatusCode
+}
+
+func (this *Repository) GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int) {
+	if this.config.Debug {
+		temp, _ := json.Marshal(bulk)
+		log.Println("DEBUG: send GetBulkDeviceSelection() with:\n", string(temp))
+	}
+	buff := new(bytes.Buffer)
+	err = json.NewEncoder(buff).Encode(bulk)
+	if err != nil {
+		debug.PrintStack()
+		return result, err, http.StatusInternalServerError
+	}
+
+	path := "/v2/bulk/selectables?complete_services=true"
 	req, err := http.NewRequest(
 		"POST",
 		this.config.DeviceSelectionUrl+path,

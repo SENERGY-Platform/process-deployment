@@ -110,3 +110,15 @@ func (this *DeviceRepoMock) GetBulkDeviceSelection(token auth.Token, bulk device
 	}
 	return result, nil, 200
 }
+
+func (this *DeviceRepoMock) GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	for _, element := range bulk {
+		result = append(result, deviceselectionmodel.BulkResultElement{
+			Id:          element.Id,
+			Selectables: this.options,
+		})
+	}
+	return result, nil, 200
+}
