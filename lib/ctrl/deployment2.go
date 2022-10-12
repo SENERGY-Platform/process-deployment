@@ -221,7 +221,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 				Id: element.BpmnId,
 				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-					FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					FilterCriteria: element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter(),
 					Interaction:    devicemodel.EVENT,
 				}},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
