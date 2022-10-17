@@ -25,6 +25,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"net/http"
+	"sort"
 )
 
 func (this *Ctrl) PrepareDeployment(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
@@ -304,6 +305,25 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 			PathOptions: selectable.ServicePathOptions,
 		})
 	}
+	sort.Slice(result, func(i, j int) bool {
+		nameI := ""
+		if result[i].Device != nil {
+			nameI = result[i].Device.Name
+		} else if result[i].DeviceGroup != nil {
+			nameI = result[i].DeviceGroup.Name
+		} else if result[i].Import != nil {
+			nameI = result[i].Import.Name
+		}
+		nameJ := ""
+		if result[j].Device != nil {
+			nameJ = result[j].Device.Name
+		} else if result[j].DeviceGroup != nil {
+			nameJ = result[j].DeviceGroup.Name
+		} else if result[j].Import != nil {
+			nameJ = result[j].Import.Name
+		}
+		return nameI < nameJ
+	})
 	return result
 }
 
