@@ -60,6 +60,9 @@ func (this *DeviceRepoMock) GetDevice(token auth.Token, id string) (devicemodel.
 func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
+	if this.devices == nil {
+		this.devices = map[string]devicemodel.Device{}
+	}
 	this.devices[id] = device
 }
 
@@ -76,6 +79,9 @@ func (this *DeviceRepoMock) GetService(token auth.Token, id string) (devicemodel
 func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
+	if this.services == nil {
+		this.services = map[string]devicemodel.Service{}
+	}
 	this.services[id] = service
 }
 

@@ -24,14 +24,16 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"github.com/golang-jwt/jwt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
-	"io/ioutil"
 	"reflect"
 	"runtime/debug"
 	"sync"
@@ -41,7 +43,7 @@ import (
 const RESOURCE_BASE_DIR = "../tests/resources/"
 
 func TestDeploymentHandler(t *testing.T) {
-	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
+	infos, err := os.ReadDir(RESOURCE_BASE_DIR)
 	if err != nil {
 		t.Error(err)
 		return
@@ -153,7 +155,7 @@ func testSetExecutableFlag(deployment deploymentmodel.Deployment, expected bool)
 }
 
 func isValidaForDeploymentHandlerTest(dir string) bool {
-	infos, err := ioutil.ReadDir(dir)
+	infos, err := os.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}
@@ -186,7 +188,7 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 		return
 	}
 
-	expectedDependenciesJson, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/dependencies.json")
+	expectedDependenciesJson, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/dependencies.json")
 	if err != nil {
 		t.Error(err)
 		return
@@ -200,7 +202,7 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	expectedDependencies.DeploymentId = deploymentId
 	expectedDependencies.Owner = userId
 
-	deploymentJson, err := ioutil.ReadFile(RESOURCE_BASE_DIR + exampleName + "/selected.json")
+	deploymentJson, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/selected.json")
 	if err != nil {
 		t.Error(err)
 		return
@@ -221,6 +223,17 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	}
 	conf.MongoUrl = "mongodb://localhost:" + mongoPort
 
+	devicesMock := &mocks.DeviceRepoMock{}
+
+	devicesJson, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/devices.json")
+	if err == nil {
+		devicesList := []devicemodel.Device{}
+		json.Unmarshal(devicesJson, &devicesList)
+		for _, d := range devicesList {
+			devicesMock.SetDevice(d.Id, d)
+		}
+	}
+
 	db, err := db.Factory.New(ctx, conf)
 	if err != nil {
 		t.Error(err)
@@ -228,8 +241,9 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	}
 
 	ctrl := &Ctrl{
-		config: conf,
-		db:     db,
+		config:  conf,
+		db:      db,
+		devices: devicesMock,
 	}
 
 	err = ctrl.HandleDeployment(messages.DeploymentCommand{

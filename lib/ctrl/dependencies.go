@@ -39,7 +39,7 @@ func (this *Ctrl) GetSelectedDependencies(token auth.Token, ids []string) ([]dep
 func (this *Ctrl) SaveDependencies(command messages.DeploymentCommand) error {
 	var dependencies dependencymodel.Dependencies
 	var err error
-	dependencies, err = this.deploymentToDependencies(*command.Deployment)
+	dependencies, err = this.deploymentToDependencies(command.Owner, *command.Deployment)
 	if err != nil {
 		return err
 	}
@@ -51,13 +51,13 @@ func (this *Ctrl) DeleteDependencies(command messages.DeploymentCommand) error {
 	return this.db.DeleteDependencies(command.Id)
 }
 
-func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
+func (this *Ctrl) deploymentToDependencies(user string, deployment deploymentmodel.Deployment) (result dependencymodel.Dependencies, err error) {
 	result.DeploymentId = deployment.Id
 	result.Events = []dependencymodel.EventDependency{}
 	result.Devices = []dependencymodel.DeviceDependency{}
 	for _, element := range deployment.Elements {
 		if element.Task != nil && element.Task.Selection.SelectedDeviceId != nil {
-			dependency := getDeviceDependencyFromSelection(element.Task.Selection)
+			dependency := this.getDeviceDependencyFromSelection(user, element.Task.Selection)
 			dependency.BpmnResources = []dependencymodel.BpmnResource{{
 				Id: element.BpmnId,
 				//Label: element.Name,
@@ -65,7 +65,7 @@ func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment
 			result.Devices = append(result.Devices, dependency)
 		}
 		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceId != nil {
-			dependency := getDeviceDependencyFromSelection(element.MessageEvent.Selection)
+			dependency := this.getDeviceDependencyFromSelection(user, element.MessageEvent.Selection)
 			dependency.BpmnResources = []dependencymodel.BpmnResource{{
 				Id: element.BpmnId,
 				//Label: element.Name,
@@ -83,15 +83,26 @@ func (this *Ctrl) deploymentToDependencies(deployment deploymentmodel.Deployment
 	return
 }
 
-func getDeviceDependencyFromSelection(selection deploymentmodel.Selection) (result dependencymodel.DeviceDependency) {
+func (this *Ctrl) getDeviceDependencyFromSelection(user string, selection deploymentmodel.Selection) (result dependencymodel.DeviceDependency) {
 	if selection.SelectedDeviceId != nil {
 		result.DeviceId = *selection.SelectedDeviceId
 	}
 	for _, option := range selection.SelectionOptions {
-		if option.Device.Id == result.DeviceId {
+		if option.Device != nil && option.Device.Id == result.DeviceId {
 			result.Name = option.Device.Name
 			return
 		}
+	}
+	if result.Name == "" && result.DeviceId != "" {
+		token, err := auth.CreateToken("process-deployment", user)
+		if err != nil {
+			return result
+		}
+		device, err, _ := this.devices.GetDevice(token, result.DeviceId)
+		if err != nil {
+			return result
+		}
+		result.Name = device.Name
 	}
 	return
 }
