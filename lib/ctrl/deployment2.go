@@ -150,55 +150,6 @@ func removeConfigurables(options []deploymentmodel.SelectionOption) (result []de
 	return
 }
 
-func (this *Ctrl) getDeploymentBulkSelectableRequest(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequest) {
-	useEventFilter := devicemodel.EVENT
-	taskGroups := map[string][]int{}
-	for index, element := range deployment.Elements {
-		if element.Task != nil {
-			if element.Group == nil {
-				bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
-					Id:                element.BpmnId,
-					FilterInteraction: &useEventFilter,
-					Criteria:          deviceselectionmodel.FilterCriteriaAndSet{element.Task.Selection.FilterCriteria.ToDeviceTypeFilter()},
-					IncludeGroups:     this.config.EnableDeviceGroupsForTasks,
-				})
-			} else {
-				taskGroups[*element.Group] = append(taskGroups[*element.Group], index)
-			}
-		}
-		if element.MessageEvent != nil {
-			bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
-				Id:             element.BpmnId,
-				Criteria:       deviceselectionmodel.FilterCriteriaAndSet{element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter()},
-				IncludeGroups:  this.config.EnableDeviceGroupsForEvents,
-				IncludeImports: this.config.EnableImportsForEvents,
-			})
-		}
-	}
-
-	for _, indexes := range taskGroups {
-		filter := deviceselectionmodel.FilterCriteriaAndSet{}
-		for _, index := range indexes {
-			element := deployment.Elements[index]
-			if element.Task != nil {
-				filter = append(filter, element.Task.Selection.FilterCriteria.ToDeviceTypeFilter())
-			}
-		}
-		for _, index := range indexes {
-			element := deployment.Elements[index]
-			if element.Task != nil {
-				bulk = append(bulk, deviceselectionmodel.BulkRequestElement{
-					Id:                element.BpmnId,
-					FilterInteraction: &useEventFilter,
-					Criteria:          filter,
-					IncludeGroups:     this.config.EnableDeviceGroupsForTasks,
-				})
-			}
-		}
-	}
-	return bulk
-}
-
 func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmodel.Deployment) (bulk deviceselectionmodel.BulkRequestV2) {
 	taskGroups := map[string][]int{}
 	for index, element := range deployment.Elements {
@@ -208,7 +159,6 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 					Id: element.BpmnId,
 					Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
 						FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
-						Interaction:    devicemodel.REQUEST,
 					}},
 					IncludeGroups:            this.config.EnableDeviceGroupsForTasks,
 					IncludeDevices:           true,
@@ -240,7 +190,6 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			if element.Task != nil {
 				filter = append(filter, deviceselectionmodel.FilterCriteriaWithInteraction{
 					FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
-					Interaction:    devicemodel.REQUEST,
 				})
 			}
 		}
