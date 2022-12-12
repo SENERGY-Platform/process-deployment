@@ -43,8 +43,9 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	}()
 
 	command := executionmodel.Task{
-		Retries: task.Retries,
-		Version: deploymentmodel.CurrentVersion,
+		Retries:     task.Retries,
+		Version:     deploymentmodel.CurrentVersion,
+		PreferEvent: task.PreferEvent,
 	}
 
 	if task.Selection.SelectedPath != nil {

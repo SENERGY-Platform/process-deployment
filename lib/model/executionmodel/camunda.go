@@ -43,6 +43,8 @@ type Task struct {
 	OutputPath      string                              `json:"output_path,omitempty"`
 	ConfigurablesV2 []deviceselectionmodel.Configurable `json:"configurables_v2,omitempty"`
 
+	PreferEvent bool `json:"prefer_event,omitempty"`
+
 	//runtime
 	Input  interface{} `json:"input,omitempty"`
 	Output interface{} `json:"output,omitempty"`

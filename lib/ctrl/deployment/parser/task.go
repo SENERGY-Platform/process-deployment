@@ -91,8 +91,9 @@ func (this *Parser) getTask(element *etree.Element) (result deploymentmodel.Elem
 		BpmnId: id,
 		Order:  this.getOrder(element),
 		Task: &deploymentmodel.Task{
-			Retries:   cmd.Retries,
-			Parameter: parameter,
+			Retries:     cmd.Retries,
+			PreferEvent: cmd.PreferEvent,
+			Parameter:   parameter,
 			Selection: deploymentmodel.Selection{
 				FilterCriteria: filterCriteria,
 			},

@@ -64,7 +64,8 @@ type MessageEvent struct {
 }
 
 type Task struct {
-	Retries   int64             `json:"retries"`
-	Parameter map[string]string `json:"parameter"`
-	Selection Selection         `json:"selection"`
+	Retries     int64             `json:"retries"`
+	Parameter   map[string]string `json:"parameter"`
+	Selection   Selection         `json:"selection"`
+	PreferEvent bool              `json:"prefer_event,omitempty"`
 }
