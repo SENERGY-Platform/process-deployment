@@ -22,7 +22,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/coocood/freecache"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -87,10 +87,12 @@ func (this *Repository) get(token auth.Token, resource string, id string, result
 
 		if resp.StatusCode >= 300 {
 			debug.PrintStack()
+			temp, _ := io.ReadAll(resp.Body)
+			log.Println("ERROR:", resp.StatusCode, string(temp))
 			return errors.New("unexpected statuscode"), resp.StatusCode
 		}
 
-		temp, err := ioutil.ReadAll(resp.Body)
+		temp, err := io.ReadAll(resp.Body)
 		if err != nil {
 			debug.PrintStack()
 			return err, http.StatusInternalServerError
