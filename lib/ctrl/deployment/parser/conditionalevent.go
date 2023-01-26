@@ -17,24 +17,23 @@
 package parser
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
-	"strconv"
 )
 
 func init() {
 	ElementParsers = append(ElementParsers, ElementParser{
 		Is: func(this *Parser, element *etree.Element) bool {
-			return this.isMsgEvent(element)
+			return this.isConditionalEvent(element)
 		},
 		Parse: func(this *Parser, dom *etree.Element) (element deploymentmodel.Element, err error) {
-			return this.getMsgEvent(dom)
+			return this.getConditionalEvent(dom)
 		},
 	})
 }
 
-func (this *Parser) isMsgEvent(element *etree.Element) bool {
+func (this *Parser) isConditionalEvent(element *etree.Element) bool {
 	msgEvent := element.FindElement(".//bpmn:messageEventDefinition")
 	if msgEvent == nil {
 		return false //is not msg event
@@ -58,14 +57,14 @@ func (this *Parser) isMsgEvent(element *etree.Element) bool {
 	}
 
 	script := element.SelectAttr("script")
-	if !(script == nil || script.Value == "") {
+	if script == nil || script.Value == "" {
 		return false
 	}
 
 	return true
 }
 
-func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.Element, err error) {
+func (this *Parser) getConditionalEvent(element *etree.Element) (result deploymentmodel.Element, err error) {
 	id := element.SelectAttr("id").Value
 	label := element.SelectAttrValue("name", id)
 
@@ -86,12 +85,24 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 		filterCriteria.CharacteristicId = &characteristic.Value
 	}
 
-	useMarshallerBool := false
-	useMarshaller := element.SelectAttr("use_marshaller")
-	if useMarshaller != nil {
-		useMarshallerBool, err = strconv.ParseBool(useMarshaller.Value)
+	scriptAttr := element.SelectAttr("script")
+	var script string
+	if scriptAttr != nil {
+		script = scriptAttr.Value
+	}
+
+	valueVariableName := "value"
+	valueVariableNameAttr := element.SelectAttr("value_variable_name")
+	if valueVariableNameAttr != nil {
+		valueVariableName = valueVariableNameAttr.Value
+	}
+
+	variables := map[string]string{}
+	variablesAttr := element.SelectAttr("variables")
+	if variablesAttr != nil && variablesAttr.Value != "" {
+		err = json.Unmarshal([]byte(variablesAttr.Value), &variables)
 		if err != nil {
-			return result, fmt.Errorf("expect boolean in senergy:use_marshaller: %w", err)
+			return result, err
 		}
 	}
 
@@ -99,9 +110,11 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 		Name:   label,
 		BpmnId: id,
 		Order:  this.getOrder(element),
-		MessageEvent: &deploymentmodel.MessageEvent{
+		ConditionalEvent: &deploymentmodel.ConditionalEvent{
+			Script:        script,
+			ValueVariable: valueVariableName,
+			Variables:     variables,
 			EventId:       "",
-			UseMarshaller: useMarshallerBool,
 			Selection: deploymentmodel.Selection{
 				FilterCriteria: filterCriteria,
 			},

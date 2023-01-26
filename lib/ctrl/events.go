@@ -27,6 +27,10 @@ func (this *Ctrl) completeEvents(deployment *deploymentmodel.Deployment) error {
 			element.MessageEvent.EventId = uuid.NewV4().String()
 			deployment.Elements[index] = element
 		}
+		if element.ConditionalEvent != nil {
+			element.ConditionalEvent.EventId = uuid.NewV4().String()
+			deployment.Elements[index] = element
+		}
 	}
 	return nil
 }

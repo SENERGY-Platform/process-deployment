@@ -165,6 +165,43 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 			}
 		}
 	}
+	if this.ConditionalEvent != nil {
+		if this.ConditionalEvent.Selection.SelectedDeviceGroupId != nil {
+			if *this.ConditionalEvent.Selection.SelectedDeviceGroupId == "" {
+				return errors.New("invalid device-group selection in event")
+			}
+		} else if this.ConditionalEvent.Selection.SelectedImportId != nil {
+			if *this.ConditionalEvent.Selection.SelectedImportId == "" {
+				return errors.New("invalid import selection in event")
+			}
+			if this.ConditionalEvent.Selection.SelectedPath == nil || this.ConditionalEvent.Selection.SelectedPath.Path == "" {
+				return errors.New("missing selected_path, but import selected in event")
+			}
+			if this.ConditionalEvent.Selection.SelectedPath.CharacteristicId == "" {
+				return errors.New("missing selected_path.characteristicId, but import selected in event")
+			}
+		} else if this.ConditionalEvent.Selection.SelectedGenericEventSource != nil {
+			if this.ConditionalEvent.Selection.SelectedGenericEventSource.FilterType == "" {
+				return errors.New("missing filter_type in selected_generic_source")
+			}
+			if this.ConditionalEvent.Selection.SelectedGenericEventSource.FilterIds == "" {
+				return errors.New("missing filter_ids in selected_generic_source")
+			}
+			if this.ConditionalEvent.Selection.SelectedGenericEventSource.Topic == "" {
+				return errors.New("missing topic in selected_generic_source")
+			}
+			if this.ConditionalEvent.Selection.SelectedPath == nil || this.ConditionalEvent.Selection.SelectedPath.Path == "" {
+				return errors.New("missing selected_path for selected_generic_source")
+			}
+		} else {
+			if this.ConditionalEvent.Selection.SelectedDeviceId == nil || *this.ConditionalEvent.Selection.SelectedDeviceId == "" {
+				return errors.New("missing device selection in event")
+			}
+			if !optionals["service"] && (this.ConditionalEvent.Selection.SelectedServiceId == nil || *this.ConditionalEvent.Selection.SelectedServiceId == "") {
+				return errors.New("missing service selection in event")
+			}
+		}
+	}
 	return nil
 }
 

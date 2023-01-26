@@ -79,6 +79,21 @@ func (this *Ctrl) deploymentToDependencies(user string, deployment deploymentmod
 				}},
 			})
 		}
+		if element.ConditionalEvent != nil && element.ConditionalEvent.Selection.SelectedDeviceId != nil {
+			dependency := this.getDeviceDependencyFromSelection(user, element.ConditionalEvent.Selection)
+			dependency.BpmnResources = []dependencymodel.BpmnResource{{
+				Id: element.BpmnId,
+				//Label: element.Name,
+			}}
+			result.Devices = append(result.Devices, dependency)
+			result.Events = append(result.Events, dependencymodel.EventDependency{
+				EventId: element.ConditionalEvent.EventId,
+				BpmnResources: []dependencymodel.BpmnResource{{
+					Id: element.BpmnId,
+					//Label: element.Name,
+				}},
+			})
+		}
 	}
 	return
 }

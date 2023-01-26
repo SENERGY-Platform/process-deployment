@@ -128,6 +128,10 @@ func (this *Ctrl) SetDeploymentOptions(token auth.Token, deployment *deploymentm
 			selectable := selectableIndex[element.BpmnId]
 			element.MessageEvent.Selection.SelectionOptions = removeConfigurables(getSelectionOptions(selectable, element.MessageEvent.Selection.FilterCriteria))
 		}
+		if element.ConditionalEvent != nil {
+			selectable := selectableIndex[element.BpmnId]
+			element.ConditionalEvent.Selection.SelectionOptions = removeConfigurables(getSelectionOptions(selectable, element.ConditionalEvent.Selection.FilterCriteria))
+		}
 		deployment.Elements[index] = element
 	}
 	return nil
@@ -173,6 +177,19 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 				Id: element.BpmnId,
 				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
 					FilterCriteria: element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					Interaction:    devicemodel.EVENT,
+				}},
+				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
+				IncludeImports:           this.config.EnableImportsForEvents,
+				IncludeDevices:           true,
+				IncludeIdModifiedDevices: this.config.EnableModifiedDevicesForDeploymentOptions,
+			})
+		}
+		if element.ConditionalEvent != nil {
+			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
+				Id: element.BpmnId,
+				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
+					FilterCriteria: element.ConditionalEvent.Selection.FilterCriteria.ToDeviceTypeFilter(),
 					Interaction:    devicemodel.EVENT,
 				}},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
@@ -339,17 +356,26 @@ func (this *Ctrl) EnsureDeploymentSelectionAccess(token auth.Token, deployment *
 		if element.Task != nil && element.Task.Selection.SelectedDeviceId != nil {
 			deviceIds = append(deviceIds, *element.Task.Selection.SelectedDeviceId)
 		}
-		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceId != nil {
-			deviceIds = append(deviceIds, *element.MessageEvent.Selection.SelectedDeviceId)
-		}
 		if element.Task != nil && element.Task.Selection.SelectedDeviceGroupId != nil {
 			deviceGroupIds = append(deviceGroupIds, *element.Task.Selection.SelectedDeviceGroupId)
+		}
+		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceId != nil {
+			deviceIds = append(deviceIds, *element.MessageEvent.Selection.SelectedDeviceId)
 		}
 		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedDeviceGroupId != nil {
 			deviceGroupIds = append(deviceGroupIds, *element.MessageEvent.Selection.SelectedDeviceGroupId)
 		}
 		if element.MessageEvent != nil && element.MessageEvent.Selection.SelectedImportId != nil {
 			importIds = append(importIds, *element.MessageEvent.Selection.SelectedImportId)
+		}
+		if element.ConditionalEvent != nil && element.ConditionalEvent.Selection.SelectedDeviceId != nil {
+			deviceIds = append(deviceIds, *element.ConditionalEvent.Selection.SelectedDeviceId)
+		}
+		if element.ConditionalEvent != nil && element.ConditionalEvent.Selection.SelectedDeviceGroupId != nil {
+			deviceGroupIds = append(deviceGroupIds, *element.ConditionalEvent.Selection.SelectedDeviceGroupId)
+		}
+		if element.ConditionalEvent != nil && element.ConditionalEvent.Selection.SelectedImportId != nil {
+			importIds = append(importIds, *element.ConditionalEvent.Selection.SelectedImportId)
 		}
 	}
 

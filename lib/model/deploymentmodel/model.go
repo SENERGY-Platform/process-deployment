@@ -35,14 +35,15 @@ type Diagram struct {
 }
 
 type Element struct {
-	BpmnId       string        `json:"bpmn_id"`
-	Group        *string       `json:"group"`
-	Name         string        `json:"name"`
-	Order        int64         `json:"order"`
-	TimeEvent    *TimeEvent    `json:"time_event"`
-	Notification *Notification `json:"notification"`
-	MessageEvent *MessageEvent `json:"message_event"`
-	Task         *Task         `json:"task"`
+	BpmnId           string            `json:"bpmn_id"`
+	Group            *string           `json:"group"`
+	Name             string            `json:"name"`
+	Order            int64             `json:"order"`
+	TimeEvent        *TimeEvent        `json:"time_event"`
+	Notification     *Notification     `json:"notification"`
+	MessageEvent     *MessageEvent     `json:"message_event"`
+	ConditionalEvent *ConditionalEvent `json:"conditional_event"`
+	Task             *Task             `json:"task"`
 }
 
 type TimeEvent struct {
@@ -61,6 +62,14 @@ type MessageEvent struct {
 	EventId       string    `json:"event_id"`
 	UseMarshaller bool      `json:"use_marshaller"`
 	Selection     Selection `json:"selection"`
+}
+
+type ConditionalEvent struct {
+	Script        string            `json:"script"`
+	ValueVariable string            `json:"value_variable"`
+	Variables     map[string]string `json:"variables"`
+	EventId       string            `json:"event_id"`
+	Selection     Selection         `json:"selection"`
 }
 
 type Task struct {

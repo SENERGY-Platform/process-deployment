@@ -46,6 +46,25 @@ func (this *Stringifier) MessageEvent(doc *etree.Document, element deploymentmod
 	return nil
 }
 
+func (this *Stringifier) ConditionalEvent(doc *etree.Document, element deploymentmodel.Element) (err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
+	if element.ConditionalEvent.EventId == "" {
+		element.ConditionalEvent.EventId = "generated_" + uuid.NewV4().String() //element.MessageEvent is pointer so edit here edits value also for caller
+	}
+	msgRef := strings.Replace("generated_ref_"+element.ConditionalEvent.EventId, "-", "_", -1)
+	bpmnMsg := doc.CreateElement("bpmn:message")
+	doc.SelectElement("bpmn:definitions").InsertChildAt(doc.SelectElement("bpmn:definitions").SelectElement("bpmndi:BPMNDiagram").Index(), bpmnMsg)
+	bpmnMsg.CreateAttr("id", msgRef)
+	bpmnMsg.CreateAttr("name", element.ConditionalEvent.EventId)
+	doc.FindElement("//*[@id='"+element.BpmnId+"']/bpmn:messageEventDefinition").CreateAttr("messageRef", msgRef)
+	return nil
+}
+
 func (this *Stringifier) TimeEvent(doc *etree.Document, element deploymentmodel.Element) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {

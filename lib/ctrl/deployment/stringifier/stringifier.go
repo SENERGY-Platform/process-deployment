@@ -79,6 +79,12 @@ func (this *Stringifier) Element(doc *etree.Document, element deploymentmodel.El
 			return err
 		}
 	}
+	if element.ConditionalEvent != nil {
+		err := this.ConditionalEvent(doc, element)
+		if err != nil {
+			return err
+		}
+	}
 	if element.TimeEvent != nil {
 		err := this.TimeEvent(doc, element)
 		if err != nil {
