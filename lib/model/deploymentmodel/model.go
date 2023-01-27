@@ -68,6 +68,7 @@ type ConditionalEvent struct {
 	Script        string            `json:"script"`
 	ValueVariable string            `json:"value_variable"`
 	Variables     map[string]string `json:"variables"`
+	Qos           int               `json:"qos"`
 	EventId       string            `json:"event_id"`
 	Selection     Selection         `json:"selection"`
 }

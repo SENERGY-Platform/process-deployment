@@ -17,10 +17,12 @@
             "time_event":null,
             "notification":null,
             "conditional_event":{
-                "script":"value == 42",
-                "value_variable":"value",
-                "variables": {},
-                "qos": 0,
+                "script":"x == foo",
+                "value_variable":"x",
+                "variables": {
+                    "foo": "42"
+                },
+                "qos": 1,
                 "event_id":"",
                 "selection":{
                     "filter_criteria":{

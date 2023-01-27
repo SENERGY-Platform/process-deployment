@@ -166,6 +166,12 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 		}
 	}
 	if this.ConditionalEvent != nil {
+		if this.ConditionalEvent.Script == "" {
+			return errors.New("missing script in conditional event")
+		}
+		if this.ConditionalEvent.Qos > 1 || this.ConditionalEvent.Qos < 0 {
+			return errors.New("invalid qos in conditional event (qos should be 0 or 1)")
+		}
 		if this.ConditionalEvent.Selection.SelectedDeviceGroupId != nil {
 			if *this.ConditionalEvent.Selection.SelectedDeviceGroupId == "" {
 				return errors.New("invalid device-group selection in event")

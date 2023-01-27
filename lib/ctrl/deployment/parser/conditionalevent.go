@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
+	"strconv"
 )
 
 func init() {
@@ -36,10 +37,10 @@ func init() {
 func (this *Parser) isConditionalEvent(element *etree.Element) bool {
 	msgEvent := element.FindElement(".//bpmn:messageEventDefinition")
 	if msgEvent == nil {
-		return false //is not msg event
+		return false
 	}
 	if msgEvent.SelectAttrValue("messageRef", "") != "" {
-		return false //msg event uses user defined events
+		return false
 	}
 	aspect := element.SelectAttr("aspect")
 	if aspect == nil || aspect.Value == "" {
@@ -106,6 +107,15 @@ func (this *Parser) getConditionalEvent(element *etree.Element) (result deployme
 		}
 	}
 
+	qos := 0
+	qosAttr := element.SelectAttr("qos")
+	if qosAttr != nil && qosAttr.Value != "" {
+		qos, err = strconv.Atoi(qosAttr.Value)
+		if err != nil {
+			return result, err
+		}
+	}
+
 	result = deploymentmodel.Element{
 		Name:   label,
 		BpmnId: id,
@@ -114,6 +124,7 @@ func (this *Parser) getConditionalEvent(element *etree.Element) (result deployme
 			Script:        script,
 			ValueVariable: valueVariableName,
 			Variables:     variables,
+			Qos:           qos,
 			EventId:       "",
 			Selection: deploymentmodel.Selection{
 				FilterCriteria: filterCriteria,

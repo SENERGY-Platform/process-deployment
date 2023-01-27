@@ -22,6 +22,7 @@
                 "variables": {
                     "foo": "42"
                 },
+                "qos": 0,
                 "event_id":"",
                 "selection":{
                     "filter_criteria":{

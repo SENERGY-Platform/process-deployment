@@ -21,6 +21,7 @@
         "script":"value == 42",
         "value_variable":"value",
         "variables": {},
+        "qos": 0,
         "event_id": "",
         "selection": {
           "filter_criteria": {
