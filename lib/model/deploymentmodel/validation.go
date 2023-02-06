@@ -187,18 +187,7 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 				return errors.New("missing selected_path.characteristicId, but import selected in event")
 			}
 		} else if this.ConditionalEvent.Selection.SelectedGenericEventSource != nil {
-			if this.ConditionalEvent.Selection.SelectedGenericEventSource.FilterType == "" {
-				return errors.New("missing filter_type in selected_generic_source")
-			}
-			if this.ConditionalEvent.Selection.SelectedGenericEventSource.FilterIds == "" {
-				return errors.New("missing filter_ids in selected_generic_source")
-			}
-			if this.ConditionalEvent.Selection.SelectedGenericEventSource.Topic == "" {
-				return errors.New("missing topic in selected_generic_source")
-			}
-			if this.ConditionalEvent.Selection.SelectedPath == nil || this.ConditionalEvent.Selection.SelectedPath.Path == "" {
-				return errors.New("missing selected_path for selected_generic_source")
-			}
+			return errors.New("selected_generic_source not supported for conditional events")
 		} else {
 			if this.ConditionalEvent.Selection.SelectedDeviceId == nil || *this.ConditionalEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")

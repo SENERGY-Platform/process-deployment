@@ -22,21 +22,21 @@ type ImportType struct {
 	Description    string                `json:"description"`
 	Image          string                `json:"image"`
 	DefaultRestart bool                  `json:"default_restart"`
-	Configs        []ImportTypeConfig    `json:"configs"`
-	AspectIds      interface{}           `json:"aspect_ids"` // permSearch gives string or []string
-	Output         ImportContentVariable `json:"output,omitempty"`
-	FunctionIds    interface{}           `json:"function_ids"` // permSearch gives string or []string
-	Owner          string                `json:"owner,omitempty"`
+	Configs        []ImportConfig        `json:"configs"`
+	Output         ImportContentVariable `json:"output"`
+	Owner          string                `json:"owner"`
 }
 
 type Type string
 
 type ImportContentVariable struct {
-	Name                string                  `json:"name,omitempty"`
-	Type                Type                    `json:"type,omitempty"`
-	CharacteristicId    string                  `json:"characteristic_id,omitempty"`
-	SubContentVariables []ImportContentVariable `json:"sub_content_variables,omitempty"`
-	UseAsTag            bool                    `json:"use_as_tag,omitempty"`
+	Name                string                  `json:"name"`
+	Type                Type                    `json:"type"`
+	CharacteristicId    string                  `json:"characteristic_id"`
+	SubContentVariables []ImportContentVariable `json:"sub_content_variables"`
+	UseAsTag            bool                    `json:"use_as_tag"`
+	FunctionId          string                  `json:"function_id,omitempty"`
+	AspectId            string                  `json:"aspect_id,omitempty"`
 }
 
 type ImportTypeConfig struct {
