@@ -14,63 +14,65 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
-	"version": 3,
-	"function": {
-		"id": "urn:infai:ses:measuring-function:bdb6a7c8-4a3d-4fe0-bab3-ce02e09b5869",
-		"name": "",
-		"concept_id": "",
-		"rdf_type": ""
-	},
-	"characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
-	"aspect": {
-		"id": "urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6",
-		"name": "",
-		"root_id": "",
-		"parent_id": "",
-		"child_ids": null,
-		"ancestor_ids": null,
-		"descendent_ids": null
-	},
-	"device_id": "hue",
-	"service_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
-    "output_path": "selected.path.to.value",
-    "configurables_v2": [
-        {
-            "path": "path.to.configurable.1",
-            "characteristic_id": "notThisCharacteristicId2",
-            "aspect_node": {
-                "id": "notThisAspectId2",
-                "name": "",
-                "root_id": "",
-                "parent_id": "",
-                "child_ids": null,
-                "ancestor_ids": null,
-                "descendent_ids": null
-            },
-            "function_id": "notThisFunctionId2",
-            "value": "foo",
-            "type": "https://schema.org/Text"
-        },
-        {
-            "path": "path.to.configurable.2",
-            "characteristic_id": "notThisCharacteristicId3",
-            "aspect_node": {
-                "id": "notThisAspectId3",
-                "name": "",
-                "root_id": "",
-                "parent_id": "",
-                "child_ids": null,
-                "ancestor_ids": null,
-                "descendent_ids": null
-            },
-            "function_id": "notThisFunctionId3",
-            "value": 42,
-            "type": "https://schema.org/Integer"
-        }
-    ],
-	"input": {},
-	"retries": 2
-}]]></camunda:inputParameter>
+        	"version": 3,
+        	"function": {
+        		"id": "urn:infai:ses:measuring-function:bdb6a7c8-4a3d-4fe0-bab3-ce02e09b5869",
+        		"name": "",
+        		"display_name": "",
+        		"description": "",
+        		"concept_id": "",
+        		"rdf_type": ""
+        	},
+        	"characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
+        	"aspect": {
+        		"id": "urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6",
+        		"name": "",
+        		"root_id": "",
+        		"parent_id": "",
+        		"child_ids": null,
+        		"ancestor_ids": null,
+        		"descendent_ids": null
+        	},
+        	"device_id": "hue",
+        	"service_id": "urn:infai:ses:service:99614933-4734-41b6-a131-3f96f134ee69",
+        	"output_path": "selected.path.to.value",
+        	"configurables_v2": [
+        		{
+        			"path": "path.to.configurable.1",
+        			"characteristic_id": "notThisCharacteristicId2",
+        			"aspect_node": {
+        				"id": "notThisAspectId2",
+        				"name": "",
+        				"root_id": "",
+        				"parent_id": "",
+        				"child_ids": null,
+        				"ancestor_ids": null,
+        				"descendent_ids": null
+        			},
+        			"function_id": "notThisFunctionId2",
+        			"value": "foo",
+        			"type": "https://schema.org/Text"
+        		},
+        		{
+        			"path": "path.to.configurable.2",
+        			"characteristic_id": "notThisCharacteristicId3",
+        			"aspect_node": {
+        				"id": "notThisAspectId3",
+        				"name": "",
+        				"root_id": "",
+        				"parent_id": "",
+        				"child_ids": null,
+        				"ancestor_ids": null,
+        				"descendent_ids": null
+        			},
+        			"function_id": "notThisFunctionId3",
+        			"value": 42,
+        			"type": "https://schema.org/Integer"
+        		}
+        	],
+        	"input": {},
+        	"retries": 2
+        }]]></camunda:inputParameter>
                     <camunda:outputParameter name="outputs.b">${result.b}</camunda:outputParameter>
                     <camunda:outputParameter name="outputs.g">${result.g}</camunda:outputParameter>
                     <camunda:outputParameter name="outputs.r">${result.r}</camunda:outputParameter>
@@ -83,65 +85,66 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
-	"version": 3,
-	"function": {
-		"id": "urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599",
-		"name": "",
-		"concept_id": "",
-		"rdf_type": ""
-	},
-	"characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
-	"device_class": {
-		"id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
-		"name": "",
-		"image": "",
-		"rdf_type": ""
-	},
-	"device_id": "hue",
-	"service_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f",
-	"input_paths": [
-        "selected.path.to.value.3"
-    ],
-    "configurables_v2": [
-        {
-            "path": "path.to.configurable.4",
-            "characteristic_id": "notThisCharacteristicId5",
-            "aspect_node": {
-                "id": "notThisAspectId5",
-                "name": "",
-                "root_id": "",
-                "parent_id": "",
-                "child_ids": null,
-                "ancestor_ids": null,
-                "descendent_ids": null
-            },
-            "function_id": "notThisFunctionId5",
-            "value": "bar",
-            "type": "https://schema.org/Text"
-        },
-        {
-            "path": "path.to.configurable.4",
-            "characteristic_id": "notThisCharacteristicId6",
-            "aspect_node": {
-                "id": "notThisAspectId6",
-                "name": "",
-                "root_id": "",
-                "parent_id": "",
-                "child_ids": null,
-                "ancestor_ids": null,
-                "descendent_ids": null
-            },
-            "function_id": "notThisFunctionId6",
-            "value": 13,
-            "type": "https://schema.org/Integer"
-        }
-    ],
-	"input": {
-		"b": 0,
-		"g": 0,
-		"r": 0
-	}
-}]]></camunda:inputParameter>
+        	"version": 3,
+        	"function": {
+        		"id": "urn:infai:ses:controlling-function:c54e2a89-1fb8-4ecb-8993-a7b40b355599",
+        		"name": "",
+        		"display_name": "",
+        		"description": "",
+        		"concept_id": "",
+        		"rdf_type": ""
+        	},
+        	"characteristic_id": "urn:infai:ses:characteristic:5b4eea52-e8e5-4e80-9455-0382f81a1b43",
+        	"device_class": {
+        		"id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
+        		"image": "",
+        		"name": ""
+        	},
+        	"device_id": "hue",
+        	"service_id": "urn:infai:ses:service:67789396-d1ca-4ea9-9147-0614c6d68a2f",
+        	"input_paths": [
+        		"selected.path.to.value.3"
+        	],
+        	"configurables_v2": [
+        		{
+        			"path": "path.to.configurable.4",
+        			"characteristic_id": "notThisCharacteristicId5",
+        			"aspect_node": {
+        				"id": "notThisAspectId5",
+        				"name": "",
+        				"root_id": "",
+        				"parent_id": "",
+        				"child_ids": null,
+        				"ancestor_ids": null,
+        				"descendent_ids": null
+        			},
+        			"function_id": "notThisFunctionId5",
+        			"value": "bar",
+        			"type": "https://schema.org/Text"
+        		},
+        		{
+        			"path": "path.to.configurable.4",
+        			"characteristic_id": "notThisCharacteristicId6",
+        			"aspect_node": {
+        				"id": "notThisAspectId6",
+        				"name": "",
+        				"root_id": "",
+        				"parent_id": "",
+        				"child_ids": null,
+        				"ancestor_ids": null,
+        				"descendent_ids": null
+        			},
+        			"function_id": "notThisFunctionId6",
+        			"value": 13,
+        			"type": "https://schema.org/Integer"
+        		}
+        	],
+        	"input": {
+        		"b": 0,
+        		"g": 0,
+        		"r": 0
+        	}
+        }]]></camunda:inputParameter>
                     <camunda:inputParameter name="inputs.b">0</camunda:inputParameter>
                     <camunda:inputParameter name="inputs.g">255</camunda:inputParameter>
                     <camunda:inputParameter name="inputs.r">100</camunda:inputParameter>

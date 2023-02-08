@@ -13,22 +13,23 @@
             <bpmn:extensionElements>
                 <camunda:inputOutput>
                     <camunda:inputParameter name="payload"><![CDATA[{
-                        "version": 3,
-                        "function": {
-                            "id": "urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9",
-                            "name": "",
-                            "concept_id": "",
-                            "rdf_type": ""
-                        },
-                        "characteristic_id": "",
-                        "device_class": {
-                            "id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
-                            "name": "",
-                            "image": "",
-                            "rdf_type": ""
-                        },
-                        "device_group_id": "selected_group_id"
-                        }]]></camunda:inputParameter>
+        	"version": 3,
+        	"function": {
+        		"id": "urn:infai:ses:controlling-function:79e7914b-f303-4a7d-90af-dee70db05fd9",
+        		"name": "",
+        		"display_name": "",
+        		"description": "",
+        		"concept_id": "",
+        		"rdf_type": ""
+        	},
+        	"characteristic_id": "",
+        	"device_class": {
+        		"id": "urn:infai:ses:device-class:14e56881-16f9-4120-bb41-270a43070c86",
+        		"image": "",
+        		"name": ""
+        	},
+        	"device_group_id": "selected_group_id"
+        }]]></camunda:inputParameter>
                 </camunda:inputOutput>
             </bpmn:extensionElements>
             <bpmn:incoming>SequenceFlow_1stinn1</bpmn:incoming>

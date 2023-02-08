@@ -7,7 +7,6 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/coocood/freecache v1.1.0
 	github.com/golang-jwt/jwt v3.2.1+incompatible
-	github.com/google/uuid v1.1.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.11.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -24,6 +23,8 @@ require (
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
+
+require github.com/SENERGY-Platform/models/go v0.0.0-20230105115534-8edcf0271764
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect

@@ -16,41 +16,14 @@
 
 package devicemodel
 
-type DeviceClass struct {
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Image   string `json:"image"`
-	RdfType string `json:"rdf_type"`
-}
+import "github.com/SENERGY-Platform/models/go/models"
 
-type Function struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	ConceptId string `json:"concept_id"`
-	RdfType   string `json:"rdf_type"`
-}
+type DeviceClass = models.DeviceClass
 
-type Aspect struct {
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	RdfType string `json:"rdf_type"`
-}
+type Function = models.Function
 
-type Concept struct {
-	Id                   string   `json:"id"`
-	Name                 string   `json:"name"`
-	CharacteristicIds    []string `json:"characteristic_ids"`
-	BaseCharacteristicId string   `json:"base_characteristic_id"`
-	RdfType              string   `json:"rdf_type"`
-}
+type Aspect = models.Aspect
 
-type Characteristic struct {
-	Id                 string           `json:"id"`
-	Name               string           `json:"name"`
-	Type               Type             `json:"type"`
-	MinValue           interface{}      `json:"min_value,omitempty"`
-	MaxValue           interface{}      `json:"max_value,omitempty"`
-	Value              interface{}      `json:"value,omitempty"`
-	SubCharacteristics []Characteristic `json:"sub_characteristics"`
-	RdfType            string           `json:"rdf_type"`
-}
+type Concept = models.Concept
+
+type Characteristic = models.Characteristic

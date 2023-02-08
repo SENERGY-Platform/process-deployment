@@ -16,39 +16,6 @@
 
 package devicemodel
 
-type AspectNode struct {
-	Id            string   `json:"id"`
-	Name          string   `json:"name"`
-	RootId        string   `json:"root_id"`
-	ParentId      string   `json:"parent_id"`
-	ChildIds      []string `json:"child_ids"`
-	AncestorIds   []string `json:"ancestor_ids"`
-	DescendentIds []string `json:"descendent_ids"`
-}
+import "github.com/SENERGY-Platform/models/go/models"
 
-type DeviceTypeCriteria struct {
-	DeviceTypeId          string `json:"device_type_id"`
-	ServiceId             string `json:"service_id"`
-	ContentVariableId     string `json:"content_variable_id"`
-	ContentVariablePath   string `json:"content_variable_path"`
-	FunctionId            string `json:"function_id"`
-	Interaction           string `json:"interaction"`
-	IsControllingFunction bool   `json:"controlling_function"`
-	DeviceClassId         string `json:"device_class_id"`
-	AspectId              string `json:"aspect_id"`
-	CharacteristicId      string `json:"characteristic_id"`
-}
-
-type DeviceTypeSelectable struct {
-	DeviceTypeId       string                         `json:"device_type_id,omitempty"`
-	Services           []Service                      `json:"services,omitempty"`
-	ServicePathOptions map[string][]ServicePathOption `json:"service_path_options,omitempty"`
-}
-
-type ServicePathOption struct {
-	ServiceId        string `json:"service_id"`
-	Path             string `json:"path"`
-	CharacteristicId string `json:"characteristic_id"`
-	AspectNodeId     string `json:"aspect_node_id"`
-	FunctionId       string `json:"function_id"`
-}
+type AspectNode = models.AspectNode
