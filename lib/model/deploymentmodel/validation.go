@@ -180,12 +180,6 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 			if *this.ConditionalEvent.Selection.SelectedImportId == "" {
 				return errors.New("invalid import selection in event")
 			}
-			if this.ConditionalEvent.Selection.SelectedPath == nil || this.ConditionalEvent.Selection.SelectedPath.Path == "" {
-				return errors.New("missing selected_path, but import selected in event")
-			}
-			if this.ConditionalEvent.Selection.SelectedPath.CharacteristicId == "" {
-				return errors.New("missing selected_path.characteristicId, but import selected in event")
-			}
 		} else if this.ConditionalEvent.Selection.SelectedGenericEventSource != nil {
 			return errors.New("selected_generic_source not supported for conditional events")
 		} else {
