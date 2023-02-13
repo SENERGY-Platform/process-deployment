@@ -186,9 +186,6 @@ func (this Element) Validate(kind ValidationKind, optionals map[string]bool) err
 			if this.ConditionalEvent.Selection.SelectedDeviceId == nil || *this.ConditionalEvent.Selection.SelectedDeviceId == "" {
 				return errors.New("missing device selection in event")
 			}
-			if !optionals["service"] && (this.ConditionalEvent.Selection.SelectedServiceId == nil || *this.ConditionalEvent.Selection.SelectedServiceId == "") {
-				return errors.New("missing service selection in event")
-			}
 		}
 	}
 	return nil
