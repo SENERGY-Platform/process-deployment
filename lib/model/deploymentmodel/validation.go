@@ -35,7 +35,6 @@ const (
 	ValidateRequest ValidationKind = false
 )
 
-// strict for cqrs; else for user
 func (this Deployment) Validate(kind ValidationKind, optionals map[string]bool) (err error) {
 	if this.Version != CurrentVersion {
 		return errors.New("unexpected deployment version")
@@ -64,6 +63,9 @@ func (this Deployment) Validate(kind ValidationKind, optionals map[string]bool) 
 		if err != nil {
 			return err
 		}
+	}
+	if this.IncidentHandling != nil && !this.IncidentHandling.RestartIsValidOption && this.IncidentHandling.Restart {
+		return errors.New("incident_handling.restart may only be true if incident_handling.restart_is_valid_option is also true")
 	}
 	return nil
 }

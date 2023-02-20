@@ -41,6 +41,17 @@ func (this *Ctrl) PrepareDeployment(token auth.Token, xml string, svg string, wi
 	}
 	result.Diagram.Svg = svg
 	this.SetExecutableFlag(&result)
+	result.IncidentHandling = &deploymentmodel.IncidentHandling{
+		Restart: false,
+		Notify:  true,
+	}
+	parameter, err := this.GetProcessStartParameters(xml)
+	if err != nil {
+		return result, err, http.StatusInternalServerError
+	}
+	if len(parameter) == 0 {
+		result.IncidentHandling.RestartIsValidOption = true
+	}
 	return result, nil, http.StatusOK
 }
 

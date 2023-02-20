@@ -19,13 +19,14 @@ package deploymentmodel
 const CurrentVersion int64 = 3
 
 type Deployment struct {
-	Version     int64     `json:"version"`
-	Id          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Diagram     Diagram   `json:"diagram"`
-	Elements    []Element `json:"elements"`
-	Executable  bool      `json:"executable"`
+	Version          int64             `json:"version"`
+	Id               string            `json:"id"`
+	Name             string            `json:"name"`
+	Description      string            `json:"description"`
+	Diagram          Diagram           `json:"diagram"`
+	Elements         []Element         `json:"elements"`
+	Executable       bool              `json:"executable"`
+	IncidentHandling *IncidentHandling `json:"incident_handling,omitempty"`
 }
 
 type Diagram struct {
@@ -78,4 +79,10 @@ type Task struct {
 	Parameter   map[string]string `json:"parameter"`
 	Selection   Selection         `json:"selection"`
 	PreferEvent bool              `json:"prefer_event,omitempty"`
+}
+
+type IncidentHandling struct {
+	Restart              bool `json:"restart"`
+	Notify               bool `json:"notify"`
+	RestartIsValidOption bool `json:"restart_is_valid_option"`
 }
