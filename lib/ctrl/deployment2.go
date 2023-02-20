@@ -330,6 +330,15 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 }
 
 func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
+	if deployment.IncidentHandling != nil && deployment.IncidentHandling.RestartIsValidOption {
+		permas, err := this.GetProcessStartParameters(deployment.Diagram.XmlDeployed)
+		if err != nil {
+			return deployment, err, http.StatusBadRequest
+		}
+		if len(permas) > 0 {
+			return deployment, errors.New("IncidentHandling.RestartIsValidOption is ReadOnly value and may not be set true if the process expects parameters on start"), http.StatusBadRequest
+		}
+	}
 	if err := deployment.Validate(deploymentmodel.ValidateRequest, optionals); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
