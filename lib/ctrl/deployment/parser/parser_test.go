@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"os"
 	"reflect"
 	"runtime/debug"
@@ -119,7 +118,7 @@ func testStartParameter(t *testing.T, exampleName string) {
 		t.Error(err)
 		return
 	}
-	var expected []processmodel.ProcessStartParameter
+	var expected []deploymentmodel.ProcessStartParameter
 	err = json.Unmarshal(expectedStr, &expected)
 	if err != nil {
 		t.Error(err)

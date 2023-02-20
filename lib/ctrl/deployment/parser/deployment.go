@@ -33,6 +33,10 @@ func (this *Parser) getDeployment(doc *etree.Document, diagram deploymentmodel.D
 	if err != nil {
 		return result, err
 	}
+	result.StartParameter, err = this.estimateStartParameter(doc)
+	if err != nil {
+		return result, err
+	}
 	result.Elements, err = this.getElements(doc)
 	sort.Slice(result.Elements, func(i, j int) bool {
 		return result.Elements[i].Order < result.Elements[j].Order

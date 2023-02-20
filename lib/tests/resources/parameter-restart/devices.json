@@ -1,0 +1,6 @@
+[
+  {"id": "lifx1", "name": "lifx1", "device_type_id": "urn:infai:ses:device-type:4038d18b-ecd4-49e5-98b5-cf466d2dd623"},
+  {"id": "lifx2", "name": "lifx2", "device_type_id": "urn:infai:ses:device-type:4038d18b-ecd4-49e5-98b5-cf466d2dd623"},
+  {"id": "hue", "name": "hue", "device_type_id": "urn:infai:ses:device-type:50fb0443-f356-4857-8f5d-59e6bef9d948"},
+  {"id": "wall_plug", "name": "wall_plug", "device_type_id": "urn:infai:ses:device-type:1c200f02-67ac-42e1-8c6c-748bdc091764"}
+]

@@ -16,8 +16,10 @@
 
 package ctrl
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+)
 
-func (this *Ctrl) GetProcessStartParameters(xml string) ([]processmodel.ProcessStartParameter, error) {
+func (this *Ctrl) GetProcessStartParameters(xml string) ([]deploymentmodel.ProcessStartParameter, error) {
 	return this.deploymentParser.EstimateStartParameter(xml)
 }

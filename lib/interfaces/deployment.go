@@ -19,12 +19,11 @@ package interfaces
 import (
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 )
 
 type DeploymentParser interface {
 	PrepareDeployment(xml string) (deploymentmodel.Deployment, error)
-	EstimateStartParameter(xml string) ([]processmodel.ProcessStartParameter, error)
+	EstimateStartParameter(xml string) ([]deploymentmodel.ProcessStartParameter, error)
 }
 
 type DeploymentStringifier interface {

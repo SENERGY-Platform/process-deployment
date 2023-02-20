@@ -55,6 +55,11 @@ func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userI
 	doc.FindElement("//bpmn:process").CreateAttr("name", deployment.Name)
 	doc.FindElement("//bpmn:process").CreateAttr("isExecutable", "true")
 
+	err = this.updateStartParameter(doc, deployment.StartParameter, deployment.IncidentHandling != nil && deployment.IncidentHandling.Restart)
+	if err != nil {
+		return "", err
+	}
+
 	for _, element := range deployment.Elements {
 		err = this.Element(doc, element, userId, token)
 		if err != nil {

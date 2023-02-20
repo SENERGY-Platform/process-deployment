@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/processmodel"
 	"github.com/beevik/etree"
 	"log"
 	"runtime/debug"
@@ -50,7 +49,7 @@ func (this *Parser) PrepareDeployment(xml string) (result deploymentmodel.Deploy
 	return this.getDeployment(doc, deploymentmodel.Diagram{XmlRaw: xml})
 }
 
-func (this *Parser) EstimateStartParameter(xml string) (result []processmodel.ProcessStartParameter, err error) {
+func (this *Parser) EstimateStartParameter(xml string) (result []deploymentmodel.ProcessStartParameter, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
 			log.Printf("%s: %s", r, debug.Stack())
@@ -62,6 +61,16 @@ func (this *Parser) EstimateStartParameter(xml string) (result []processmodel.Pr
 	if err != nil {
 		return
 	}
+	return this.estimateStartParameter(doc)
+}
+
+func (this *Parser) estimateStartParameter(doc *etree.Document) (result []deploymentmodel.ProcessStartParameter, err error) {
+	defer func() {
+		if r := recover(); r != nil && err == nil {
+			log.Printf("%s: %s", r, debug.Stack())
+			err = errors.New(fmt.Sprint("Recovered Error: ", r))
+		}
+	}()
 	elements := doc.FindElements("//bpmn:startEvent/bpmn:extensionElements/camunda:formData/camunda:formField")
 	for _, element := range elements {
 		id := element.SelectAttrValue("id", "")
@@ -69,11 +78,20 @@ func (this *Parser) EstimateStartParameter(xml string) (result []processmodel.Pr
 			label := element.SelectAttrValue("label", "")
 			paramtype := element.SelectAttrValue("type", "string")
 			defaultValue := element.SelectAttrValue("defaultValue", "")
-			result = append(result, processmodel.ProcessStartParameter{
-				Id:      id,
-				Label:   label,
-				Type:    paramtype,
-				Default: defaultValue,
+			properties := map[string]string{}
+			for _, propterty := range element.FindElements(".//camunda:property") {
+				propertyName := propterty.SelectAttrValue("id", "")
+				propertyValue := propterty.SelectAttrValue("value", "")
+				if propertyName != "" {
+					properties[propertyName] = propertyValue
+				}
+			}
+			result = append(result, deploymentmodel.ProcessStartParameter{
+				Id:         id,
+				Label:      label,
+				Type:       paramtype,
+				Default:    defaultValue,
+				Properties: properties,
 			})
 		}
 	}

@@ -19,14 +19,23 @@ package deploymentmodel
 const CurrentVersion int64 = 3
 
 type Deployment struct {
-	Version          int64             `json:"version"`
-	Id               string            `json:"id"`
-	Name             string            `json:"name"`
-	Description      string            `json:"description"`
-	Diagram          Diagram           `json:"diagram"`
-	Elements         []Element         `json:"elements"`
-	Executable       bool              `json:"executable"`
-	IncidentHandling *IncidentHandling `json:"incident_handling,omitempty"`
+	Version          int64                   `json:"version"`
+	Id               string                  `json:"id"`
+	Name             string                  `json:"name"`
+	Description      string                  `json:"description"`
+	Diagram          Diagram                 `json:"diagram"`
+	Elements         []Element               `json:"elements"`
+	Executable       bool                    `json:"executable"`
+	IncidentHandling *IncidentHandling       `json:"incident_handling,omitempty"`
+	StartParameter   []ProcessStartParameter `json:"start_parameter,omitempty"`
+}
+
+type ProcessStartParameter struct {
+	Id         string            `json:"id"`
+	Label      string            `json:"label"`
+	Type       string            `json:"type"`
+	Default    string            `json:"default"`
+	Properties map[string]string `json:"properties"`
 }
 
 type Diagram struct {
