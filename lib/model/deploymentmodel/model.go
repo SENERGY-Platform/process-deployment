@@ -91,7 +91,6 @@ type Task struct {
 }
 
 type IncidentHandling struct {
-	Restart              bool `json:"restart"`
-	Notify               bool `json:"notify"`
-	RestartIsValidOption bool `json:"restart_is_valid_option"`
+	Restart bool `json:"restart"`
+	Notify  bool `json:"notify"`
 }
