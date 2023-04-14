@@ -23,9 +23,9 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
-	"github.com/ory/dockertest/v3"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -33,6 +33,11 @@ func TestDeploymentsV1(t *testing.T) {
 	if testing.Short() {
 		t.Skip("short tests only without docker")
 	}
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	ctx, stop := context.WithCancel(context.Background())
+	defer stop()
+
 	buffer := &strings.Builder{}
 	testprint := func(args ...interface{}) {
 		fmt.Fprintln(buffer, args...)
@@ -46,19 +51,12 @@ func TestDeploymentsV1(t *testing.T) {
 	}
 	config.Debug = true
 
-	pool, err := dockertest.NewPool("")
+	port, _, err := docker.Mongo(ctx, &wg)
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
 		return
 	}
-	closer, port, _, err := docker.MongoTestServer(pool)
-	if err != nil {
-		debug.PrintStack()
-		testprint(err)
-		return
-	}
-	defer closer()
 
 	config.MongoUrl = "mongodb://localhost:" + port
 
@@ -156,6 +154,11 @@ func TestDeploymentsV2(t *testing.T) {
 	if testing.Short() {
 		t.Skip("short tests only without docker")
 	}
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	ctx, stop := context.WithCancel(context.Background())
+	defer stop()
+
 	buffer := &strings.Builder{}
 	testprint := func(args ...interface{}) {
 		fmt.Fprintln(buffer, args...)
@@ -169,19 +172,12 @@ func TestDeploymentsV2(t *testing.T) {
 	}
 	config.Debug = true
 
-	pool, err := dockertest.NewPool("")
+	port, _, err := docker.Mongo(ctx, &wg)
 	if err != nil {
 		debug.PrintStack()
 		testprint(err)
 		return
 	}
-	closer, port, _, err := docker.MongoTestServer(pool)
-	if err != nil {
-		debug.PrintStack()
-		testprint(err)
-		return
-	}
-	defer closer()
 
 	config.MongoUrl = "mongodb://localhost:" + port
 

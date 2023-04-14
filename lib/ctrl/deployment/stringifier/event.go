@@ -19,9 +19,9 @@ package stringifier
 import (
 	"errors"
 	"fmt"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
-	uuid "github.com/satori/go.uuid"
 	"log"
 	"runtime/debug"
 	"strings"
@@ -35,7 +35,7 @@ func (this *Stringifier) MessageEvent(doc *etree.Document, element deploymentmod
 		}
 	}()
 	if element.MessageEvent.EventId == "" {
-		element.MessageEvent.EventId = "generated_" + uuid.NewV4().String() //element.MessageEvent is pointer so edit here edits value also for caller
+		element.MessageEvent.EventId = "generated_" + config.NewId() //element.MessageEvent is pointer so edit here edits value also for caller
 	}
 	msgRef := strings.Replace("generated_ref_"+element.MessageEvent.EventId, "-", "_", -1)
 	bpmnMsg := doc.CreateElement("bpmn:message")
@@ -54,7 +54,7 @@ func (this *Stringifier) ConditionalEvent(doc *etree.Document, element deploymen
 		}
 	}()
 	if element.ConditionalEvent.EventId == "" {
-		element.ConditionalEvent.EventId = "generated_" + uuid.NewV4().String() //element.MessageEvent is pointer so edit here edits value also for caller
+		element.ConditionalEvent.EventId = "generated_" + config.NewId() //element.MessageEvent is pointer so edit here edits value also for caller
 	}
 	msgRef := strings.Replace("generated_ref_"+element.ConditionalEvent.EventId, "-", "_", -1)
 	bpmnMsg := doc.CreateElement("bpmn:message")

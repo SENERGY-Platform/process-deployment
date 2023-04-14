@@ -17,18 +17,18 @@
 package ctrl
 
 import (
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (this *Ctrl) completeEvents(deployment *deploymentmodel.Deployment) error {
 	for index, element := range deployment.Elements {
 		if element.MessageEvent != nil {
-			element.MessageEvent.EventId = uuid.NewV4().String()
+			element.MessageEvent.EventId = config.NewId()
 			deployment.Elements[index] = element
 		}
 		if element.ConditionalEvent != nil {
-			element.ConditionalEvent.EventId = uuid.NewV4().String()
+			element.ConditionalEvent.EventId = config.NewId()
 			deployment.Elements[index] = element
 		}
 	}

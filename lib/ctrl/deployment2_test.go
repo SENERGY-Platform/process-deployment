@@ -216,7 +216,7 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	}
 	deployment.Id = deploymentId
 
-	mongoPort, _, err := docker.MongoContainer(ctx, &wg)
+	mongoPort, _, err := docker.Mongo(ctx, &wg)
 	if err != nil {
 		t.Error(err)
 		return
