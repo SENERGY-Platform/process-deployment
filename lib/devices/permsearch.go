@@ -17,13 +17,21 @@
 package devices
 
 import (
+	"github.com/SENERGY-Platform/permission-search/lib/client"
+	"github.com/SENERGY-Platform/permission-search/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
-	"github.com/SENERGY-Platform/process-deployment/lib/util"
 )
 
 func (this *Repository) CheckAccess(token auth.Token, kind string, ids []string) (result map[string]bool, err error) {
 	if len(ids) == 0 {
 		return map[string]bool{}, nil
 	}
-	return util.CheckAccess(this.config.PermSearchUrl, token, kind, ids)
+	result, _, err = client.Query[map[string]bool](this.permissionsearch, token.String(), model.QueryMessage{
+		Resource: kind,
+		CheckIds: &model.QueryCheckIds{
+			Ids:    ids,
+			Rights: "x",
+		},
+	})
+	return result, err
 }

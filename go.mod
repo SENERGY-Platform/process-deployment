@@ -7,11 +7,11 @@ require (
 	github.com/coocood/freecache v1.2.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/klauspost/compress v1.16.4 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/samuel/go-zookeeper v0.0.0-20190810000440-0ceca61e4d75 // indirect
+	github.com/samuel/go-zookeeper v0.0.0-20200724154423-2164a8ac840e // indirect
 	github.com/segmentio/kafka-go v0.4.39
-	github.com/wvanbergen/kazoo-go v0.0.0-20180202103751-f72d8611297a
+	github.com/wvanbergen/kazoo-go v0.0.0-20180202103751-f72d8611297a // indirect
 	go.mongodb.org/mongo-driver v1.11.4
 	golang.org/x/crypto v0.8.0 // indirect
 	golang.org/x/net v0.9.0 // indirect
@@ -19,6 +19,7 @@ require (
 
 require (
 	github.com/SENERGY-Platform/models/go v0.0.0-20230406081245-2b17534509d4
+	github.com/SENERGY-Platform/permission-search v0.0.0-20230428103111-a87111ac99d5
 	github.com/google/uuid v1.3.0
 	github.com/testcontainers/testcontainers-go v0.19.0
 )

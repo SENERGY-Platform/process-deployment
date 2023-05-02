@@ -20,9 +20,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/SENERGY-Platform/permission-search/lib/client"
+	"github.com/SENERGY-Platform/permission-search/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/util"
 	"net/http"
 )
 
@@ -60,9 +61,15 @@ IDLOOP:
 	if !alsoCheckTypes {
 		return true, nil
 	}
-	typesAccess, err := util.CheckAccess(check.config.PermSearchUrl, token, "import-types", typeIds)
+	typesAccess, _, err := client.Query[map[string]bool](check.permissionsearch, token.String(), model.QueryMessage{
+		Resource: "import-types",
+		CheckIds: &model.QueryCheckIds{
+			Ids:    typeIds,
+			Rights: "x",
+		},
+	})
 	if err != nil {
-		return
+		return false, err
 	}
 	for _, typeAccess := range typesAccess {
 		if !typeAccess {

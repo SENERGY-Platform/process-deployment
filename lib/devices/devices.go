@@ -18,6 +18,7 @@ package devices
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/permission-search/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/coocood/freecache"
@@ -29,16 +30,18 @@ var L1Size = 20 * 1024 * 1024 //20MB
 type RepositoryFactory struct{}
 
 type Repository struct {
-	config       config.Config
-	l1           *freecache.Cache
-	defaultToken string
+	config           config.Config
+	l1               *freecache.Cache
+	defaultToken     string
+	permissionsearch client.Client
 }
 
 func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {
 	return &Repository{
-		config:       config,
-		l1:           freecache.NewCache(L1Size),
-		defaultToken: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
+		config:           config,
+		l1:               freecache.NewCache(L1Size),
+		defaultToken:     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
+		permissionsearch: client.NewClient(config.PermSearchUrl),
 	}, nil
 }
 

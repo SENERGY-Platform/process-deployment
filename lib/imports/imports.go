@@ -17,6 +17,7 @@
 package imports
 
 import (
+	"github.com/SENERGY-Platform/permission-search/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 )
@@ -24,14 +25,16 @@ import (
 type CheckFactory struct{}
 
 type Check struct {
-	config       config.Config
-	defaultToken string
+	config           config.Config
+	defaultToken     string
+	permissionsearch client.Client
 }
 
 func (this *CheckFactory) New(config config.Config) (interfaces.Imports, error) {
 	return &Check{
-		config:       config,
-		defaultToken: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
+		config:           config,
+		defaultToken:     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
+		permissionsearch: client.NewClient(config.PermSearchUrl),
 	}, nil
 }
 
