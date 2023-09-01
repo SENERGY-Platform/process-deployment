@@ -13,17 +13,18 @@ require (
 	github.com/segmentio/kafka-go v0.4.42
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/net v0.13.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 )
 
 require (
-	github.com/SENERGY-Platform/models/go v0.0.0-20230724134144-c26fd506045f
-	github.com/SENERGY-Platform/permission-search v0.0.0-20230814064430-b5ed112b136a
-	github.com/google/uuid v1.3.0
-	github.com/testcontainers/testcontainers-go v0.21.0
+	github.com/SENERGY-Platform/models/go v0.0.0-20230824080159-16585960df38
+	github.com/SENERGY-Platform/permission-search v0.0.0-20230829121111-76c8c176bddb
+	github.com/google/uuid v1.3.1
+	github.com/testcontainers/testcontainers-go v0.23.0
 )
 
 require (
+	dario.cat/mergo v1.0.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
@@ -37,7 +38,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
