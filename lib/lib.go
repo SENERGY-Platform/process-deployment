@@ -27,6 +27,11 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
 	"github.com/SENERGY-Platform/process-deployment/lib/processrepo"
+	"github.com/SENERGY-Platform/service-commons/pkg/cache/invalidator"
+	kafkalib "github.com/SENERGY-Platform/service-commons/pkg/kafka"
+	"log"
+	"runtime/debug"
+	"time"
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
@@ -63,4 +68,20 @@ func Start(
 		return err
 	}
 	return api.Start(ctx, config, controller)
+}
+
+func StartCacheInvalidator(ctx context.Context, conf config.Config) error {
+	if conf.KafkaUrl == "" || conf.KafkaUrl == "-" {
+		return nil
+	}
+	return invalidator.StartCacheInvalidatorAll(ctx, kafkalib.Config{
+		KafkaUrl:               conf.KafkaUrl,
+		StartOffset:            kafkalib.LastOffset,
+		Debug:                  conf.Debug,
+		PartitionWatchInterval: time.Minute,
+		OnError: func(err error) {
+			log.Println("ERROR:", err)
+			debug.PrintStack()
+		},
+	}, conf.CacheInvalidationKafkaTopics, nil)
 }

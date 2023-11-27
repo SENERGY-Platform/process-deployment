@@ -17,6 +17,8 @@
   "notification_url": "http://notification-service:5000",
   "import_deploy_url": "http://import-deploy:8080",
 
+  "cache_invalidation_kafka_topics": ["aspects", "device-types", "device-groups"],
+
   "enable_device_groups_for_tasks": false,
   "enable_device_groups_for_events": false,
   "enable_imports_for_events": false,

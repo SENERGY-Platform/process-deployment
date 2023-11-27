@@ -41,8 +41,12 @@ func main() {
 
 	err = lib.StartDefault(ctx, config)
 	if err != nil {
-		log.Println(err)
-		cancel()
+		log.Fatal(err)
+	}
+
+	err = lib.StartCacheInvalidator(ctx, config)
+	if err != nil {
+		log.Println("WARNING: unable to start cache invalidator:", err)
 	}
 
 	go func() {
