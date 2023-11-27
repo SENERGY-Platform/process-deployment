@@ -21,28 +21,42 @@ import (
 	"github.com/SENERGY-Platform/permission-search/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/coocood/freecache"
+	"github.com/SENERGY-Platform/service-commons/pkg/cache"
+	"github.com/SENERGY-Platform/service-commons/pkg/signal"
+	"time"
 )
 
-var L1Expiration = 60         // 60sec
-var L1Size = 20 * 1024 * 1024 //20MB
+var CacheExpiration = 60 * time.Second
 
 type RepositoryFactory struct{}
 
-type Repository struct {
-	config           config.Config
-	l1               *freecache.Cache
-	defaultToken     string
-	permissionsearch client.Client
-}
-
 func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {
+	c, err := cache.New(cache.Config{
+		CacheInvalidationSignalHooks: map[cache.Signal]cache.ToKey{
+			signal.Known.CacheInvalidationAll:        nil,
+			signal.Known.AspectCacheInvalidation:     nil,
+			signal.Known.DeviceTypeCacheInvalidation: nil,
+			signal.Known.DeviceGroupInvalidation: func(signalValue string) (cacheKey string) {
+				return "device-groups." + signalValue
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
 	return &Repository{
 		config:           config,
-		l1:               freecache.NewCache(L1Size),
+		cache:            c,
 		defaultToken:     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
 		permissionsearch: client.NewClient(config.PermSearchUrl),
 	}, nil
 }
 
 var Factory = &RepositoryFactory{}
+
+type Repository struct {
+	config           config.Config
+	cache            *cache.Cache
+	defaultToken     string
+	permissionsearch client.Client
+}

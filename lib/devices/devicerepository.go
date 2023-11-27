@@ -21,7 +21,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	"github.com/coocood/freecache"
+	"github.com/SENERGY-Platform/service-commons/pkg/cache"
 	"io"
 	"log"
 	"net/http"
@@ -29,91 +29,48 @@ import (
 	"runtime/debug"
 )
 
-func (this *Repository) GetAspectNode(token auth.Token, id string) (result devicemodel.AspectNode, err error) {
-	err, _ = this.get(token, "aspect-nodes", id, &result)
-	return
+func (this *Repository) GetAspectNode(token auth.Token, id string) (devicemodel.AspectNode, error) {
+	resource := "aspect-nodes"
+	return cache.Use(this.cache, resource+"."+id, func() (result devicemodel.AspectNode, err error) {
+		err, _ = this.get(token, resource, id, &result)
+		return result, err
+	}, CacheExpiration)
 }
 
 func (this *Repository) GetDevice(token auth.Token, id string) (result devicemodel.Device, err error, code int) {
-	err, code = this.get(token, "devices", id, &result)
-	return
+	resource := "devices"
+	code = http.StatusOK
+	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Device, err error) {
+		err, code = this.get(token, resource, id, &temp)
+		return temp, err
+	}, CacheExpiration)
+	return result, err, code
 }
 
 func (this *Repository) GetService(token auth.Token, id string) (result devicemodel.Service, err error, code int) {
-	err, code = this.get(token, "services", id, &result)
-	return
+	resource := "services"
+	code = http.StatusOK
+	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Service, err error) {
+		err, code = this.get(token, resource, id, &temp)
+		return temp, err
+	}, CacheExpiration)
+	return result, err, code
 }
 
 func (this *Repository) GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int) {
-	err, code = this.get(token, "device-groups", id, &result)
-	return
+	resource := "device-groups"
+	code = http.StatusOK
+	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.DeviceGroup, err error) {
+		err, code = this.get(token, resource, id, &temp)
+		return temp, err
+	}, CacheExpiration)
+	return result, err, code
 }
 
 func (this *Repository) get(token auth.Token, resource string, id string, result interface{}) (error, int) {
-	temp, err := this.l1.Get([]byte(resource + "." + id))
-	if err != nil && this.config.Debug {
-		if err == freecache.ErrNotFound {
-			log.Println("DEBUG: "+resource+" not in cache", id)
-		} else {
-			log.Println("ERROR: "+resource+" cache retrieval error", id, err)
-		}
-	}
-	if err == nil {
-		err = json.Unmarshal(temp, result)
-		if err != nil {
-			debug.PrintStack()
-			return err, http.StatusInternalServerError
-		} else {
-			return nil, 200
-		}
-	} else {
-		req, err := http.NewRequest(
-			"GET",
-			this.config.DeviceRepoUrl+"/"+resource+"/"+url.PathEscape(id),
-			nil,
-		)
-		if err != nil {
-			debug.PrintStack()
-			return err, http.StatusInternalServerError
-		}
-		req.Header.Set("Authorization", token.Token)
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			debug.PrintStack()
-			return err, http.StatusInternalServerError
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode >= 300 {
-			debug.PrintStack()
-			temp, _ := io.ReadAll(resp.Body)
-			log.Println("ERROR:", resp.StatusCode, string(temp))
-			return errors.New("unexpected statuscode"), resp.StatusCode
-		}
-
-		temp, err := io.ReadAll(resp.Body)
-		if err != nil {
-			debug.PrintStack()
-			return err, http.StatusInternalServerError
-		}
-		err = json.Unmarshal(temp, result)
-		if err != nil {
-			debug.PrintStack()
-			return err, http.StatusInternalServerError
-		}
-		err = this.l1.Set([]byte(resource+"."+id), temp, L1Expiration)
-		if err != nil {
-			log.Println("WARNING: unable to save resource in cache", resource+"."+id, string(temp))
-		}
-		return nil, 200
-	}
-}
-
-func (this *Repository) getUncachedList(token auth.Token, resource string, result interface{}) (error, int) {
 	req, err := http.NewRequest(
 		"GET",
-		this.config.DeviceRepoUrl+"/"+resource,
+		this.config.DeviceRepoUrl+"/"+resource+"/"+url.PathEscape(id),
 		nil,
 	)
 	if err != nil {
@@ -131,13 +88,20 @@ func (this *Repository) getUncachedList(token auth.Token, resource string, resul
 
 	if resp.StatusCode >= 300 {
 		debug.PrintStack()
+		temp, _ := io.ReadAll(resp.Body)
+		log.Println("ERROR:", resp.StatusCode, string(temp))
 		return errors.New("unexpected statuscode"), resp.StatusCode
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(result)
+	temp, err := io.ReadAll(resp.Body)
 	if err != nil {
 		debug.PrintStack()
 		return err, http.StatusInternalServerError
 	}
-	return nil, 200
+	err = json.Unmarshal(temp, result)
+	if err != nil {
+		debug.PrintStack()
+		return err, http.StatusInternalServerError
+	}
+	return nil, http.StatusOK
 }

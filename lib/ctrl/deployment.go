@@ -19,9 +19,7 @@ package ctrl
 import (
 	"encoding/json"
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 )
 
@@ -93,28 +91,4 @@ func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
 		return err
 	}
 	return this.deploymentPublisher.Produce(id, msg)
-}
-
-func (this *Ctrl) getCachedDevice(token auth.Token, cache *map[string]devicemodel.Device, id string) (*devicemodel.Device, error, int) {
-	if result, ok := (*cache)[id]; ok {
-		return &result, nil, 200
-	}
-	result, err, code := this.devices.GetDevice(token, id)
-	if err != nil {
-		return &result, err, code
-	}
-	(*cache)[id] = result
-	return &result, nil, 200
-}
-
-func (this *Ctrl) getCachedService(token auth.Token, cache *map[string]devicemodel.Service, id string) (*devicemodel.Service, error, int) {
-	if result, ok := (*cache)[id]; ok {
-		return &result, nil, 200
-	}
-	result, err, code := this.devices.GetService(token, id)
-	if err != nil {
-		return &result, err, code
-	}
-	(*cache)[id] = result
-	return &result, nil, 200
 }
