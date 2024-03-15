@@ -34,6 +34,11 @@ func (this *Repository) GetAspectNode(token auth.Token, id string) (devicemodel.
 	return cache.Use(this.cache, resource+"."+id, func() (result devicemodel.AspectNode, err error) {
 		err, _ = this.get(token, resource, id, &result)
 		return result, err
+	}, func(node devicemodel.AspectNode) error {
+		if node.Id == "" {
+			return errors.New("invalid aspect-node returned from cache")
+		}
+		return nil
 	}, CacheExpiration)
 }
 
@@ -43,6 +48,11 @@ func (this *Repository) GetDevice(token auth.Token, id string) (result devicemod
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Device, err error) {
 		err, code = this.get(token, resource, id, &temp)
 		return temp, err
+	}, func(device devicemodel.Device) error {
+		if device.Id == "" {
+			return errors.New("invalid device returned from cache")
+		}
+		return nil
 	}, CacheExpiration)
 	return result, err, code
 }
@@ -53,6 +63,11 @@ func (this *Repository) GetService(token auth.Token, id string) (result devicemo
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Service, err error) {
 		err, code = this.get(token, resource, id, &temp)
 		return temp, err
+	}, func(service devicemodel.Service) error {
+		if service.Id == "" {
+			return errors.New("invalid service returned from cache")
+		}
+		return nil
 	}, CacheExpiration)
 	return result, err, code
 }
@@ -63,6 +78,11 @@ func (this *Repository) GetDeviceGroup(token auth.Token, id string) (result devi
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.DeviceGroup, err error) {
 		err, code = this.get(token, resource, id, &temp)
 		return temp, err
+	}, func(group devicemodel.DeviceGroup) error {
+		if group.Id == "" {
+			return errors.New("invalid group returned from cache")
+		}
+		return nil
 	}, CacheExpiration)
 	return result, err, code
 }
