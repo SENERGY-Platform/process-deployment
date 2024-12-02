@@ -20,8 +20,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/SENERGY-Platform/permission-search/lib/client"
-	"github.com/SENERGY-Platform/permission-search/lib/model"
+	permv2 "github.com/SENERGY-Platform/permissions-v2/pkg/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
 	"net/http"
@@ -61,13 +60,7 @@ IDLOOP:
 	if !alsoCheckTypes {
 		return true, nil
 	}
-	typesAccess, _, err := client.Query[map[string]bool](check.permissionsearch, token.String(), model.QueryMessage{
-		Resource: "import-types",
-		CheckIds: &model.QueryCheckIds{
-			Ids:    typeIds,
-			Rights: "x",
-		},
-	})
+	typesAccess, err, _ := check.permv2.CheckMultiplePermissions(token.Jwt(), "import-types", typeIds, permv2.Execute)
 	if err != nil {
 		return false, err
 	}

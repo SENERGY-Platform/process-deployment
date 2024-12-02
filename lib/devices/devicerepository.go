@@ -17,22 +17,18 @@
 package devices
 
 import (
-	"encoding/json"
 	"errors"
+	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/service-commons/pkg/cache"
-	"io"
-	"log"
 	"net/http"
-	"net/url"
-	"runtime/debug"
 )
 
 func (this *Repository) GetAspectNode(token auth.Token, id string) (devicemodel.AspectNode, error) {
 	resource := "aspect-nodes"
 	return cache.Use(this.cache, resource+"."+id, func() (result devicemodel.AspectNode, err error) {
-		err, _ = this.get(token, resource, id, &result)
+		result, err, _ = this.devicerepo.GetAspectNode(id)
 		return result, err
 	}, func(node devicemodel.AspectNode) error {
 		if node.Id == "" {
@@ -46,7 +42,7 @@ func (this *Repository) GetDevice(token auth.Token, id string) (result devicemod
 	resource := "devices"
 	code = http.StatusOK
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Device, err error) {
-		err, code = this.get(token, resource, id, &temp)
+		temp, err, code = this.devicerepo.ReadDevice(id, token.Jwt(), devicerepo.READ)
 		return temp, err
 	}, func(device devicemodel.Device) error {
 		if device.Id == "" {
@@ -61,7 +57,7 @@ func (this *Repository) GetService(token auth.Token, id string) (result devicemo
 	resource := "services"
 	code = http.StatusOK
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.Service, err error) {
-		err, code = this.get(token, resource, id, &temp)
+		temp, err, code = this.devicerepo.GetService(id)
 		return temp, err
 	}, func(service devicemodel.Service) error {
 		if service.Id == "" {
@@ -76,7 +72,7 @@ func (this *Repository) GetDeviceGroup(token auth.Token, id string) (result devi
 	resource := "device-groups"
 	code = http.StatusOK
 	result, err = cache.Use(this.cache, resource+"."+id, func() (temp devicemodel.DeviceGroup, err error) {
-		err, code = this.get(token, resource, id, &temp)
+		temp, err, code = this.devicerepo.ReadDeviceGroup(id, token.Jwt(), false)
 		return temp, err
 	}, func(group devicemodel.DeviceGroup) error {
 		if group.Id == "" {
@@ -85,43 +81,4 @@ func (this *Repository) GetDeviceGroup(token auth.Token, id string) (result devi
 		return nil
 	}, CacheExpiration)
 	return result, err, code
-}
-
-func (this *Repository) get(token auth.Token, resource string, id string, result interface{}) (error, int) {
-	req, err := http.NewRequest(
-		"GET",
-		this.config.DeviceRepoUrl+"/"+resource+"/"+url.PathEscape(id),
-		nil,
-	)
-	if err != nil {
-		debug.PrintStack()
-		return err, http.StatusInternalServerError
-	}
-	req.Header.Set("Authorization", token.Token)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		debug.PrintStack()
-		return err, http.StatusInternalServerError
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= 300 {
-		debug.PrintStack()
-		temp, _ := io.ReadAll(resp.Body)
-		log.Println("ERROR:", resp.StatusCode, string(temp))
-		return errors.New("unexpected statuscode"), resp.StatusCode
-	}
-
-	temp, err := io.ReadAll(resp.Body)
-	if err != nil {
-		debug.PrintStack()
-		return err, http.StatusInternalServerError
-	}
-	err = json.Unmarshal(temp, result)
-	if err != nil {
-		debug.PrintStack()
-		return err, http.StatusInternalServerError
-	}
-	return nil, http.StatusOK
 }

@@ -224,13 +224,22 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	conf.MongoUrl = "mongodb://localhost:" + mongoPort
 
 	devicesMock := &mocks.DeviceRepoMock{}
+	_, err = devicesMock.New(ctx, conf)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	devicesJson, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/devices.json")
 	if err == nil {
 		devicesList := []devicemodel.Device{}
 		json.Unmarshal(devicesJson, &devicesList)
 		for _, d := range devicesList {
-			devicesMock.SetDevice(d.Id, d)
+			err = devicesMock.SetDevice(d.Id, d, userId)
+			if err != nil {
+				t.Error(err)
+				return
+			}
 		}
 	}
 

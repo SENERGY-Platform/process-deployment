@@ -18,7 +18,8 @@ package devices
 
 import (
 	"context"
-	"github.com/SENERGY-Platform/permission-search/lib/client"
+	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
+	permv2 "github.com/SENERGY-Platform/permissions-v2/pkg/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/service-commons/pkg/cache"
@@ -45,18 +46,20 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 		return nil, err
 	}
 	return &Repository{
-		config:           config,
-		cache:            c,
-		defaultToken:     "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
-		permissionsearch: client.NewClient(config.PermSearchUrl),
+		config:       config,
+		cache:        c,
+		defaultToken: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
+		devicerepo:   devicerepo.NewClient(config.DeviceRepoUrl),
+		permv2:       permv2.New(config.PermissionsV2Url),
 	}, nil
 }
 
 var Factory = &RepositoryFactory{}
 
 type Repository struct {
-	config           config.Config
-	cache            *cache.Cache
-	defaultToken     string
-	permissionsearch client.Client
+	config       config.Config
+	cache        *cache.Cache
+	defaultToken string
+	devicerepo   devicerepo.Interface
+	permv2       permv2.Client
 }

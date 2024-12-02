@@ -18,22 +18,24 @@ package mocks
 
 import (
 	"context"
-	"errors"
+	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
+	"github.com/SENERGY-Platform/device-repository/lib/database"
+	"github.com/SENERGY-Platform/device-repository/lib/model"
+	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 
-	"net/http"
 	"sync"
 )
 
 type DeviceRepoMock struct {
-	mux      sync.Mutex
-	devices  map[string]devicemodel.Device
-	services map[string]devicemodel.Service
-	options  []deviceselectionmodel.Selectable
+	mux     sync.Mutex
+	options []deviceselectionmodel.Selectable
+	repodb  database.Database
+	repo    devicerepo.Interface
 }
 
 func (this *DeviceRepoMock) GetAspectNode(token auth.Token, id string) (aspectNode devicemodel.AspectNode, err error) {
@@ -41,48 +43,46 @@ func (this *DeviceRepoMock) GetAspectNode(token auth.Token, id string) (aspectNo
 	panic("implement me")
 }
 
-var Devices = &DeviceRepoMock{devices: map[string]devicemodel.Device{}, services: map[string]devicemodel.Service{}}
+var Devices = &DeviceRepoMock{}
 
 func (this *DeviceRepoMock) New(ctx context.Context, config config.Config) (interfaces.Devices, error) {
-	return this, nil
+	var err error
+	this.repo, this.repodb, err = devicerepo.NewTestClient()
+	return this, err
 }
 
 func (this *DeviceRepoMock) GetDevice(token auth.Token, id string) (devicemodel.Device, error, int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	if result, ok := this.devices[id]; ok {
-		return result, nil, 200
-	} else {
-		return result, errors.New("device " + id + " not found"), http.StatusNotFound
-	}
+	return this.repo.ReadDevice(id, token.Jwt(), devicerepo.READ)
 }
 
-func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	if this.devices == nil {
-		this.devices = map[string]devicemodel.Device{}
+func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device, userId string) error {
+	device.Id = id
+	err := this.repodb.SetRights("devices", device.Id, devicemodel.ResourceRights{
+		UserRights: map[string]model.Right{userId: {
+			Read:         true,
+			Write:        true,
+			Execute:      true,
+			Administrate: true,
+		}},
+		GroupRights:          map[string]model.Right{},
+		KeycloakGroupsRights: map[string]model.Right{},
+	})
+	if err != nil {
+		return err
 	}
-	this.devices[id] = device
+	return this.repodb.SetDevice(context.Background(), devicerepo.DeviceWithConnectionState{Device: device})
 }
 
 func (this *DeviceRepoMock) GetService(token auth.Token, id string) (devicemodel.Service, error, int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	if result, ok := this.services[id]; ok {
-		return result, nil, 200
-	} else {
-		return result, errors.New("service " + id + " not found"), http.StatusNotFound
-	}
+	return this.repo.GetService(id)
 }
 
-func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	if this.services == nil {
-		this.services = map[string]devicemodel.Service{}
-	}
-	this.services[id] = service
+func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) error {
+	return this.repodb.SetDeviceType(context.Background(), models.DeviceType{
+		Id:       "ref-service:" + service.Id,
+		Name:     "ref-service:" + service.Name,
+		Services: []models.Service{service},
+	})
 }
 
 func (this *DeviceRepoMock) GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int) {

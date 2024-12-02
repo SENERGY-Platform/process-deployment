@@ -17,8 +17,7 @@
 package devices
 
 import (
-	"github.com/SENERGY-Platform/permission-search/lib/client"
-	"github.com/SENERGY-Platform/permission-search/lib/model"
+	permv2 "github.com/SENERGY-Platform/permissions-v2/pkg/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 )
 
@@ -26,12 +25,6 @@ func (this *Repository) CheckAccess(token auth.Token, kind string, ids []string)
 	if len(ids) == 0 {
 		return map[string]bool{}, nil
 	}
-	result, _, err = client.Query[map[string]bool](this.permissionsearch, token.String(), model.QueryMessage{
-		Resource: kind,
-		CheckIds: &model.QueryCheckIds{
-			Ids:    ids,
-			Rights: "x",
-		},
-	})
+	result, err, _ = this.permv2.CheckMultiplePermissions(token.Jwt(), kind, ids, permv2.Execute)
 	return result, err
 }

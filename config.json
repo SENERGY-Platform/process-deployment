@@ -13,7 +13,7 @@
   "mongo_dependencies_collection": "dependencies",
   "device_repo_url": "http://device-repo:8080",
   "device_selection_url": "http://device-selection:8080",
-  "perm_search_url": "http://permission-search:8080",
+  "permissions_v2_url": "http://permv2.permissions:8080",
   "notification_url": "http://notification-service:5000",
   "import_deploy_url": "http://import-deploy:8080",
 
