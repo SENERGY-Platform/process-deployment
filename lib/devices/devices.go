@@ -49,7 +49,7 @@ func (this *RepositoryFactory) New(ctx context.Context, config config.Config) (i
 		config:       config,
 		cache:        c,
 		defaultToken: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw",
-		devicerepo:   devicerepo.NewClient(config.DeviceRepoUrl),
+		devicerepo:   devicerepo.NewClient(config.DeviceRepoUrl, nil),
 		permv2:       permv2.New(config.PermissionsV2Url),
 	}, nil
 }
