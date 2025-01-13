@@ -24,6 +24,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/helper"
 	"io/ioutil"
+	"os"
 	"runtime/debug"
 	"testing"
 )
@@ -31,7 +32,7 @@ import (
 const RESOURCE_BASE_DIR = "../../../tests/resources/"
 
 func TestStringifyDeployment(t *testing.T) {
-	infos, err := ioutil.ReadDir(RESOURCE_BASE_DIR)
+	infos, err := os.ReadDir(RESOURCE_BASE_DIR)
 	if err != nil {
 		t.Error(err)
 		return

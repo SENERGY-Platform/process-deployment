@@ -73,4 +73,5 @@ type NotificationPayload struct {
 	UserId  string `json:"userId"`
 	Title   string `json:"title"`
 	IsRead  bool   `json:"isRead"`
+	Topic   string `json:"topic"`
 }

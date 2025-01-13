@@ -9,7 +9,7 @@
             <bpmn:extensionElements>
                 <camunda:connector>
                     <camunda:inputOutput>
-                        <camunda:inputParameter name="payload"><![CDATA[{"message":"test_changed","userId":"user1","title":"camunda_changed","isRead":false}]]></camunda:inputParameter>
+                        <camunda:inputParameter name="payload"><![CDATA[{"message":"test_changed","userId":"user1","title":"camunda_changed","isRead":false,"topic":"processes"}]]></camunda:inputParameter>
                         <camunda:inputParameter name="deploymentIdentifier">notification</camunda:inputParameter>
                         <camunda:inputParameter name="url">http://notification-service:5000</camunda:inputParameter>
                         <camunda:inputParameter name="method">PUT</camunda:inputParameter>

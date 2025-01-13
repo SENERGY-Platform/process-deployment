@@ -65,6 +65,7 @@ func (this *Stringifier) Notification(doc *etree.Document, element deploymentmod
 		UserId:  userId,
 		Title:   element.Notification.Title,
 		IsRead:  false,
+		Topic:   "processes",
 	}
 	txt, err := json.Marshal(notificationPayload)
 	if err != nil {
