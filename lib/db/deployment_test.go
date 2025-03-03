@@ -21,8 +21,10 @@ import (
 	"fmt"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
+	"reflect"
 	"runtime/debug"
 	"strings"
 	"sync"
@@ -195,7 +197,6 @@ func TestDeploymentsV2(t *testing.T) {
 		Name: "name1",
 	})
 	if err != nil {
-		debug.PrintStack()
 		testprint(err)
 		return
 	}
@@ -205,7 +206,6 @@ func TestDeploymentsV2(t *testing.T) {
 		Name: "name2",
 	})
 	if err != nil {
-		debug.PrintStack()
 		testprint(err)
 		return
 	}
@@ -215,8 +215,75 @@ func TestDeploymentsV2(t *testing.T) {
 		Name: "name3",
 	})
 	if err != nil {
-		debug.PrintStack()
 		testprint(err)
+		return
+	}
+
+	list, err := db.ListDeployments("user1", model.DeploymentListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !reflect.DeepEqual(list, []deploymentmodel.Deployment{
+		{
+			Id:   "id1",
+			Name: "name1",
+		},
+		{
+			Id:   "id2",
+			Name: "name2",
+		},
+	}) {
+		t.Errorf("%#v", list)
+		return
+	}
+
+	list, err = db.ListDeployments("user1", model.DeploymentListOptions{SortBy: "name.desc"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !reflect.DeepEqual(list, []deploymentmodel.Deployment{
+		{
+			Id:   "id2",
+			Name: "name2",
+		},
+		{
+			Id:   "id1",
+			Name: "name1",
+		},
+	}) {
+		t.Errorf("%#v", list)
+		return
+	}
+
+	list, err = db.ListDeployments("user1", model.DeploymentListOptions{Limit: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !reflect.DeepEqual(list, []deploymentmodel.Deployment{
+		{
+			Id:   "id1",
+			Name: "name1",
+		},
+	}) {
+		t.Errorf("%#v", list)
+		return
+	}
+
+	list, err = db.ListDeployments("user1", model.DeploymentListOptions{Offset: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !reflect.DeepEqual(list, []deploymentmodel.Deployment{
+		{
+			Id:   "id2",
+			Name: "name2",
+		},
+	}) {
+		t.Errorf("%#v", list)
 		return
 	}
 

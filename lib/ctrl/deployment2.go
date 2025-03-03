@@ -20,6 +20,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
@@ -64,6 +65,14 @@ func (this *Ctrl) GetDeployment(token auth.Token, id string, withOptions bool) (
 		}
 	}
 	return
+}
+
+func (this *Ctrl) GetDeployments(token auth.Token, options model.DeploymentListOptions) (result []deploymentmodel.Deployment, err error, code int) {
+	result, err = this.db.ListDeployments(token.GetUserId(), options)
+	if err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+	return result, nil, http.StatusOK
 }
 
 func (this *Ctrl) CreateDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {

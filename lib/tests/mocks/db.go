@@ -21,6 +21,7 @@ import (
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
@@ -69,6 +70,17 @@ func (this *DatabaseMock) GetDeployment(user string, deploymentId string) (deplo
 		return nil, errors.New("access denied"), http.StatusForbidden
 	}
 	return temp.Deployment, nil, 200
+}
+
+func (this *DatabaseMock) ListDeployments(user string, options model.DeploymentListOptions) (deployments []deploymentmodel.Deployment, err error) {
+	this.mux.Lock()
+	defer this.mux.Unlock()
+	for _, depl := range this.Deployments {
+		if depl.Owner == user && depl.Deployment != nil {
+			deployments = append(deployments, *depl.Deployment)
+		}
+	}
+	return deployments, nil
 }
 
 func (this *DatabaseMock) DeleteDeployment(id string) error {

@@ -20,13 +20,16 @@ import (
 	"context"
 	"errors"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 	"runtime/debug"
+	"strings"
 )
 
 const deploymentIdFiledName = "Id"
@@ -71,7 +74,7 @@ func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err 
 	ctx, _ := getTimeoutContext()
 	wrapper := messages.DeploymentCommand{}
 	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
-	if err == mongo.ErrNoDocuments {
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		return errors.New("not found"), http.StatusNotFound
 	}
 	if err != nil {
@@ -89,6 +92,50 @@ func (this *Mongo) DeleteDeployment(id string) error {
 	return err
 }
 
+func (this *Mongo) ListDeployments(user string, listOptions model.DeploymentListOptions) (deployments []deploymentmodel.Deployment, err error) {
+	ctx, _ := getTimeoutContext()
+	dbOptions := options.Find()
+	if listOptions.Limit > 0 {
+		dbOptions.SetLimit(listOptions.Limit)
+	}
+	if listOptions.Offset > 0 {
+		dbOptions.SetSkip(listOptions.Offset)
+	}
+
+	if listOptions.SortBy == "" {
+		listOptions.SortBy = deploymentIdFiledName + ".asc"
+	}
+	sortby := listOptions.SortBy
+	sortby = strings.TrimSuffix(sortby, ".asc")
+	sortby = strings.TrimSuffix(sortby, ".desc")
+	switch sortby {
+	case "name":
+		sortby = "deployment.name"
+	}
+	log.Println("sortby", sortby)
+	direction := int32(1)
+	if strings.HasSuffix(listOptions.SortBy, ".desc") {
+		direction = int32(-1)
+	}
+	dbOptions.SetSort(bson.D{{sortby, direction}})
+
+	c, err := this.deploymentsCollection().Find(ctx, bson.M{deploymentOwnerKey: user}, dbOptions)
+	if err != nil {
+		return nil, err
+	}
+	list := []messages.DeploymentCommand{}
+	err = c.All(ctx, &list)
+	if err != nil {
+		return nil, err
+	}
+	for _, element := range list {
+		if element.Deployment != nil {
+			deployments = append(deployments, *element.Deployment)
+		}
+	}
+	return deployments, nil
+}
+
 func (this *Mongo) GetDeployment(user string, deploymentId string) (deployment *deploymentmodel.Deployment, err error, code int) {
 	ctx, _ := getTimeoutContext()
 	response := this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId})
@@ -97,7 +144,7 @@ func (this *Mongo) GetDeployment(user string, deploymentId string) (deployment *
 
 	versionWrapper := DeploymentCommandIdVersionWrapper{}
 	err = response.Decode(&versionWrapper)
-	if err == mongo.ErrNoDocuments {
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, errors.New("not found"), http.StatusNotFound
 	}
 	if err != nil {

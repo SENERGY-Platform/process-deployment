@@ -21,6 +21,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
+	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/julienschmidt/httprouter"
@@ -175,6 +176,49 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 			}
 		}
 		result, err, code := ctrl.UpdateDeployment(token, id, deployment, source, optionals)
+		if err != nil {
+			http.Error(writer, err.Error(), code)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+		json.NewEncoder(writer).Encode(result)
+	})
+
+	router.GET("/v3/deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+		listOptions := model.DeploymentListOptions{
+			Limit:  0,
+			Offset: 0,
+		}
+		var err error
+		limitParam := request.URL.Query().Get("limit")
+		if limitParam != "" {
+			listOptions.Limit, err = strconv.ParseInt(limitParam, 10, 64)
+		}
+		if err != nil {
+			http.Error(writer, "unable to parse limit:"+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		offsetParam := request.URL.Query().Get("offset")
+		if offsetParam != "" {
+			listOptions.Offset, err = strconv.ParseInt(offsetParam, 10, 64)
+		}
+		if err != nil {
+			http.Error(writer, "unable to parse offset:"+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		listOptions.SortBy = request.URL.Query().Get("sort")
+		if listOptions.SortBy == "" {
+			listOptions.SortBy = "name.asc"
+		}
+		
+		token, err := auth.GetParsedToken(request)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusBadRequest)
+			return
+		}
+		result, err, code := ctrl.GetDeployments(token, listOptions)
 		if err != nil {
 			http.Error(writer, err.Error(), code)
 			return
