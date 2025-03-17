@@ -24,7 +24,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,12 +31,28 @@ import (
 )
 
 func init() {
-	endpoints = append(endpoints, DeploymentsEndpoints)
+	endpoints = append(endpoints, &DeploymentsEndpoints{})
 }
 
-func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
-	router.GET("/v3/start-parameters/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		id := params.ByName("modelId")
+type DeploymentsEndpoints struct{}
+
+// GetStartParameters godoc
+// @Summary      get start-parameters
+// @Description  get start-parameters of a process-model
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        modelId path string true "process-model id"
+// @Success      200 {array}  deploymentmodel.ProcessStartParameter
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/start-parameters/{modelId} [GET]
+func (this *DeploymentsEndpoints) GetStartParameters(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /v3/start-parameters/{modelId}", func(writer http.ResponseWriter, request *http.Request) {
+		id := request.PathValue("modelId")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -56,8 +71,25 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.POST("/v3/prepared-deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// PrepareDeployment godoc
+// @Summary      prepare process deployment
+// @Description  prepare process deployment
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        with_options query bool false "default true, omit SelectionOptions if set to false"
+// @Param        message body messages.PrepareRequest true "model that should be prepared for deployment"
+// @Success      200 {object} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/prepared-deployments [POST]
+func (this *DeploymentsEndpoints) PrepareDeployment(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("POST /v3/prepared-deployments", func(writer http.ResponseWriter, request *http.Request) {
 		withOptionsStr := request.URL.Query().Get("with_options")
 		if withOptionsStr == "" {
 			withOptionsStr = "true"
@@ -86,8 +118,25 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.GET("/v3/prepared-deployments/:modelId", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// PrepareDeploymentByModelId godoc
+// @Summary      prepare process deployment with model-id
+// @Description  prepare process deployment with model-id
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        modelId path string true "process-model id"
+// @Param        with_options query bool false "default true, omit SelectionOptions if set to false"
+// @Success      200 {object} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/prepared-deployments/{modelId} [GET]
+func (this *DeploymentsEndpoints) PrepareDeploymentByModelId(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /v3/prepared-deployments/{modelId}", func(writer http.ResponseWriter, request *http.Request) {
 		withOptionsStr := request.URL.Query().Get("with_options")
 		if withOptionsStr == "" {
 			withOptionsStr = "true"
@@ -97,7 +146,7 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		id := params.ByName("modelId")
+		id := request.PathValue("modelId")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -119,8 +168,26 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.POST("/v3/deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// Deploy godoc
+// @Summary      deploy process
+// @Description  deploy process
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        source query string false "source of deployment (e.g. smart-service)"
+// @Param        optional_service_selection query integer false "set to true to disable validation, that a service must be selected"
+// @Param        message body deploymentmodel.Deployment true "process deployment"
+// @Success      200 {object} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/deployments [POST]
+func (this *DeploymentsEndpoints) Deploy(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("POST /v3/deployments", func(writer http.ResponseWriter, request *http.Request) {
 		source := request.URL.Query().Get("source")
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
@@ -151,10 +218,29 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.PUT("/v3/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// UpdateDeployment godoc
+// @Summary      update process deployment
+// @Description  update process deployment
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        id path string true "deployment id"
+// @Param        source query string false "source of deployment (e.g. smart-service)"
+// @Param        optional_service_selection query integer false "set to true to disable validation, that a service must be selected"
+// @Param        message body deploymentmodel.Deployment true "process deployment"
+// @Success      200 {object} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/deployments/{id} [PUT]
+func (this *DeploymentsEndpoints) UpdateDeployment(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("PUT /v3/deployments/{id}", func(writer http.ResponseWriter, request *http.Request) {
 		source := request.URL.Query().Get("source")
-		id := params.ByName("id")
+		id := request.PathValue("id")
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
@@ -183,8 +269,26 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.GET("/v3/deployments", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// ListDeployments godoc
+// @Summary      list process deployments
+// @Description  list process deployments
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        limit query integer false "default unlimited"
+// @Param        offset query integer false "default 0"
+// @Param        sort query string false "default name.asc"
+// @Success      200 {array} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/deployments [GET]
+func (this *DeploymentsEndpoints) ListDeployments(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /v3/deployments", func(writer http.ResponseWriter, request *http.Request) {
 		listOptions := model.DeploymentListOptions{
 			Limit:  0,
 			Offset: 0,
@@ -212,7 +316,7 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		if listOptions.SortBy == "" {
 			listOptions.SortBy = "name.asc"
 		}
-		
+
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -226,8 +330,25 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.GET("/v3/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// GetDeployment godoc
+// @Summary      get process deployment
+// @Description  get process deployment
+// @Tags         deployment
+// @Produce      json
+// @Security Bearer
+// @Param        id path string true "deployment id"
+// @Param        with_options query bool false "default true, omit SelectionOptions if set to false"
+// @Success      200 {object} deploymentmodel.Deployment
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/deployments/{id} [GET]
+func (this *DeploymentsEndpoints) GetDeployment(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /v3/deployments/{id}", func(writer http.ResponseWriter, request *http.Request) {
 		withOptionsStr := request.URL.Query().Get("with_options")
 		if withOptionsStr == "" {
 			withOptionsStr = "true"
@@ -237,7 +358,7 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}
-		id := params.ByName("id")
+		id := request.PathValue("id")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -251,9 +372,24 @@ func DeploymentsEndpoints(router *httprouter.Router, config config.Config, ctrl 
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.DELETE("/v3/deployments/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		id := params.ByName("id")
+// DeleteDeployment godoc
+// @Summary      delete process deployment
+// @Description  delete process deployment
+// @Tags         deployment
+// @Security Bearer
+// @Param        id path string true "deployment id"
+// @Success      200
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /v3/deployments/{id} [DELETE]
+func (this *DeploymentsEndpoints) DeleteDeployment(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("DELETE /v3/deployments/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		id := request.PathValue("id")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)

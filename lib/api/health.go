@@ -20,8 +20,7 @@ import (
 	"bytes"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/julienschmidt/httprouter"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -30,12 +29,14 @@ import (
 const connectivityTestToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25uZWN0aXZpdHktdGVzdCJ9.OnihzQ7zwSq0l1Za991SpdsxkktfrdlNl-vHHpYpXQw"
 
 func init() {
-	endpoints = append(endpoints, HealthEndpoints)
+	endpoints = append(endpoints, &HealthEndpoints{})
 }
 
-func HealthEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
-	router.POST("/health", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		msg, err := ioutil.ReadAll(request.Body)
+type HealthEndpoints struct{}
+
+func (this *HealthEndpoints) Health(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("POST /health", func(writer http.ResponseWriter, request *http.Request) {
+		msg, err := io.ReadAll(request.Body)
 		log.Println("INFO: /health", err, string(msg))
 		writer.WriteHeader(http.StatusOK)
 	})
@@ -64,7 +65,7 @@ func HealthEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl
 				if err != nil {
 					log.Fatal("FATAL: connection test:", err)
 				}
-				ioutil.ReadAll(resp.Body)
+				io.ReadAll(resp.Body)
 				resp.Body.Close()
 			}
 		}()

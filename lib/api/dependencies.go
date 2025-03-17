@@ -22,27 +22,35 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 func init() {
-	endpoints = append(endpoints, DependenciesEndpoints)
+	endpoints = append(endpoints, &DependenciesEndpoints{})
 }
 
-func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl *ctrl.Ctrl) {
+type DependenciesEndpoints struct{}
 
-	/*
-		query-parameter:
-			ids:
-				comma separated list of deployment ids
-				filters dependencies by given deployments
-			limit
-			offset
-	*/
-	router.GET("/dependencies", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+// ListDependencies godoc
+// @Summary      list dependencies
+// @Description  list dependencies
+// @Tags         dependencies
+// @Produce      json
+// @Security Bearer
+// @Param        limit query integer false "default 100, will be ignored if 'ids' is set"
+// @Param        offset query integer false "default 0, will be ignored if 'ids' is set"
+// @Param        ids query string false "filter; ignores limit/offset; comma-seperated list"
+// @Success      200 {array} dependencymodel.Dependencies
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /dependencies [GET]
+func (this *DependenciesEndpoints) ListDependencies(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /dependencies", func(writer http.ResponseWriter, request *http.Request) {
 		result := []dependencymodel.Dependencies{}
 		var err error
 		var code int
@@ -83,9 +91,25 @@ func DependenciesEndpoints(router *httprouter.Router, config config.Config, ctrl
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
+}
 
-	router.GET("/dependencies/:id", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-		id := params.ByName("id")
+// GetDependency godoc
+// @Summary      get dependencies
+// @Description  get dependencies of deployment
+// @Tags         dependencies
+// @Produce      json
+// @Security Bearer
+// @Param        id path string true "deployment id"
+// @Success      200 {object}  dependencymodel.Dependencies
+// @Failure      400
+// @Failure      401
+// @Failure      403
+// @Failure      404
+// @Failure      500
+// @Router       /dependencies/{id} [GET]
+func (this *DependenciesEndpoints) GetDependency(config config.Config, router *http.ServeMux, ctrl *ctrl.Ctrl) {
+	router.HandleFunc("GET /dependencies/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		id := request.PathValue("id")
 		token, err := auth.GetParsedToken(request)
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusBadRequest)
