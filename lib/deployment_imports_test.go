@@ -49,7 +49,7 @@ func TestImportDeployments(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	control, err := ctrl.New(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
+	control, err := ctrl.New(ctx, conf, mocks.Kafka, mocks.Database, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports, mocks.Engine, mocks.EventDepl)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -60,7 +60,7 @@ func TestImportDeployments(t *testing.T) {
 		if err != nil {
 			t.Error(err.Error())
 		}
-		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{}, deploymentmodel.DeploymentXmlValidator)
 		if err != nil {
 			t.Error(err.Error())
 		}
@@ -76,7 +76,7 @@ func TestImportDeployments(t *testing.T) {
 			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
 		}
 		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
-		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{}, deploymentmodel.DeploymentXmlValidator)
 		if err == nil {
 			t.Error("Did not detect missing path")
 		}
@@ -92,7 +92,7 @@ func TestImportDeployments(t *testing.T) {
 			deployment.Elements[0].MessageEvent.Selection.SelectedPath = &deviceselectionmodel.PathOption{}
 		}
 		deployment.Elements[0].MessageEvent.Selection.SelectedPath.CharacteristicId = emptyString
-		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{})
+		err = deployment.Validate(deploymentmodel.ValidateRequest, map[string]bool{}, deploymentmodel.DeploymentXmlValidator)
 		if err == nil {
 			t.Error("Did not detect missing characteristic")
 		}

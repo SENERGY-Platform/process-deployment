@@ -30,34 +30,21 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"time"
 )
 
-const deploymentIdFiledName = "Id"
-const deploymentOwnerFiledName = "Owner"
-
-var deploymentIdKey string
-var deploymentOwnerKey string
+var DeploymentBson = getBsonFieldObject[messages.DeploymentCommand]()
 
 func init() {
 	CreateCollections = append(CreateCollections, func(db *Mongo, config config.Config) error {
 		var err error
-		deploymentIdKey, err = getBsonFieldName(messages.DeploymentCommand{}, deploymentIdFiledName)
-		if err != nil {
-			debug.PrintStack()
-			return err
-		}
-		deploymentOwnerKey, err = getBsonFieldName(messages.DeploymentCommand{}, deploymentOwnerFiledName)
-		if err != nil {
-			debug.PrintStack()
-			return err
-		}
 		collection := db.client.Database(db.config.MongoTable).Collection(db.config.MongoDeploymentCollection)
-		err = db.ensureIndex(collection, "deploymentidindex", deploymentIdKey, true, true)
+		err = db.ensureIndex(collection, "deploymentidindex", DeploymentBson.Id, true, true)
 		if err != nil {
 			debug.PrintStack()
 			return err
 		}
-		err = db.ensureIndex(collection, "deploymentownerindex", deploymentOwnerKey, true, false)
+		err = db.ensureIndex(collection, "deploymentownerindex", DeploymentBson.Owner, true, false)
 		if err != nil {
 			debug.PrintStack()
 			return err
@@ -73,7 +60,7 @@ func (this *Mongo) deploymentsCollection() *mongo.Collection {
 func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err error, code int) {
 	ctx, _ := getTimeoutContext()
 	wrapper := messages.DeploymentCommand{}
-	err = this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId}).Decode(&wrapper)
+	err = this.deploymentsCollection().FindOne(ctx, bson.M{DeploymentBson.Id: deploymentId, NotDeletedFilterKey: NotDeletedFilterValue}).Decode(&wrapper)
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		return errors.New("not found"), http.StatusNotFound
 	}
@@ -84,12 +71,6 @@ func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err 
 		return errors.New("access denied"), http.StatusForbidden
 	}
 	return nil, 200
-}
-
-func (this *Mongo) DeleteDeployment(id string) error {
-	ctx, _ := getTimeoutContext()
-	_, err := this.deploymentsCollection().DeleteOne(ctx, bson.M{deploymentIdKey: id})
-	return err
 }
 
 func (this *Mongo) ListDeployments(user string, listOptions model.DeploymentListOptions) (deployments []deploymentmodel.Deployment, err error) {
@@ -103,7 +84,7 @@ func (this *Mongo) ListDeployments(user string, listOptions model.DeploymentList
 	}
 
 	if listOptions.SortBy == "" {
-		listOptions.SortBy = deploymentIdFiledName + ".asc"
+		listOptions.SortBy = DeploymentBson.Id + ".asc"
 	}
 	sortby := listOptions.SortBy
 	sortby = strings.TrimSuffix(sortby, ".asc")
@@ -119,7 +100,7 @@ func (this *Mongo) ListDeployments(user string, listOptions model.DeploymentList
 	}
 	dbOptions.SetSort(bson.D{{sortby, direction}})
 
-	c, err := this.deploymentsCollection().Find(ctx, bson.M{deploymentOwnerKey: user}, dbOptions)
+	c, err := this.deploymentsCollection().Find(ctx, bson.M{DeploymentBson.Owner: user, NotDeletedFilterKey: NotDeletedFilterValue}, dbOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -136,35 +117,32 @@ func (this *Mongo) ListDeployments(user string, listOptions model.DeploymentList
 	return deployments, nil
 }
 
-func (this *Mongo) GetDeployment(user string, deploymentId string) (deployment *deploymentmodel.Deployment, err error, code int) {
+func (this *Mongo) getDeployment(deploymentId string) (deployment messages.DeploymentCommand, err error, code int) {
 	ctx, _ := getTimeoutContext()
-	response := this.deploymentsCollection().FindOne(ctx, bson.M{deploymentIdKey: deploymentId})
-
-	//first decode to check version to prevent crash in second decode
-
-	versionWrapper := DeploymentCommandIdVersionWrapper{}
-	err = response.Decode(&versionWrapper)
+	err = this.deploymentsCollection().FindOne(ctx, bson.M{DeploymentBson.Id: deploymentId, NotDeletedFilterKey: NotDeletedFilterValue}).Decode(&deployment)
 	if errors.Is(err, mongo.ErrNoDocuments) {
-		return nil, errors.New("not found"), http.StatusNotFound
+		return deployment, errors.New("not found"), http.StatusNotFound
 	}
 	if err != nil {
-		return nil, err, http.StatusInternalServerError
+		return deployment, err, http.StatusInternalServerError
 	}
-	if versionWrapper.Owner != user {
+	return deployment, nil, 200
+}
+
+func (this *Mongo) GetDeployment(user string, deploymentId string) (deployment *deploymentmodel.Deployment, err error, code int) {
+	depl, err, code := this.getDeployment(deploymentId)
+	if err != nil {
+		return nil, err, code
+	}
+	if depl.Owner != user {
 		return nil, errors.New("access denied"), http.StatusForbidden
 	}
-
-	wrapper := messages.DeploymentCommand{}
-	err = response.Decode(&wrapper)
-	if err != nil {
-		return nil, err, http.StatusInternalServerError
-	}
-	return wrapper.Deployment, nil, 200
+	return depl.Deployment, nil, 200
 }
 
 func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err error) {
 	ctx, _ := getTimeoutContext()
-	cursor, err := this.deploymentsCollection().Find(ctx, bson.M{deploymentOwnerKey: user})
+	cursor, err := this.deploymentsCollection().Find(ctx, bson.M{DeploymentBson.Owner: user, NotDeletedFilterKey: NotDeletedFilterValue})
 	if err != nil {
 		return nil, err
 	}
@@ -182,17 +160,110 @@ func (this *Mongo) GetDeploymentIds(user string) (deployments []string, err erro
 
 var ErrorUnexpectedDeploymentVersion = errors.New("unexpected deployment version")
 
-func (this *Mongo) SetDeployment(id string, owner string, deployment *deploymentmodel.Deployment) error {
-	if deployment.Version != deploymentmodel.CurrentVersion {
-		return ErrorUnexpectedDeploymentVersion
-	}
-	ctx, _ := getTimeoutContext()
-	_, err := this.deploymentsCollection().ReplaceOne(ctx, bson.M{deploymentIdKey: id}, messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment, Version: deployment.Version}, options.Replace().SetUpsert(true))
-	return err
-}
-
 type DeploymentCommandIdVersionWrapper struct {
 	Id      string `json:"id"`
 	Owner   string `json:"owner"`
 	Version int64  `json:"version"`
+}
+
+type DeploymentWithSyncInfo struct {
+	messages.DeploymentCommand `bson:",inline"`
+	SyncInfo                   `bson:",inline"`
+}
+
+func (this *Mongo) SetDeployment(depl messages.DeploymentCommand, syncHandler func(messages.DeploymentCommand) error) error {
+	if depl.Deployment.Version != deploymentmodel.CurrentVersion {
+		return ErrorUnexpectedDeploymentVersion
+	}
+	if depl.Id != depl.Deployment.Id {
+		return errors.New("deployment id mismatch")
+	}
+	ctx, _ := getTimeoutContext()
+	timestamp := time.Now().Unix()
+	collection := this.deploymentsCollection()
+	_, err := collection.ReplaceOne(ctx, bson.M{DeploymentBson.Id: depl.Id}, DeploymentWithSyncInfo{
+		DeploymentCommand: depl,
+		SyncInfo: SyncInfo{
+			SyncTodo:          true,
+			SyncDelete:        false,
+			SyncUnixTimestamp: timestamp,
+		},
+	}, options.Replace().SetUpsert(true))
+	if err != nil {
+		return err
+	}
+	err = syncHandler(depl)
+	if err != nil {
+		log.Printf("WARNING: error in SetConcept::syncHandler %v, will be retried later\n", err)
+		return nil
+	}
+	err = this.setSynced(ctx, collection, DeploymentBson.Id, depl.Id, timestamp)
+	if err != nil {
+		log.Printf("WARNING: error in SetConcept::setSynced %v, will be retried later\n", err)
+		return nil
+	}
+	return nil
+}
+
+func (this *Mongo) DeleteDeployment(id string, syncDeleteHandler func(messages.DeploymentCommand) error) error {
+	ctx, _ := getTimeoutContext()
+	old, err, code := this.getDeployment(id)
+	if err != nil {
+		if code == http.StatusNotFound {
+			return nil
+		}
+		return err
+	}
+	collection := this.deploymentsCollection()
+	err = this.setDeleted(ctx, collection, DeploymentBson.Id, id)
+	if err != nil {
+		return err
+	}
+	err = syncDeleteHandler(old)
+	if err != nil {
+		log.Printf("WARNING: error in RemoveConcept::syncDeleteHandler %v, will be retried later\n", err)
+		return nil
+	}
+	_, err = collection.DeleteOne(ctx, bson.M{DeploymentBson.Id: id})
+	if err != nil {
+		log.Printf("WARNING: error in RemoveConcept::DeleteOne %v, will be retried later\n", err)
+		return nil
+	}
+	return nil
+}
+
+func (this *Mongo) RetryDeploymentSync(lockduration time.Duration, syncDeleteHandler func(messages.DeploymentCommand) error, syncHandler func(messages.DeploymentCommand) error) error {
+	collection := this.deploymentsCollection()
+	jobs, err := FetchSyncJobs[DeploymentWithSyncInfo](collection, lockduration, FetchSyncJobsDefaultBatchSize)
+	if err != nil {
+		return err
+	}
+	for _, job := range jobs {
+		if job.SyncDelete {
+			err = syncDeleteHandler(job.DeploymentCommand)
+			if err != nil {
+				log.Printf("WARNING: error in RetryConceptSync::syncDeleteHandler %v, will be retried later\n", err)
+				continue
+			}
+			ctx, _ := getTimeoutContext()
+			_, err = collection.DeleteOne(ctx, bson.M{DeploymentBson.Id: job.Id})
+			if err != nil {
+				log.Printf("WARNING: error in RetryConceptSync::DeleteOne %v, will be retried later\n", err)
+				continue
+			}
+		} else if job.SyncTodo {
+			err = syncHandler(job.DeploymentCommand)
+			if err != nil {
+				log.Printf("WARNING: error in RetryConceptSync::syncHandler %v, will be retried later\n", err)
+				continue
+			}
+			ctx, _ := getTimeoutContext()
+			err = this.setSynced(ctx, collection, DeploymentBson.Id, job.Id, job.SyncUnixTimestamp)
+			if err != nil {
+				log.Printf("WARNING: error in RetryConceptSync::setSynced %v, will be retried later\n", err)
+				continue
+			}
+		}
+	}
+	return nil
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 InfAI (CC SES)
+ * Copyright 2025 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package ctrl
+package mocks
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+import (
+	engine "github.com/SENERGY-Platform/camunda-engine-wrapper/lib/client"
+)
 
-func (this *Ctrl) HandleUsersCommand(userMsg messages.UserCommandMsg) error {
-	if userMsg.Command != "DELETE" {
-		return nil
-	}
-	deployments, err := this.db.GetDeploymentIds(userMsg.Id)
-	if err != nil {
-		return err
-	}
-	for _, id := range deployments {
-		err = this.deleteDeployment(id)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+type MockEngine struct{}
+
+var Engine = &MockEngine{}
+
+func (this *MockEngine) Deploy(token string, depl engine.DeploymentMessage) (err error, code int) {
+	return nil, 200
+}
+
+func (this *MockEngine) DeleteDeployment(token string, userId string, deplId string) (err error, code int) {
+	return nil, 200
 }

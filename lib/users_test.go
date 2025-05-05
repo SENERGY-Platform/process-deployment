@@ -62,7 +62,7 @@ func TestUserDelete(t *testing.T) {
 
 	k := &mocks.KafkaMock{Produced: map[string][]string{}, Listeners: map[string][]func(msg []byte) error{}}
 
-	control, err := ctrl.New(ctx, conf, k, db, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports)
+	control, err := ctrl.New(ctx, conf, k, db, mocks.Devices, mocks.ProcessModelRepo, mocks.Imports, mocks.Engine, mocks.EventDepl)
 	if err != nil {
 		fmt.Println(err)
 		return

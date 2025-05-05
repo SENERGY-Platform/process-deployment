@@ -27,6 +27,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"net/http"
 	"sync"
+	"time"
 )
 
 type DatabaseMock struct {
@@ -83,20 +84,6 @@ func (this *DatabaseMock) ListDeployments(user string, options model.DeploymentL
 	return deployments, nil
 }
 
-func (this *DatabaseMock) DeleteDeployment(id string) error {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	delete(this.Deployments, id)
-	return nil
-}
-
-func (this *DatabaseMock) SetDeployment(id string, owner string, deployment *deploymentmodel.Deployment) error {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	this.Deployments[id] = messages.DeploymentCommand{Id: id, Owner: owner, Deployment: deployment}
-	return nil
-}
-
 func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (dependencymodel.Dependencies, error, int) {
 	this.mux.Lock()
 	defer this.mux.Unlock()
@@ -108,6 +95,29 @@ func (this *DatabaseMock) GetDependencies(user string, deploymentId string) (dep
 		return dependencymodel.Dependencies{}, errors.New("access denied"), http.StatusForbidden
 	}
 	return dependencies, nil, 200
+}
+
+func (this *DatabaseMock) SetDeployment(depl messages.DeploymentCommand, syncHandler func(messages.DeploymentCommand) error) error {
+	this.mux.Lock()
+	this.Deployments[depl.Id] = depl
+	this.mux.Unlock()
+	return syncHandler(depl)
+}
+
+func (this *DatabaseMock) DeleteDeployment(id string, syncDeleteHandler func(messages.DeploymentCommand) error) error {
+	this.mux.Lock()
+	element, ok := this.Deployments[id]
+	if !ok {
+		this.mux.Unlock()
+		return nil
+	}
+	delete(this.Deployments, id)
+	this.mux.Unlock()
+	return syncDeleteHandler(element)
+}
+
+func (this *DatabaseMock) RetryDeploymentSync(lockduration time.Duration, syncDeleteHandler func(messages.DeploymentCommand) error, syncHandler func(messages.DeploymentCommand) error) error {
+	return nil
 }
 
 func (this *DatabaseMock) GetDependenciesList(user string, limit int, offset int) (result []dependencymodel.Dependencies, err error, code int) {

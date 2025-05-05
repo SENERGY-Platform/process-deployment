@@ -18,14 +18,21 @@ package interfaces
 
 import (
 	"context"
+	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 )
 
 type SourcingFactory interface {
-	NewConsumer(ctx context.Context, config config.Config, topic string, listener func(delivery []byte) error) error
-	NewProducer(ctx context.Context, config config.Config, topic string) (Producer, error)
+	NewUserCommandConsumer(ctx context.Context, config config.Config, listener func(delivery messages.UserCommandMsg) error) error
+	NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(group models.DeviceGroup) error) error
+	NewDeploymentProducer(ctx context.Context, config config.Config) (DeploymentProducer, error)
 }
 
 type Producer interface {
 	Produce(key string, message []byte) error
+}
+
+type DeploymentProducer interface {
+	Produce(command messages.DeploymentCommand) error
 }

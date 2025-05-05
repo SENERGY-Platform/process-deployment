@@ -91,7 +91,7 @@ func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (resu
 	opt := options.Find()
 	opt.SetLimit(int64(limit))
 	opt.SetSkip(int64(offset))
-	opt.SetSort(bson.D{{deploymentIdKey, 1}})
+	opt.SetSort(bson.D{{DeploymentBson.Id, 1}})
 	ctx, _ := getTimeoutContext()
 	cursor, err := this.dependenciesCollection().Find(ctx, bson.M{dependenciesOwnerKey: user}, opt)
 	if err != nil {
@@ -115,7 +115,7 @@ func (this *Mongo) GetDependenciesList(user string, limit int, offset int) (resu
 
 func (this *Mongo) GetSelectedDependencies(user string, ids []string) (result []dependencymodel.Dependencies, err error, code int) {
 	opt := options.Find()
-	opt.SetSort(bson.D{{deploymentIdKey, 1}})
+	opt.SetSort(bson.D{{DeploymentBson.Id, 1}})
 	ctx, _ := getTimeoutContext()
 	cursor, err := this.dependenciesCollection().Find(ctx, bson.M{dependenciesIdKey: bson.M{"$in": ids}, dependenciesOwnerKey: user}, opt)
 	if err != nil {

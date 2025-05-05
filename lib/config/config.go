@@ -57,6 +57,14 @@ type ConfigStruct struct {
 	HttpClientTimeout     string `json:"http_client_timeout"`
 	HttpServerTimeout     string `json:"http_server_timeout"`
 	HttpServerReadTimeout string `json:"http_server_read_timeout"`
+
+	DoneTopic        string `json:"done_topic"`
+	DeviceGroupTopic string `json:"device_group_topic"`
+	SyncInterval     string `json:"sync_interval"`
+	SyncLockDuration string `json:"sync_lock_duration"`
+
+	ProcessEngineWrapperUrl string `json:"process_engine_wrapper_url"`
+	EventDeploymentUrl      string `json:"event_deployment_url"`
 }
 
 type Config = *ConfigStruct

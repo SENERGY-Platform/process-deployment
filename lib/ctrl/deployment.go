@@ -17,78 +17,135 @@
 package ctrl
 
 import (
-	"encoding/json"
+	"context"
 	"errors"
+	engine "github.com/SENERGY-Platform/camunda-engine-wrapper/lib/client"
+	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"log"
+	"runtime/debug"
+	"time"
 )
 
-func (this *Ctrl) HandleDeployment(cmd messages.DeploymentCommand) error {
-	switch cmd.Command {
-	case "RIGHTS":
-		return nil
-	case "PUT":
-		err := this.SaveDependencies(cmd)
-		if err != nil {
-			return err
+func (this *Ctrl) StartSyncLoop(ctx context.Context, interval time.Duration, lockduration time.Duration) {
+	ticker := time.NewTicker(interval)
+	go func() {
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				err := this.Sync(lockduration)
+				if err != nil {
+					log.Printf("ERROR: while db sync run: %v", err)
+				}
+			case <-ctx.Done():
+				return
+			}
 		}
-		err = this.SaveDeployment(cmd)
-		if err != nil {
-			return err
-		}
-		return nil
-	case "DELETE":
-		err := this.DeleteDependencies(cmd)
-		if err != nil {
-			return err
-		}
-		err = this.DeleteDeployment(cmd)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return errors.New("unable to handle command: " + cmd.Command)
-	}
+	}()
 }
 
-func (this *Ctrl) DeleteDeployment(command messages.DeploymentCommand) error {
-	return this.db.DeleteDeployment(command.Id)
+func (this *Ctrl) Sync(lockduration time.Duration) interface{} {
+	return this.db.RetryDeploymentSync(lockduration, this.syncDeploymentDelete, func(command messages.DeploymentCommand) error {
+		return this.deleteDeployment(command.Id)
+	})
 }
 
-func (this *Ctrl) SaveDeployment(command messages.DeploymentCommand) error {
-	return this.db.SetDeployment(command.Id, command.Owner, command.Deployment)
+func (this *Ctrl) setDeployment(owner string, source string, deployment deploymentmodel.Deployment) error {
+	err := this.db.SetDeployment(
+		messages.DeploymentCommand{
+			Command:    "PUT",
+			Id:         deployment.Id,
+			Owner:      owner,
+			Deployment: &deployment,
+			Source:     source,
+			Version:    deployment.Version,
+		},
+		this.syncDeployment,
+	)
+	if err != nil {
+		_ = this.deleteDeployment(deployment.Id)
+	}
+	return err
 }
 
-func (this *Ctrl) publishDeployment(owner string, id string, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) error {
-	if err := deployment.Validate(deploymentmodel.ValidatePublish, optionals); err != nil {
-		return err
+func (this *Ctrl) syncDeployment(command messages.DeploymentCommand) error {
+	if command.Deployment == nil {
+		debug.PrintStack()
+		return errors.New("deployment cannot be nil")
 	}
-	cmd := messages.DeploymentCommand{
-		Command:    "PUT",
-		Id:         id,
-		Owner:      owner,
-		Deployment: &deployment,
-		Source:     source,
-		Version:    deployment.Version,
-	}
-	msg, err := json.Marshal(cmd)
+
+	err := this.SaveDependencies(command)
 	if err != nil {
 		return err
 	}
-	return this.deploymentPublisher.Produce(id, msg)
+
+	err, _ = this.engine.Deploy(engine.InternalAdminToken, engine.DeploymentMessage{
+		Deployment: engine.Deployment{
+			Id:               command.Deployment.Id,
+			Name:             command.Deployment.Name,
+			Diagram:          command.Deployment.Diagram,
+			IncidentHandling: command.Deployment.IncidentHandling,
+		},
+		UserId: command.Owner,
+		Source: command.Source,
+	})
+	if err != nil {
+		return err
+	}
+
+	err, _ = this.eventdeployment.Deploy(eventdeployment.InternalAdminToken, eventdeployment.Deployment{
+		Deployment: *command.Deployment,
+		UserId:     command.Owner,
+	})
+	if err != nil {
+		return err
+	}
+	err = this.publishDeployment(command)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (this *Ctrl) publishDeployment(command messages.DeploymentCommand) error {
+	command.Command = "PUT"
+	return this.deploymentPublisher.Produce(command)
+}
+
+func (this *Ctrl) deleteDeployment(id string) error {
+	return this.db.DeleteDeployment(id, this.syncDeploymentDelete)
+}
+
+func (this *Ctrl) syncDeploymentDelete(command messages.DeploymentCommand) error {
+	err := this.DeleteDependencies(command)
+	if err != nil {
+		return err
+	}
+
+	err, _ = this.eventdeployment.DeleteDeployment(eventdeployment.InternalAdminToken, command.Owner, command.Id)
+	if err != nil {
+		return err
+	}
+
+	err, _ = this.engine.DeleteDeployment(engine.InternalAdminToken, command.Owner, command.Id)
+	if err != nil {
+		return err
+	}
+
+	err = this.publishDeploymentDelete(command.Owner, command.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (this *Ctrl) publishDeploymentDelete(user string, id string) error {
-	cmd := messages.DeploymentCommand{
+	return this.deploymentPublisher.Produce(messages.DeploymentCommand{
 		Command: "DELETE",
 		Id:      id,
 		Owner:   user,
 		Version: deploymentmodel.CurrentVersion,
-	}
-	msg, err := json.Marshal(cmd)
-	if err != nil {
-		return err
-	}
-	return this.deploymentPublisher.Produce(id, msg)
+	})
 }

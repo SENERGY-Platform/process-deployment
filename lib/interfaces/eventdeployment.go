@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 InfAI (CC SES)
+ * Copyright 2025 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package ctrl
+package interfaces
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+import "github.com/SENERGY-Platform/event-deployment/lib/client"
 
-func (this *Ctrl) HandleUsersCommand(userMsg messages.UserCommandMsg) error {
-	if userMsg.Command != "DELETE" {
-		return nil
-	}
-	deployments, err := this.db.GetDeploymentIds(userMsg.Id)
-	if err != nil {
-		return err
-	}
-	for _, id := range deployments {
-		err = this.deleteDeployment(id)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+type EventDeployment interface {
+	Deploy(token string, depl client.Deployment) (err error, code int)
+	DeleteDeployment(token string, userId string, deplId string) (err error, code int)
+	UpdateDeploymentsOfDeviceGroup(token string, dg client.DeviceGroup) (err error, code int)
 }

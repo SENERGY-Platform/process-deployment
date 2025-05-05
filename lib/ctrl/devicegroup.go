@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 InfAI (CC SES)
+ * Copyright 2025 InfAI (CC SES)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,12 @@
 
 package ctrl
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+import (
+	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
+	"github.com/SENERGY-Platform/models/go/models"
+)
 
-func (this *Ctrl) HandleUsersCommand(userMsg messages.UserCommandMsg) error {
-	if userMsg.Command != "DELETE" {
-		return nil
-	}
-	deployments, err := this.db.GetDeploymentIds(userMsg.Id)
-	if err != nil {
-		return err
-	}
-	for _, id := range deployments {
-		err = this.deleteDeployment(id)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func (this *Ctrl) HandleDeviceGroupCommand(dg models.DeviceGroup) error {
+	err, _ := this.eventdeployment.UpdateDeploymentsOfDeviceGroup(eventdeployment.InternalAdminToken, dg)
+	return err
 }

@@ -20,7 +20,6 @@ import (
 	"context"
 	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
 	"github.com/SENERGY-Platform/device-repository/lib/database"
-	"github.com/SENERGY-Platform/device-repository/lib/model"
 	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
@@ -39,7 +38,6 @@ type DeviceRepoMock struct {
 }
 
 func (this *DeviceRepoMock) GetAspectNode(token auth.Token, id string) (aspectNode devicemodel.AspectNode, err error) {
-	//TODO implement me
 	panic("implement me")
 }
 
@@ -57,20 +55,35 @@ func (this *DeviceRepoMock) GetDevice(token auth.Token, id string) (devicemodel.
 
 func (this *DeviceRepoMock) SetDevice(id string, device devicemodel.Device, userId string) error {
 	device.Id = id
-	err := this.repodb.SetRights("devices", device.Id, devicemodel.ResourceRights{
-		UserRights: map[string]model.Right{userId: {
-			Read:         true,
-			Write:        true,
-			Execute:      true,
-			Administrate: true,
-		}},
-		GroupRights:          map[string]model.Right{},
-		KeycloakGroupsRights: map[string]model.Right{},
+	device.LocalId = id
+	device.OwnerId = userId
+	_, err, _ := this.repo.SetProtocol(devicerepo.InternalAdminToken, models.Protocol{
+		Id:               "p1",
+		Name:             "p1",
+		Handler:          "p1",
+		ProtocolSegments: []models.ProtocolSegment{{Id: "ps1", Name: "ps1"}},
 	})
 	if err != nil {
 		return err
 	}
-	return this.repodb.SetDevice(context.Background(), devicerepo.DeviceWithConnectionState{Device: device})
+	_, err, _ = this.repo.SetDeviceType(devicerepo.InternalAdminToken, models.DeviceType{
+		Id:   device.DeviceTypeId,
+		Name: device.DeviceTypeId,
+		Services: []models.Service{
+			{
+				Id:          device.DeviceTypeId + "_s1",
+				LocalId:     device.DeviceTypeId + "_s1",
+				Name:        device.DeviceTypeId + "_s1",
+				Interaction: models.REQUEST,
+				ProtocolId:  "p1",
+			},
+		},
+	}, devicerepo.DeviceTypeUpdateOptions{})
+	if err != nil {
+		return err
+	}
+	_, err, _ = this.repo.SetDevice(devicerepo.InternalAdminToken, device, devicerepo.DeviceUpdateOptions{})
+	return err
 }
 
 func (this *DeviceRepoMock) GetService(token auth.Token, id string) (devicemodel.Service, error, int) {
@@ -78,11 +91,12 @@ func (this *DeviceRepoMock) GetService(token auth.Token, id string) (devicemodel
 }
 
 func (this *DeviceRepoMock) SetService(id string, service devicemodel.Service) error {
-	return this.repodb.SetDeviceType(context.Background(), models.DeviceType{
+	_, err, _ := this.repo.SetDeviceType(devicerepo.InternalAdminToken, models.DeviceType{
 		Id:       "ref-service:" + service.Id,
 		Name:     "ref-service:" + service.Name,
 		Services: []models.Service{service},
-	})
+	}, devicerepo.DeviceTypeUpdateOptions{})
+	return err
 }
 
 func (this *DeviceRepoMock) GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int) {

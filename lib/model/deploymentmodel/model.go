@@ -16,81 +16,26 @@
 
 package deploymentmodel
 
-const CurrentVersion int64 = 3
+import "github.com/SENERGY-Platform/models/go/models"
 
-type Deployment struct {
-	Version          int64                   `json:"version"`
-	Id               string                  `json:"id"`
-	Name             string                  `json:"name"`
-	Description      string                  `json:"description"`
-	Diagram          Diagram                 `json:"diagram"`
-	Elements         []Element               `json:"elements"`
-	Executable       bool                    `json:"executable"`
-	IncidentHandling *IncidentHandling       `json:"incident_handling,omitempty"`
-	StartParameter   []ProcessStartParameter `json:"start_parameter,omitempty"`
-}
+const CurrentVersion int64 = models.CurrentDeploymentModelVersion
 
-type ProcessStartParameter struct {
-	Id         string            `json:"id"`
-	Label      string            `json:"label"`
-	Type       string            `json:"type"`
-	Default    string            `json:"default"`
-	Properties map[string]string `json:"properties"`
-}
+type Deployment = models.Deployment
 
-type Diagram struct {
-	XmlRaw      string `json:"xml_raw"`
-	XmlDeployed string `json:"xml_deployed"`
-	Svg         string `json:"svg"`
-}
+type ProcessStartParameter = models.ProcessStartParameter
 
-type Element struct {
-	BpmnId           string            `json:"bpmn_id"`
-	Group            *string           `json:"group"`
-	Name             string            `json:"name"`
-	Order            int64             `json:"order"`
-	TimeEvent        *TimeEvent        `json:"time_event"`
-	Notification     *Notification     `json:"notification"`
-	MessageEvent     *MessageEvent     `json:"message_event"`
-	ConditionalEvent *ConditionalEvent `json:"conditional_event"`
-	Task             *Task             `json:"task"`
-}
+type Diagram = models.Diagram
 
-type TimeEvent struct {
-	Type string `json:"type"`
-	Time string `json:"time"`
-}
+type Element = models.Element
 
-type Notification struct {
-	Title   string `json:"title"`
-	Message string `json:"message"`
-}
+type TimeEvent = models.TimeEvent
 
-type MessageEvent struct {
-	Value         string    `json:"value"`
-	FlowId        string    `json:"flow_id"`
-	EventId       string    `json:"event_id"`
-	UseMarshaller bool      `json:"use_marshaller"`
-	Selection     Selection `json:"selection"`
-}
+type Notification = models.Notification
 
-type ConditionalEvent struct {
-	Script        string            `json:"script"`
-	ValueVariable string            `json:"value_variable"`
-	Variables     map[string]string `json:"variables"`
-	Qos           int               `json:"qos"`
-	EventId       string            `json:"event_id"`
-	Selection     Selection         `json:"selection"`
-}
+type MessageEvent = models.MessageEvent
 
-type Task struct {
-	Retries     int64             `json:"retries"`
-	Parameter   map[string]string `json:"parameter"`
-	Selection   Selection         `json:"selection"`
-	PreferEvent bool              `json:"prefer_event,omitempty"`
-}
+type ConditionalEvent = models.ConditionalEvent
 
-type IncidentHandling struct {
-	Restart bool `json:"restart"`
-	Notify  bool `json:"notify"`
-}
+type Task = models.Task
+
+type IncidentHandling = models.IncidentHandling

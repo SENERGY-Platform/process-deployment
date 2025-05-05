@@ -30,7 +30,7 @@ func TestKafka(t *testing.T) {
 	if testing.Short() {
 		t.Skip("short tests only without docker")
 	}
-	config, err := config.LoadConfig("../../config.json")
+	config, err := config.LoadConfig("../../../config.json")
 	if err != nil {
 		t.Error(err)
 		return

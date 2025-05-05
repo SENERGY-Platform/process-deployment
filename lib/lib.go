@@ -18,14 +18,16 @@ package lib
 
 import (
 	"context"
+	engine "github.com/SENERGY-Platform/camunda-engine-wrapper/lib/client"
+	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/api"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/db"
 	"github.com/SENERGY-Platform/process-deployment/lib/devices"
+	"github.com/SENERGY-Platform/process-deployment/lib/events"
 	"github.com/SENERGY-Platform/process-deployment/lib/imports"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/kafka"
 	"github.com/SENERGY-Platform/process-deployment/lib/processrepo"
 	"github.com/SENERGY-Platform/service-commons/pkg/cache/invalidator"
 	kafkalib "github.com/SENERGY-Platform/service-commons/pkg/kafka"
@@ -35,7 +37,7 @@ import (
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
-	return Start(ctx, config, kafka.Factory, db.Factory, devices.Factory, processrepo.Factory, imports.Factory)
+	return Start(ctx, config, events.Factory, db.Factory, devices.Factory, processrepo.Factory, imports.Factory)
 }
 
 func Start(
@@ -63,7 +65,17 @@ func Start(
 	if err != nil {
 		return err
 	}
-	controller, err := ctrl.New(ctx, config, sourcing, db, d, p, i)
+
+	var e interfaces.Engine = VoidEngine{}
+	var eventdepl interfaces.EventDeployment = VoidEventDeployment{}
+	if config.ProcessEngineWrapperUrl != "" && config.ProcessEngineWrapperUrl != "-" {
+		e = engine.New(config.ProcessEngineWrapperUrl)
+	}
+	if config.EventDeploymentUrl != "" && config.EventDeploymentUrl != "-" {
+		eventdepl = eventdeployment.New(config.EventDeploymentUrl)
+	}
+
+	controller, err := ctrl.New(ctx, config, sourcing, db, d, p, i, e, eventdepl)
 	if err != nil {
 		return err
 	}
@@ -84,4 +96,28 @@ func StartCacheInvalidator(ctx context.Context, conf config.Config) error {
 			debug.PrintStack()
 		},
 	}, conf.CacheInvalidationKafkaTopics, nil)
+}
+
+type VoidEngine struct{}
+
+func (this VoidEngine) Deploy(token string, depl engine.DeploymentMessage) (err error, code int) {
+	return nil, 200
+}
+
+func (this VoidEngine) DeleteDeployment(token string, userId string, deplId string) (err error, code int) {
+	return nil, 200
+}
+
+type VoidEventDeployment struct{}
+
+func (this VoidEventDeployment) Deploy(token string, depl eventdeployment.Deployment) (err error, code int) {
+	return nil, 200
+}
+
+func (this VoidEventDeployment) DeleteDeployment(token string, userId string, deplId string) (err error, code int) {
+	return nil, 200
+}
+
+func (this VoidEventDeployment) UpdateDeploymentsOfDeviceGroup(token string, dg eventdeployment.DeviceGroup) (err error, code int) {
+	return nil, 200
 }

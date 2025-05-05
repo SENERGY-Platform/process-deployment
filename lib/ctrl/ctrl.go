@@ -18,29 +18,28 @@ package ctrl
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/parser"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl/deployment/stringifier"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	"log"
-	"runtime/debug"
+	"time"
 )
 
 type Ctrl struct {
 	config                config.Config
 	db                    interfaces.Database
 	devices               interfaces.Devices
-	deploymentPublisher   interfaces.Producer
+	deploymentPublisher   interfaces.DeploymentProducer
 	processrepo           interfaces.ProcessRepo
 	deploymentParser      interfaces.DeploymentParser
 	deploymentStringifier interfaces.DeploymentStringifier
 	imports               interfaces.Imports
+
+	engine          interfaces.Engine
+	eventdeployment interfaces.EventDeployment
 }
 
-func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo, imports interfaces.Imports) (result *Ctrl, err error) {
+func New(ctx context.Context, config config.Config, sourcing interfaces.SourcingFactory, db interfaces.Database, devices interfaces.Devices, processrepo interfaces.ProcessRepo, imports interfaces.Imports, engine interfaces.Engine, eventdepl interfaces.EventDeployment) (result *Ctrl, err error) {
 	result = &Ctrl{
 		config:                config,
 		db:                    db,
@@ -49,55 +48,35 @@ func New(ctx context.Context, config config.Config, sourcing interfaces.Sourcing
 		imports:               imports,
 		deploymentParser:      parser.New(config),
 		deploymentStringifier: stringifier.New(config, devices.GetAspectNode),
+		engine:                engine,
+		eventdeployment:       eventdepl,
 	}
-	result.deploymentPublisher, err = sourcing.NewProducer(ctx, config, config.DeploymentTopic)
+	result.deploymentPublisher, err = sourcing.NewDeploymentProducer(ctx, config)
 	if err != nil {
 		return result, err
 	}
-	err = sourcing.NewConsumer(ctx, config, config.DeploymentTopic, func(delivery []byte) error {
-		version := VersionWrapper{}
-		err := json.Unmarshal(delivery, &version)
-		if err != nil {
-			log.Println("ERROR: consumed invalid message --> ignore", err)
-			debug.PrintStack()
-			return nil
-		}
-		if version.Version != deploymentmodel.CurrentVersion {
-			log.Println("ERROR: consumed unexpected deployment version", version.Version)
-			if version.Command == "DELETE" {
-				log.Println("handle legacy delete")
-				return result.HandleDeployment(messages.DeploymentCommand{
-					Command: version.Command,
-					Id:      version.Id,
-					Version: version.Version,
-				})
-			}
-			return nil
-		}
-		deployment := messages.DeploymentCommand{}
-		err = json.Unmarshal(delivery, &deployment)
-		if err != nil {
-			log.Println("ERROR: consumed invalid message --> ignore", err)
-			debug.PrintStack()
-			return err
-		}
-		return result.HandleDeployment(deployment)
-	})
+
+	err = sourcing.NewDeviceGroupConsumer(ctx, config, result.HandleDeviceGroupCommand)
 	if err != nil {
 		return result, err
 	}
-	err = sourcing.NewConsumer(ctx, config, config.UsersTopic, func(delivery []byte) error {
-		msg := messages.UserCommandMsg{}
-		err := json.Unmarshal(delivery, &msg)
-		if err != nil {
-			debug.PrintStack()
-			return err
-		}
-		return result.HandleUsersCommand(msg)
-	})
+
+	err = sourcing.NewUserCommandConsumer(ctx, config, result.HandleUsersCommand)
 	if err != nil {
 		return result, err
 	}
+
+	syncInterval := 10 * time.Minute
+	if config.SyncInterval != "" && config.SyncInterval != "-" {
+		syncInterval, err = time.ParseDuration(config.SyncInterval)
+	}
+	syncLockDuration := time.Minute
+	if config.SyncLockDuration != "" && config.SyncLockDuration != "-" {
+		syncLockDuration, err = time.ParseDuration(config.SyncLockDuration)
+	}
+
+	result.StartSyncLoop(ctx, syncInterval, syncLockDuration)
+
 	return result, err
 }
 

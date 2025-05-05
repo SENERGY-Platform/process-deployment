@@ -18,8 +18,12 @@ package mocks
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/events"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"log"
 	"runtime/debug"
 	"sync"
@@ -36,6 +40,46 @@ type KafkaMock struct {
 type Producer struct {
 	Topic string
 	Kafka *KafkaMock
+}
+
+func (this *KafkaMock) NewUserCommandConsumer(ctx context.Context, config config.Config, listener func(delivery messages.UserCommandMsg) error) error {
+	return this.NewConsumer(ctx, config, config.UsersTopic, func(delivery []byte) error {
+		msg := messages.UserCommandMsg{}
+		err := json.Unmarshal(delivery, &msg)
+		if err != nil {
+			debug.PrintStack()
+			return err
+		}
+		return listener(msg)
+	})
+}
+
+func (this *KafkaMock) NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(group models.DeviceGroup) error) error {
+	return this.NewConsumer(ctx, config, config.DeviceGroupTopic, func(delivery []byte) error {
+		msg := messages.DeviceGroupCommand{}
+		err := json.Unmarshal(delivery, &msg)
+		if err != nil {
+			debug.PrintStack()
+			return err
+		}
+		return listener(msg.DeviceGroup)
+	})
+}
+
+func (this *KafkaMock) NewDeploymentProducer(ctx context.Context, config config.Config) (interfaces.DeploymentProducer, error) {
+	deploymentProducer, err := this.NewProducer(ctx, config, config.DeploymentTopic)
+	if err != nil {
+		return nil, err
+	}
+	doneProducer, err := this.NewProducer(ctx, config, config.DoneTopic)
+	if err != nil {
+		return nil, err
+	}
+	return &events.DeploymentProducer{
+		Config:             config,
+		DoneProducer:       doneProducer,
+		DeploymentProducer: deploymentProducer,
+	}, nil
 }
 
 func (this *KafkaMock) NewConsumer(ctx context.Context, config config.Config, topic string, listener func(delivery []byte) error) error {

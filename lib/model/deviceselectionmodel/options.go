@@ -17,85 +17,33 @@
 package deviceselectionmodel
 
 import (
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
+	"github.com/SENERGY-Platform/models/go/models"
 )
 
-type Selectable struct {
-	Device             *DeviceWithDisplayName   `json:"device"`
-	Services           []devicemodel.Service    `json:"services"`
-	DeviceGroup        *devicemodel.DeviceGroup `json:"device_group,omitempty"`
-	Import             *importmodel.Import      `json:"import,omitempty"`
-	ImportType         *importmodel.ImportType  `json:"importType,omitempty"`
-	ServicePathOptions map[string][]PathOption  `json:"servicePathOptions,omitempty"`
-}
+type Selectable = models.Selectable
 
-type DeviceWithDisplayName struct {
-	devicemodel.Device
-	DisplayName string `json:"display_name"`
-}
+type DeviceWithDisplayName = models.DeviceWithDisplayName
 
-type FilterCriteriaAndSet []FilterCriteria
+type FilterCriteriaAndSet = models.FilterCriteriaAndSet
 
-type FilterCriteriaOrSet []FilterCriteria
+type FilterCriteriaOrSet = models.FilterCriteriaOrSet
 
-type FilterCriteria struct {
-	FunctionId    string `json:"function_id"`
-	DeviceClassId string `json:"device_class_id"`
-	AspectId      string `json:"aspect_id"`
-}
+type FilterCriteria = models.FilterCriteria
 
-type FilterCriteriaWithInteraction struct {
-	FilterCriteria
-	Interaction devicemodel.Interaction `json:"interaction,omitempty"`
-}
+type FilterCriteriaWithInteraction = models.FilterCriteriaWithInteraction
 
-type BulkRequestElement struct {
-	Id                string                   `json:"id"`
-	FilterInteraction *devicemodel.Interaction `json:"filter_interaction"`
-	FilterProtocols   []string                 `json:"filter_protocols"`
-	Criteria          FilterCriteriaAndSet     `json:"criteria"`
-	IncludeGroups     bool                     `json:"include_groups"`
-	IncludeImports    bool                     `json:"include_imports"`
-}
+type BulkRequestElement = models.BulkRequestElement
 
-type BulkRequest []BulkRequestElement
+type BulkRequest = models.BulkRequest
 
-type BulkRequestElementV2 struct {
-	Id                       string                          `json:"id"`
-	Criteria                 []FilterCriteriaWithInteraction `json:"criteria"`
-	IncludeGroups            bool                            `json:"include_groups"`
-	IncludeImports           bool                            `json:"include_imports"`
-	IncludeDevices           bool                            `json:"include_devices"`
-	IncludeIdModifiedDevices bool                            `json:"include_id_modified_devices"`
-	LocalDevices             []string                        `json:"local_devices"`
-}
+type BulkRequestElementV2 = models.BulkRequestElementV2
 
-type BulkRequestV2 []BulkRequestElementV2
+type BulkRequestV2 = models.BulkRequestV2
 
-type BulkResult []BulkResultElement
+type BulkResult = models.BulkResult
 
-type BulkResultElement struct {
-	Id          string       `json:"id"`
-	Selectables []Selectable `json:"selectables"`
-}
+type BulkResultElement = models.BulkResultElement
 
-type PathOption struct {
-	Path             string                 `json:"path"`
-	CharacteristicId string                 `json:"characteristicId"`
-	AspectNode       devicemodel.AspectNode `json:"aspectNode"`
-	FunctionId       string                 `json:"functionId"`
-	IsVoid           bool                   `json:"isVoid"`
-	Value            interface{}            `json:"value,omitempty"`
-	Type             string                 `json:"type,omitempty"`
-	Configurables    []Configurable         `json:"configurables,omitempty"`
-}
+type PathOption = models.PathOption
 
-type Configurable struct {
-	Path             string                 `json:"path"`
-	CharacteristicId string                 `json:"characteristic_id"`
-	AspectNode       devicemodel.AspectNode `json:"aspect_node"`
-	FunctionId       string                 `json:"function_id"`
-	Value            interface{}            `json:"value,omitempty"`
-	Type             string                 `json:"type,omitempty"`
-}
+type Configurable = models.Configurable

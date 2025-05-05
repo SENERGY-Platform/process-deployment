@@ -17,6 +17,7 @@
 package messages
 
 import (
+	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 )
 
@@ -32,4 +33,13 @@ type DeploymentCommand struct {
 type UserCommandMsg struct {
 	Command string `json:"command"`
 	Id      string `json:"id"`
+}
+
+type DeviceGroupCommand struct {
+	Command     string             `json:"command"`
+	Id          string             `json:"id"`
+	DeviceGroup models.DeviceGroup `json:"device_group"`
+
+	//field has been removed but can still exist as value in kafka
+	//StrictWaitBeforeDone bool          `json:"strict_wait_before_done"`
 }

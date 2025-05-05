@@ -19,10 +19,12 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"reflect"
 	"runtime/debug"
@@ -71,9 +73,18 @@ func TestDeploymentsV1(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id1", "user1", &deploymentmodel.Deployment{
-		Id:   "id1",
-		Name: "name1",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id1",
+		Owner:   "user1",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id1",
+			Name: "name1",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		debug.PrintStack()
@@ -81,9 +92,18 @@ func TestDeploymentsV1(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id2", "user1", &deploymentmodel.Deployment{
-		Id:   "id2",
-		Name: "name2",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id2",
+		Owner:   "user1",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id2",
+			Name: "name2",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		debug.PrintStack()
@@ -91,9 +111,18 @@ func TestDeploymentsV1(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id3", "user2", &deploymentmodel.Deployment{
-		Id:   "id3",
-		Name: "name3",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id3",
+		Owner:   "user2",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id3",
+			Name: "name3",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		debug.PrintStack()
@@ -121,9 +150,9 @@ func TestDeploymentsV1(t *testing.T) {
 
 	testprint("DELETE:")
 	testprint(testGetDeploymentV1(db, "user1", "id1"))
-	testprint(db.DeleteDeployment("nope"))
+	testprint(db.DeleteDeployment("nope", func(messages.DeploymentCommand) error { return nil }))
 	testprint(testGetDeploymentV1(db, "user1", "id1"))
-	testprint(db.DeleteDeployment("id1"))
+	testprint(db.DeleteDeployment("id1", func(messages.DeploymentCommand) error { return nil }))
 	testprint(testGetDeploymentV1(db, "user1", "id1"))
 
 	expected := `
@@ -192,33 +221,60 @@ func TestDeploymentsV2(t *testing.T) {
 		return
 	}
 
-	err = db.SetDeployment("id1", "user1", &deploymentmodel.Deployment{
-		Id:   "id1",
-		Name: "name1",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id1",
+		Owner:   "user1",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id1",
+			Name: "name1",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		testprint(err)
 		return
 	}
 
-	err = db.SetDeployment("id2", "user1", &deploymentmodel.Deployment{
-		Id:   "id2",
-		Name: "name2",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id2",
+		Owner:   "user1",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id2",
+			Name: "name2",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		testprint(err)
 		return
 	}
 
-	err = db.SetDeployment("id3", "user2", &deploymentmodel.Deployment{
-		Id:   "id3",
-		Name: "name3",
+	err = db.SetDeployment(messages.DeploymentCommand{
+		Command: "PUT",
+		Id:      "id3",
+		Owner:   "user2",
+		Deployment: &deploymentmodel.Deployment{
+			Id:   "id3",
+			Name: "name3",
+		},
+		Source:  "test",
+		Version: models.CurrentDeploymentModelVersion,
+	}, func(command messages.DeploymentCommand) error {
+		return nil
 	})
 	if err != nil {
 		testprint(err)
 		return
 	}
-
+	
 	list, err := db.ListDeployments("user1", model.DeploymentListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -307,9 +363,9 @@ func TestDeploymentsV2(t *testing.T) {
 
 	testprint("DELETE:")
 	testprint(testGetDeploymentV2(db, "user1", "id1"))
-	testprint(db.DeleteDeployment("nope"))
+	testprint(db.DeleteDeployment("nope", func(messages.DeploymentCommand) error { return nil }))
 	testprint(testGetDeploymentV2(db, "user1", "id1"))
-	testprint(db.DeleteDeployment("id1"))
+	testprint(db.DeleteDeployment("id1", func(messages.DeploymentCommand) error { return nil }))
 	testprint(testGetDeploymentV2(db, "user1", "id1"))
 
 	expected := `

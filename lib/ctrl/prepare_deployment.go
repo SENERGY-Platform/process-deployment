@@ -77,7 +77,7 @@ func (this *Ctrl) GetDeployments(token auth.Token, options model.DeploymentListO
 
 func (this *Ctrl) CreateDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
 	deployment.Id = config.NewId()
-	return this.setDeployment(token, deployment, source, optionals)
+	return this.SetDeployment(token, deployment, source, optionals)
 }
 
 func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
@@ -90,7 +90,7 @@ func (this *Ctrl) UpdateDeployment(token auth.Token, id string, deployment deplo
 		return result, err, code
 	}
 
-	return this.setDeployment(token, deployment, source, optionals)
+	return this.SetDeployment(token, deployment, source, optionals)
 }
 
 func (this *Ctrl) RemoveDeployment(token auth.Token, id string) (err error, code int) {
@@ -98,8 +98,7 @@ func (this *Ctrl) RemoveDeployment(token auth.Token, id string) (err error, code
 	if err != nil {
 		return err, code
 	}
-
-	err = this.publishDeploymentDelete(token.GetUserId(), id)
+	err = this.deleteDeployment(id)
 	if err != nil {
 		return err, http.StatusInternalServerError
 	}
@@ -175,7 +174,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 				bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 					Id: element.BpmnId,
 					Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-						FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+						FilterCriteria: element.Task.Selection.FilterCriteria.ToFilterCriteria(),
 					}},
 					IncludeGroups:            this.config.EnableDeviceGroupsForTasks,
 					IncludeDevices:           true,
@@ -189,7 +188,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 				Id: element.BpmnId,
 				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-					FilterCriteria: element.MessageEvent.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					FilterCriteria: element.MessageEvent.Selection.FilterCriteria.ToFilterCriteria(),
 					Interaction:    devicemodel.EVENT,
 				}},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
@@ -202,7 +201,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 				Id: element.BpmnId,
 				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-					FilterCriteria: element.ConditionalEvent.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					FilterCriteria: element.ConditionalEvent.Selection.FilterCriteria.ToFilterCriteria(),
 					Interaction:    devicemodel.EVENT,
 				}},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
@@ -219,7 +218,7 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			element := deployment.Elements[index]
 			if element.Task != nil {
 				filter = append(filter, deviceselectionmodel.FilterCriteriaWithInteraction{
-					FilterCriteria: element.Task.Selection.FilterCriteria.ToDeviceTypeFilter(),
+					FilterCriteria: element.Task.Selection.FilterCriteria.ToFilterCriteria(),
 				})
 			}
 		}
@@ -331,8 +330,8 @@ func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmode
 	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
 }
 
-func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
-	if err := deployment.Validate(deploymentmodel.ValidateRequest, optionals); err != nil {
+func (this *Ctrl) SetDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {
+	if err := deployment.Validate(deploymentmodel.ValidateRequest, optionals, deploymentmodel.DeploymentXmlValidator); err != nil {
 		return deployment, err, http.StatusBadRequest
 	}
 
@@ -354,7 +353,12 @@ func (this *Ctrl) setDeployment(token auth.Token, deployment deploymentmodel.Dep
 		return deployment, err, http.StatusInternalServerError
 	}
 
-	if err = this.publishDeployment(userid, deployment.Id, deployment, source, optionals); err != nil {
+	if err := deployment.Validate(deploymentmodel.ValidatePublish, optionals, deploymentmodel.DeploymentXmlValidator); err != nil {
+		return deployment, err, http.StatusBadRequest
+	}
+
+	err = this.setDeployment(userid, source, deployment)
+	if err != nil {
 		return deployment, err, http.StatusInternalServerError
 	}
 	return deployment, nil, 200

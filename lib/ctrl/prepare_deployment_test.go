@@ -25,7 +25,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/dependencymodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/mocks"
 	"github.com/golang-jwt/jwt"
@@ -208,6 +207,12 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 		return
 	}
 
+	rawXml, err := os.ReadFile(RESOURCE_BASE_DIR + exampleName + "/raw.bpmn")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	deployment := deploymentmodel.Deployment{}
 	err = json.Unmarshal(deploymentJson, &deployment)
 	if err != nil {
@@ -215,6 +220,7 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 		return
 	}
 	deployment.Id = deploymentId
+	deployment.Diagram.XmlRaw = string(rawXml)
 
 	mongoPort, _, err := docker.Mongo(ctx, &wg)
 	if err != nil {
@@ -250,24 +256,25 @@ func testDeploymentHandler(t *testing.T, exampleName string) {
 	}
 
 	ctrl := &Ctrl{
-		config:  conf,
-		db:      db,
-		devices: devicesMock,
+		config:          conf,
+		db:              db,
+		devices:         devicesMock,
+		engine:          mocks.Engine,
+		eventdeployment: mocks.EventDepl,
 	}
-
-	err = ctrl.HandleDeployment(messages.DeploymentCommand{
-		Command:    "PUT",
-		Id:         deploymentId,
-		Owner:      userId,
-		Deployment: &deployment,
-		Source:     "test",
-	})
+	ctrl.deploymentPublisher, err = mocks.Kafka.NewDeploymentProducer(ctx, conf)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	usertoken, err := ForgeUserToken(userId)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = ctrl.setDeployment(userId, "test", deployment)
 	if err != nil {
 		t.Error(err)
 		return
