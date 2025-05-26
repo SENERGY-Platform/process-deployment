@@ -32,6 +32,6 @@ func (this *MockEventDepl) DeleteDeployment(token string, userId string, deplId 
 	return nil, 200
 }
 
-func (this *MockEventDepl) UpdateDeploymentsOfDeviceGroup(token string, dg eventdeployment.DeviceGroup) (err error, code int) {
+func (this *MockEventDepl) UpdateDeploymentsOfDeviceGroup(token string, dgId string) (err error, code int) {
 	return nil, 200
 }

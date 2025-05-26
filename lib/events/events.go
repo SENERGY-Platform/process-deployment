@@ -19,7 +19,6 @@ package events
 import (
 	"context"
 	"encoding/json"
-	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/events/kafka"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
@@ -46,7 +45,7 @@ func (this *Event) NewUserCommandConsumer(ctx context.Context, config config.Con
 	})
 }
 
-func (this *Event) NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(group models.DeviceGroup) error) error {
+func (this *Event) NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(groupId string) error) error {
 	if config.DeviceGroupTopic == "" || config.DeviceGroupTopic == "-" {
 		return nil
 	}
@@ -57,7 +56,7 @@ func (this *Event) NewDeviceGroupConsumer(ctx context.Context, config config.Con
 			debug.PrintStack()
 			return err
 		}
-		return listener(msg.DeviceGroup)
+		return listener(msg.Id)
 	})
 }
 

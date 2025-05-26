@@ -19,7 +19,6 @@ package mocks
 import (
 	"context"
 	"encoding/json"
-	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/events"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
@@ -54,7 +53,7 @@ func (this *KafkaMock) NewUserCommandConsumer(ctx context.Context, config config
 	})
 }
 
-func (this *KafkaMock) NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(group models.DeviceGroup) error) error {
+func (this *KafkaMock) NewDeviceGroupConsumer(ctx context.Context, config config.Config, listener func(groupId string) error) error {
 	return this.NewConsumer(ctx, config, config.DeviceGroupTopic, func(delivery []byte) error {
 		msg := messages.DeviceGroupCommand{}
 		err := json.Unmarshal(delivery, &msg)
@@ -62,7 +61,7 @@ func (this *KafkaMock) NewDeviceGroupConsumer(ctx context.Context, config config
 			debug.PrintStack()
 			return err
 		}
-		return listener(msg.DeviceGroup)
+		return listener(msg.Id)
 	})
 }
 

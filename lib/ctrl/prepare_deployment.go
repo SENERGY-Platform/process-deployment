@@ -416,12 +416,14 @@ func (this *Ctrl) EnsureDeploymentSelectionAccess(token auth.Token, deployment *
 		}
 	}
 
-	importaccess, err := this.imports.CheckAccess(token, importIds, false)
-	if err != nil {
-		return err, http.StatusInternalServerError
-	}
-	for !importaccess {
-		return errors.New("import access denied"), http.StatusForbidden
+	if len(importIds) > 0 {
+		importaccess, err := this.imports.CheckAccess(token, importIds, false)
+		if err != nil {
+			return err, http.StatusInternalServerError
+		}
+		for !importaccess {
+			return errors.New("import access denied"), http.StatusForbidden
+		}
 	}
 	return nil, http.StatusOK
 }

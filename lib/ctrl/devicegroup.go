@@ -18,10 +18,14 @@ package ctrl
 
 import (
 	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
-	"github.com/SENERGY-Platform/models/go/models"
+	"log"
 )
 
-func (this *Ctrl) HandleDeviceGroupCommand(dg models.DeviceGroup) error {
-	err, _ := this.eventdeployment.UpdateDeploymentsOfDeviceGroup(eventdeployment.InternalAdminToken, dg)
-	return err
+func (this *Ctrl) HandleDeviceGroupCommand(dgId string) error {
+	err, _ := this.eventdeployment.UpdateDeploymentsOfDeviceGroup(eventdeployment.InternalAdminToken, dgId)
+	if err != nil {
+		log.Printf("ERROR: unable to handle device-group update err=%v, dg=%#v", err, dgId)
+		return err
+	}
+	return nil
 }

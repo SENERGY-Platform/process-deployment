@@ -16,7 +16,10 @@
 
 package ctrl
 
-import "github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"log"
+)
 
 func (this *Ctrl) HandleUsersCommand(userMsg messages.UserCommandMsg) error {
 	if userMsg.Command != "DELETE" {
@@ -24,11 +27,13 @@ func (this *Ctrl) HandleUsersCommand(userMsg messages.UserCommandMsg) error {
 	}
 	deployments, err := this.db.GetDeploymentIds(userMsg.Id)
 	if err != nil {
+		log.Println("ERROR: unable to handle users command (this.db.GetDeploymentIds)", err)
 		return err
 	}
 	for _, id := range deployments {
 		err = this.deleteDeployment(id)
 		if err != nil {
+			log.Println("ERROR: unable to handle users command (this.deleteDeployment)", err)
 			return err
 		}
 	}

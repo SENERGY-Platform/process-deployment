@@ -21,5 +21,5 @@ import "github.com/SENERGY-Platform/event-deployment/lib/client"
 type EventDeployment interface {
 	Deploy(token string, depl client.Deployment) (err error, code int)
 	DeleteDeployment(token string, userId string, deplId string) (err error, code int)
-	UpdateDeploymentsOfDeviceGroup(token string, dg client.DeviceGroup) (err error, code int)
+	UpdateDeploymentsOfDeviceGroup(token string, dgId string) (err error, code int)
 }

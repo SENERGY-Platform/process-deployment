@@ -5,7 +5,7 @@
   "debug": false,
   "log_level": "CALL",
   "api_port": "8080",
-  "connectivity_test": true,
+  "connectivity_test": false,
   "users_topic": "user",
   "deployment_topic": "deployments_v3",
   "mongo_table": "processdeployment",

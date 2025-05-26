@@ -118,6 +118,6 @@ func (this VoidEventDeployment) DeleteDeployment(token string, userId string, de
 	return nil, 200
 }
 
-func (this VoidEventDeployment) UpdateDeploymentsOfDeviceGroup(token string, dg eventdeployment.DeviceGroup) (err error, code int) {
+func (this VoidEventDeployment) UpdateDeploymentsOfDeviceGroup(token string, dg string) (err error, code int) {
 	return nil, 200
 }
