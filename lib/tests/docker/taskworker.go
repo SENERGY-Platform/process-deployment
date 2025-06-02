@@ -18,11 +18,8 @@ package docker
 
 import (
 	"context"
-	"fmt"
 	"github.com/testcontainers/testcontainers-go"
-	"io"
 	"log"
-	"strings"
 	"sync"
 )
 
@@ -59,18 +56,18 @@ func TaskWorker(ctx context.Context, wg *sync.WaitGroup, deviceRepoUrl string, k
 			log.Println("DEBUG: remove container task-worker", c.Terminate(context.Background()))
 		}()
 		<-ctx.Done()
-		///*
-		reader, err := c.Logs(context.Background())
-		if err != nil {
-			log.Println("ERROR: unable to get container log")
-			return
-		}
-		buf := new(strings.Builder)
-		io.Copy(buf, reader)
-		fmt.Println("TASK-WORKER LOGS: ------------------------------------------")
-		fmt.Println(buf.String())
-		fmt.Println("\n---------------------------------------------------------------")
-		//*/
+		/*
+			reader, err := c.Logs(context.Background())
+			if err != nil {
+				log.Println("ERROR: unable to get container log")
+				return
+			}
+			buf := new(strings.Builder)
+			io.Copy(buf, reader)
+			fmt.Println("TASK-WORKER LOGS: ------------------------------------------")
+			fmt.Println(buf.String())
+			fmt.Println("\n---------------------------------------------------------------")
+		*/
 	}()
 
 	return err

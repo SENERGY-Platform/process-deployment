@@ -23,6 +23,7 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/events/kafka"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
+	"log"
 	"runtime/debug"
 )
 
@@ -105,9 +106,9 @@ func (this *DeploymentProducer) Produce(command messages.DeploymentCommand) erro
 		}
 	}
 
-	if this.DoneProducer != nil && command.Command == "PUT" {
+	if this.DoneProducer != nil {
 		message := DoneNotification{
-			Command: "PUT",
+			Command: command.Command,
 			Id:      command.Id,
 			Handler: "github.com/SENERGY-Platform/process-deployment",
 		}
@@ -115,6 +116,7 @@ func (this *DeploymentProducer) Produce(command messages.DeploymentCommand) erro
 		if err != nil {
 			return err
 		}
+		log.Println("send done notification", string(msg))
 		err = this.DoneProducer.Produce(command.Id, msg)
 		if err != nil {
 			return err
