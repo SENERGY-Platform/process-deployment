@@ -49,6 +49,7 @@ func TestDeploymentListApi(t *testing.T) {
 		return
 	}
 	conf.Debug = true
+	conf.InitTopics = true
 
 	port, _, err := docker.Mongo(ctx, &wg)
 	if err != nil {

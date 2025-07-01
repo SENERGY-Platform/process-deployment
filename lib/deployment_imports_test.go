@@ -46,6 +46,7 @@ func TestImportDeployments(t *testing.T) {
 	}
 
 	conf.Debug = true
+	conf.InitTopics = true
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

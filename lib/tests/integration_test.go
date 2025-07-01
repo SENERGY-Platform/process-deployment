@@ -59,6 +59,7 @@ func TestIntegration(t *testing.T) {
 	conf.DeploymentTopic = "-"
 	conf.DoneTopic = "process-deployment-done"
 	conf.DeviceGroupTopic = "device-groups"
+	conf.InitTopics = true
 
 	_, mongoIp, err := docker.Mongo(ctx, &wg)
 	if err != nil {

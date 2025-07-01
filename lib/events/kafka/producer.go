@@ -32,10 +32,12 @@ type Producer struct {
 
 func NewProducer(ctx context.Context, config config.Config, topic string) (interfaces.Producer, error) {
 	result := &Producer{ctx: ctx}
-	err := InitTopic(config.KafkaUrl, topic)
-	if err != nil {
-		log.Println("ERROR: unable to create topic", err)
-		return nil, err
+	if config.InitTopics {
+		err := InitTopic(config.KafkaUrl, topic)
+		if err != nil {
+			log.Println("ERROR: unable to create topic", err)
+			return nil, err
+		}
 	}
 
 	var logger kafka.Logger

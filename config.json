@@ -34,5 +34,7 @@
   "device_group_topic": "device-groups",
 
   "process_engine_wrapper_url": "",
-  "event_deployment_url": ""
+  "event_deployment_url": "",
+
+  "init_topics": false
 }

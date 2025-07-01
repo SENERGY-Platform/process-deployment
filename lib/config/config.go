@@ -65,6 +65,8 @@ type ConfigStruct struct {
 
 	ProcessEngineWrapperUrl string `json:"process_engine_wrapper_url"`
 	EventDeploymentUrl      string `json:"event_deployment_url"`
+
+	InitTopics bool `json:"init_topics"`
 }
 
 type Config = *ConfigStruct

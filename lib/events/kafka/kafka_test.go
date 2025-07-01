@@ -36,6 +36,7 @@ func TestKafka(t *testing.T) {
 		return
 	}
 	config.Debug = true
+	config.InitTopics = true
 
 	wg := sync.WaitGroup{}
 	defer wg.Wait()

@@ -28,10 +28,12 @@ import (
 )
 
 func NewConsumer(ctx context.Context, config config.Config, topic string, listener func(delivery []byte) error) error {
-	err := InitTopic(config.KafkaUrl, topic)
-	if err != nil {
-		log.Println("ERROR: unable to create topic", err)
-		return err
+	if config.InitTopics {
+		err := InitTopic(config.KafkaUrl, topic)
+		if err != nil {
+			log.Println("ERROR: unable to create topic", err)
+			return err
+		}
 	}
 	r := kafka.NewReader(kafka.ReaderConfig{
 		CommitInterval:         0, //synchronous commits
