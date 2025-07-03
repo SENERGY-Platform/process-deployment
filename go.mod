@@ -14,11 +14,11 @@ require (
 
 require (
 	github.com/SENERGY-Platform/camunda-engine-wrapper v1.0.5
-	github.com/SENERGY-Platform/device-repository v0.2.17
-	github.com/SENERGY-Platform/event-deployment v0.0.35
+	github.com/SENERGY-Platform/device-repository v0.2.27
+	github.com/SENERGY-Platform/event-deployment v0.0.37
 	github.com/SENERGY-Platform/models/go v0.0.0-20250417082304-c41a4b3157af
-	github.com/SENERGY-Platform/permissions-v2 v0.0.36
-	github.com/SENERGY-Platform/service-commons v0.0.0-20250331120616-ff35c05099d3
+	github.com/SENERGY-Platform/permissions-v2 v0.0.38
+	github.com/SENERGY-Platform/service-commons v0.0.0-20250624131956-6c08be412ea0
 	github.com/google/uuid v1.6.0
 	github.com/swaggo/swag v1.16.4
 	github.com/testcontainers/testcontainers-go v0.33.0
