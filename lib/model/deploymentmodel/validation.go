@@ -45,6 +45,8 @@ func DeploymentXmlValidator(xml string) (err error) {
 	if err != nil {
 		return err
 	}
+
+	//may not contain scripts that access 'execution'
 	scripts := []string{}
 	for _, script := range doc.FindElements("//camunda:script") {
 		scripts = append(scripts, script.Text())
@@ -57,5 +59,12 @@ func DeploymentXmlValidator(xml string) (err error) {
 			return errors.New("bpmn script contains engine access")
 		}
 	}
+
+	for _, connectors := range doc.FindElements("//camunda:connectorId") {
+		if connectors.Text() == "mail-send" {
+			return errors.New("bpmn contains mail-send connector, which is not allowed")
+		}
+	}
+
 	return nil
 }

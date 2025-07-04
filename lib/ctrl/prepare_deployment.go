@@ -30,6 +30,10 @@ import (
 )
 
 func (this *Ctrl) PrepareDeployment(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
+	err = deploymentmodel.DeploymentXmlValidator(xml)
+	if err != nil {
+		return result, err, http.StatusBadRequest
+	}
 	result, err = this.deploymentParser.PrepareDeployment(xml)
 	if err != nil {
 		return result, err, http.StatusInternalServerError

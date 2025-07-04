@@ -16,7 +16,10 @@
 
 package deploymentmodel
 
-import "testing"
+import (
+	"github.com/SENERGY-Platform/process-deployment/lib/tests/resources"
+	"testing"
+)
 
 func TestElement_Validate(t *testing.T) {
 	type fields = TimeEvent
@@ -54,4 +57,13 @@ func TestElement_Validate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestEmailForbiddenValidation(t *testing.T) {
+	err := DeploymentXmlValidator(resources.EmailProcess)
+	if err == nil {
+		t.Error("expected error")
+		return
+	}
+	t.Log(err)
 }
