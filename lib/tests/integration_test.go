@@ -19,6 +19,17 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"slices"
+	"strconv"
+	"strings"
+	"sync"
+	"testing"
+	"time"
+
 	"github.com/SENERGY-Platform/camunda-engine-wrapper/lib/shards"
 	"github.com/SENERGY-Platform/camunda-engine-wrapper/lib/shards/cache"
 	"github.com/SENERGY-Platform/device-repository/lib/client"
@@ -30,16 +41,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/docker"
 	"github.com/SENERGY-Platform/process-deployment/lib/tests/resources/integrationtest"
 	kafkalib "github.com/segmentio/kafka-go"
-	"log"
-	"net/http"
-	"net/url"
-	"os"
-	"slices"
-	"strconv"
-	"strings"
-	"sync"
-	"testing"
-	"time"
 )
 
 func TestIntegration(t *testing.T) {
@@ -111,15 +112,7 @@ func TestIntegration(t *testing.T) {
 	}
 	conf.ProcessEngineWrapperUrl = "http://" + engineWrapperIp + ":8080"
 
-	_, zkIp, err := docker.Zookeeper(ctx, &wg)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	zkUrl := zkIp + ":2181"
-
-	conf.KafkaUrl, err = docker.Kafka(ctx, &wg, zkUrl)
+	conf.KafkaUrl, err = docker.Kafka(ctx, &wg)
 	if err != nil {
 		t.Error(err)
 		return
@@ -399,6 +392,13 @@ func TestIntegration(t *testing.T) {
 	time.Sleep(10 * time.Second)
 
 	t.Run("test event deployment", func(t *testing.T) {
+		servicetopic := ServiceIdToTopic(sensorServiceId)
+		err := kafka.InitTopic(conf.KafkaUrl, servicetopic)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		time.Sleep(5 * time.Second)
 		var deplId string
 		t.Run("deploy", func(t *testing.T) {
 			deplId, err = integrationtest.DeployEventProcess(token, deploymentUrl, device.Id, sensorServiceId)
@@ -409,12 +409,7 @@ func TestIntegration(t *testing.T) {
 		})
 		time.Sleep(5 * time.Second)
 		t.Run("trigger event", func(t *testing.T) {
-			servicetopic := ServiceIdToTopic(sensorServiceId)
-			err := kafka.InitTopic(conf.KafkaUrl, servicetopic)
-			if err != nil {
-				t.Error(err)
-				return
-			}
+			t.Logf("trigger event for topic %s", servicetopic)
 			writer := &kafkalib.Writer{
 				Addr:        kafkalib.TCP(conf.KafkaUrl),
 				Topic:       servicetopic,
@@ -469,11 +464,14 @@ func TestIntegration(t *testing.T) {
 				t.Error(err)
 				return
 			}
+			if len(instances) == 0 {
+				t.Error("no process instances found")
+			}
 			index := slices.IndexFunc(instances, func(instance HistoricProcessInstance) bool {
-				return instance.ProcessDefinitionKey == "canary_event_process"
+				return instance.ProcessDefinitionName == "canary_event_process"
 			})
 			if index == -1 {
-				t.Error("no process instance found")
+				t.Errorf("no matching process instance found: \n%#v", instances)
 				return
 			}
 			if instances[index].State != "COMPLETED" {

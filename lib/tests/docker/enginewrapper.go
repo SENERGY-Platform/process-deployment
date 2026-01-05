@@ -18,10 +18,14 @@ package docker
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"log"
+	"strings"
+	"sync"
+
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"log"
-	"sync"
 )
 
 func EngineWrapper(ctx context.Context, wg *sync.WaitGroup, incidentApiUrl string, pgConn string) (hostPort string, ipAddress string, err error) {
@@ -50,18 +54,18 @@ func EngineWrapper(ctx context.Context, wg *sync.WaitGroup, incidentApiUrl strin
 			log.Println("DEBUG: remove container engine-wrapper", c.Terminate(context.Background()))
 		}()
 		<-ctx.Done()
-		/*
-			reader, err := c.Logs(context.Background())
-			if err != nil {
-				log.Println("ERROR: unable to get container log")
-				return
-			}
-			buf := new(strings.Builder)
-			io.Copy(buf, reader)
-			fmt.Println("ENGINE-WRAPPER LOGS: ------------------------------------------")
-			fmt.Println(buf.String())
-			fmt.Println("\n---------------------------------------------------------------")
-		*/
+
+		reader, err := c.Logs(context.Background())
+		if err != nil {
+			log.Println("ERROR: unable to get container log")
+			return
+		}
+		buf := new(strings.Builder)
+		io.Copy(buf, reader)
+		fmt.Println("ENGINE-WRAPPER LOGS: ------------------------------------------")
+		fmt.Println(buf.String())
+		fmt.Println("\n---------------------------------------------------------------")
+
 	}()
 
 	ipAddress, err = c.ContainerIP(ctx)
