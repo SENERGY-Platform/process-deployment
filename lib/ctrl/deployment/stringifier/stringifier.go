@@ -19,13 +19,12 @@ package stringifier
 import (
 	"errors"
 	"fmt"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
 )
 
 type Stringifier struct {
@@ -42,7 +41,7 @@ func New(conf config.Config, aspectNodeProvider AspectNodeProvider) *Stringifier
 func (this *Stringifier) Deployment(deployment deploymentmodel.Deployment, userId string, token auth.Token) (xml string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()

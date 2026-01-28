@@ -19,12 +19,12 @@ package events
 import (
 	"context"
 	"encoding/json"
+	"runtime/debug"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/events/kafka"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	"log"
-	"runtime/debug"
 )
 
 type Event struct{}
@@ -116,7 +116,7 @@ func (this *DeploymentProducer) Produce(command messages.DeploymentCommand) erro
 		if err != nil {
 			return err
 		}
-		log.Println("send done notification", string(msg))
+		this.Config.GetLogger().Debug("send done notification", "message", string(msg))
 		err = this.DoneProducer.Produce(command.Id, msg)
 		if err != nil {
 			return err

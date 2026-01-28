@@ -17,9 +17,9 @@
 package parser
 
 import (
-	"github.com/beevik/etree"
-	"log"
 	"strconv"
+
+	"github.com/beevik/etree"
 )
 
 func (this *Parser) getOrder(element *etree.Element) int64 {
@@ -32,9 +32,7 @@ func (this *Parser) getOrder(element *etree.Element) int64 {
 	}
 	order, err := strconv.ParseInt(orderAttr.Value, 10, 64)
 	if err != nil {
-		if this.conf.Debug {
-			log.Println("unable to parse element senergy:order as int64", err, *element)
-		}
+		this.conf.GetLogger().Debug("unable to parse element senergy:order as int64", "error", err, "element", *element)
 		return 0
 	}
 	return order

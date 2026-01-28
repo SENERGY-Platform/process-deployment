@@ -19,11 +19,11 @@ package deploymentmodel
 import (
 	"errors"
 	"fmt"
+	"log/slog"
+	"strings"
+
 	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
-	"strings"
 )
 
 type ValidationKind = models.ValidationKind
@@ -36,7 +36,7 @@ const (
 func DeploymentXmlValidator(xml string) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			slog.Default().Error("recovered from panic in DeploymentXmlValidator", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()

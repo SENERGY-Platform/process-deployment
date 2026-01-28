@@ -19,14 +19,15 @@ package api
 import (
 	"context"
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
-	"github.com/SENERGY-Platform/service-commons/pkg/accesslog"
 	"log"
 	"net/http"
 	"reflect"
 	"time"
+
+	"github.com/SENERGY-Platform/process-deployment/lib/api/util"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
+	"github.com/SENERGY-Platform/service-commons/pkg/accesslog"
 )
 
 //go:generate go tool swag init -o ../../docs --parseDependency -d .. -g api/api.go
@@ -36,36 +37,36 @@ type EndpointMethod = func(config config.Config, router *http.ServeMux, ctrl *ct
 var endpoints = []interface{}{} //list of objects with EndpointMethod
 
 func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
-	log.Println("start api")
+	config.GetLogger().Info("start api")
 
 	timeout, err := time.ParseDuration(config.HttpServerTimeout)
 	if err != nil {
-		log.Println("WARNING: invalid http server timeout --> no timeouts\n", err)
+		config.GetLogger().Warn("invalid http server timeout --> no timeouts", "error", err)
 		err = nil
 	}
 
 	readtimeout, err := time.ParseDuration(config.HttpServerReadTimeout)
 	if err != nil {
-		log.Println("WARNING: invalid http server read timeout --> no timeouts\n", err)
+		config.GetLogger().Warn("invalid http server read timeout --> no timeouts", "error", err)
 		err = nil
 	}
 
 	router := GetRouter(config, ctrl)
 	server := &http.Server{Addr: ":" + config.ApiPort, Handler: router, WriteTimeout: timeout, ReadTimeout: readtimeout}
 	go func() {
-		log.Println("Listening on ", server.Addr)
+		config.GetLogger().Info("start api server", "address", server.Addr)
 		if err := server.ListenAndServe(); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				log.Println("ERROR: api server error", err)
+				config.GetLogger().Error("FATAL api server error", "error", err)
 				log.Fatal(err)
 			} else {
-				log.Println("closing api server")
+				config.GetLogger().Info("api server closed")
 			}
 		}
 	}()
 	go func() {
 		<-ctx.Done()
-		log.Println("DEBUG: api shutdown", server.Shutdown(context.Background()))
+		config.GetLogger().Info("shutdown api server", "result", server.Shutdown(context.Background()))
 	}()
 	return nil
 }
@@ -84,11 +85,11 @@ func GetRouter(config config.Config, ctrl *ctrl.Ctrl) http.Handler {
 	router := http.NewServeMux()
 	for _, e := range endpoints {
 		for name, call := range getEndpointMethods(e) {
-			log.Println("add endpoint " + name)
+			config.GetLogger().Info("add endpoint", "name", name)
 			call(config, router, ctrl)
 		}
 	}
-	log.Println("add logging and cors")
+	config.GetLogger().Info("add logging and cors")
 	corsHandler := util.NewCors(router)
 	logger := accesslog.New(corsHandler)
 	return logger

@@ -18,6 +18,9 @@ package lib
 
 import (
 	"context"
+	"runtime/debug"
+	"time"
+
 	engine "github.com/SENERGY-Platform/camunda-engine-wrapper/lib/client"
 	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/api"
@@ -31,9 +34,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/processrepo"
 	"github.com/SENERGY-Platform/service-commons/pkg/cache/invalidator"
 	kafkalib "github.com/SENERGY-Platform/service-commons/pkg/kafka"
-	"log"
-	"runtime/debug"
-	"time"
 )
 
 func StartDefault(ctx context.Context, config config.Config) error {
@@ -93,7 +93,7 @@ func StartCacheInvalidator(ctx context.Context, conf config.Config) error {
 		PartitionWatchInterval: time.Minute,
 		InitTopic:              conf.InitTopics,
 		OnError: func(err error) {
-			log.Println("ERROR:", err)
+			conf.GetLogger().Error("cache invalidator", "error", err)
 			debug.PrintStack()
 		},
 	}, conf.CacheInvalidationKafkaTopics, nil)

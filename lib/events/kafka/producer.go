@@ -18,11 +18,13 @@ package kafka
 
 import (
 	"context"
+	"io"
+	"log"
+	"log/slog"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/interfaces"
 	"github.com/segmentio/kafka-go"
-	"log"
-	"os"
 )
 
 type Producer struct {
@@ -35,24 +37,23 @@ func NewProducer(ctx context.Context, config config.Config, topic string) (inter
 	if config.InitTopics {
 		err := InitTopic(config.KafkaUrl, topic)
 		if err != nil {
-			log.Println("ERROR: unable to create topic", err)
+			config.GetLogger().Error("unable to create topic", "topic", topic, "error", err)
 			return nil, err
 		}
 	}
 
-	var logger kafka.Logger
-	if config.Debug {
-		logger = log.New(os.Stdout, "KAFKA", 0)
-	}
+	logger := slog.NewLogLogger(config.GetLogger().Handler(), slog.LevelError)
+	logger.SetPrefix("[KAFKA-ERROR] ")
 
 	result.writer = &kafka.Writer{
 		Addr:        kafka.TCP(config.KafkaUrl),
 		Topic:       topic,
-		Logger:      logger,
+		Logger:      log.New(io.Discard, "", 0),
 		Async:       false,
 		BatchSize:   1,
 		Balancer:    &kafka.Hash{},
-		ErrorLogger: log.New(os.Stderr, "KAFKA", 0),
+		ErrorLogger: logger,
+		Compression: kafka.Snappy,
 	}
 
 	go func() {

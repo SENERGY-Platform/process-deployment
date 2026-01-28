@@ -20,14 +20,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/executionmodel"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
-	"strings"
 )
 
 func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Element, token auth.Token) (err error) {
@@ -37,7 +36,7 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	}
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -72,7 +71,7 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 	if task.Selection.FilterCriteria.AspectId != nil {
 		temp, err := this.aspectNodeProvider(token, *task.Selection.FilterCriteria.AspectId)
 		if err != nil {
-			log.Println("ERROR: unable to load aspect node", task.Selection.FilterCriteria.AspectId, err)
+			this.conf.GetLogger().Error("unable to load aspect node", "aspectId", *task.Selection.FilterCriteria.AspectId, "error", err)
 			return err
 		}
 		command.Aspect = &temp

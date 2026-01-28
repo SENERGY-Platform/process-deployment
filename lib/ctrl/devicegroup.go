@@ -18,13 +18,12 @@ package ctrl
 
 import (
 	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
-	"log"
 )
 
 func (this *Ctrl) HandleDeviceGroupCommand(dgId string) error {
 	err, _ := this.eventdeployment.UpdateDeploymentsOfDeviceGroup(eventdeployment.InternalAdminToken, dgId)
 	if err != nil {
-		log.Printf("ERROR: unable to handle device-group update err=%v, dg=%#v", err, dgId)
+		this.config.GetLogger().Error("unable to handle device-group update", "error", err, "dgId", dgId)
 		return err
 	}
 	return nil

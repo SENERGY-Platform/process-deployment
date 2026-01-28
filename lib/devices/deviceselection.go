@@ -21,10 +21,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
-	"log"
 
 	"net/http"
 	"net/url"
@@ -71,7 +71,7 @@ func (this *Repository) GetDeviceSelection(token auth.Token, descriptions device
 func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
 	if this.config.Debug {
 		temp, _ := json.Marshal(bulk)
-		log.Println("DEBUG: send GetBulkDeviceSelection() with:\n", string(temp))
+		this.config.GetLogger().Debug("send GetBulkDeviceSelection()", "request", string(temp))
 	}
 	buff := new(bytes.Buffer)
 	err = json.NewEncoder(buff).Encode(bulk)
@@ -111,7 +111,7 @@ func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk devicesele
 func (this *Repository) GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int) {
 	if this.config.Debug {
 		temp, _ := json.Marshal(bulk)
-		log.Println("DEBUG: send GetBulkDeviceSelection() with:\n", string(temp))
+		this.config.GetLogger().Debug("send GetBulkDeviceSelectionV2()", "request", string(temp))
 	}
 	buff := new(bytes.Buffer)
 	err = json.NewEncoder(buff).Encode(bulk)

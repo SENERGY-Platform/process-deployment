@@ -19,13 +19,13 @@ package ctrl
 import (
 	"context"
 	"errors"
+	"runtime/debug"
+	"time"
+
 	engine "github.com/SENERGY-Platform/camunda-engine-wrapper/lib/client"
 	eventdeployment "github.com/SENERGY-Platform/event-deployment/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	"log"
-	"runtime/debug"
-	"time"
 )
 
 func (this *Ctrl) StartSyncLoop(ctx context.Context, interval time.Duration, lockduration time.Duration) {
@@ -37,7 +37,7 @@ func (this *Ctrl) StartSyncLoop(ctx context.Context, interval time.Duration, loc
 			case <-ticker.C:
 				err := this.Sync(lockduration)
 				if err != nil {
-					log.Printf("ERROR: while db sync run: %v", err)
+					this.config.GetLogger().Error("unable to run db sync", "error", err)
 				}
 			case <-ctx.Done():
 				return

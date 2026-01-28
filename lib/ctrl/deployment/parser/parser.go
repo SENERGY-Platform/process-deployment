@@ -19,11 +19,10 @@ package parser
 import (
 	"errors"
 	"fmt"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
 )
 
 type Parser struct {
@@ -37,7 +36,7 @@ func New(conf config.Config) *Parser {
 func (this *Parser) PrepareDeployment(xml string) (result deploymentmodel.Deployment, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -52,7 +51,7 @@ func (this *Parser) PrepareDeployment(xml string) (result deploymentmodel.Deploy
 func (this *Parser) EstimateStartParameter(xml string) (result []deploymentmodel.ProcessStartParameter, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -67,7 +66,7 @@ func (this *Parser) EstimateStartParameter(xml string) (result []deploymentmodel
 func (this *Parser) estimateStartParameter(doc *etree.Document) (result []deploymentmodel.ProcessStartParameter, err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()

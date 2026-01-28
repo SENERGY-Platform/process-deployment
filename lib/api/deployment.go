@@ -18,16 +18,16 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/ctrl"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/messages"
-	"log"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 func init() {
@@ -164,7 +164,7 @@ func (this *DeploymentsEndpoints) PrepareDeploymentByModelId(config config.Confi
 			return
 		}
 		dur := time.Now().Sub(start)
-		log.Println("DEBUG: prepare deployment complete time:", dur, dur.Milliseconds())
+		config.GetLogger().Debug("prepare deployment complete time", "duration", dur, "duration_ms", dur.Milliseconds())
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(writer).Encode(result)
 	})
@@ -192,7 +192,7 @@ func (this *DeploymentsEndpoints) Deploy(config config.Config, router *http.Serv
 		deployment := deploymentmodel.Deployment{}
 		err := json.NewDecoder(request.Body).Decode(&deployment)
 		if err != nil {
-			log.Println("ERROR: unable to parse request", err)
+			config.GetLogger().Error("unable to parse request", "error", err)
 			http.Error(writer, err.Error(), http.StatusBadRequest)
 			return
 		}

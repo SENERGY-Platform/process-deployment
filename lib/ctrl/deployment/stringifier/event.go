@@ -19,18 +19,17 @@ package stringifier
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
-	"strings"
 )
 
 func (this *Stringifier) MessageEvent(doc *etree.Document, element deploymentmodel.Element) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -49,7 +48,7 @@ func (this *Stringifier) MessageEvent(doc *etree.Document, element deploymentmod
 func (this *Stringifier) ConditionalEvent(doc *etree.Document, element deploymentmodel.Element) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()
@@ -68,7 +67,7 @@ func (this *Stringifier) ConditionalEvent(doc *etree.Document, element deploymen
 func (this *Stringifier) TimeEvent(doc *etree.Document, element deploymentmodel.Element) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()

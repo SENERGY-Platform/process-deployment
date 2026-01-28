@@ -19,19 +19,21 @@ package kafka
 import (
 	"context"
 	"errors"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
-	"github.com/segmentio/kafka-go"
 	"io"
 	"log"
+	"log/slog"
 	"os"
 	"time"
+
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
+	"github.com/segmentio/kafka-go"
 )
 
 func NewConsumer(ctx context.Context, config config.Config, topic string, listener func(delivery []byte) error) error {
 	if config.InitTopics {
 		err := InitTopic(config.KafkaUrl, topic)
 		if err != nil {
-			log.Println("ERROR: unable to create topic", err)
+			config.GetLogger().Error("unable to create topic", "topic", topic, "error", err)
 			return err
 		}
 	}
@@ -48,17 +50,18 @@ func NewConsumer(ctx context.Context, config config.Config, topic string, listen
 	})
 	go func() {
 		defer r.Close()
-		defer log.Println("close consumer for topic ", topic)
+		defer config.GetLogger().Info("close consumer for topic", "topic", topic)
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			default:
 				m, err := r.FetchMessage(ctx)
-				if err == io.EOF || err == context.Canceled {
+				if err == io.EOF || errors.Is(err, context.Canceled) {
 					return
 				}
 				if err != nil {
+					config.GetLogger().Error("FATAL: while fetching message", "topic", topic, "error", err)
 					log.Fatal("ERROR: while consuming topic ", topic, err)
 					return
 				}
@@ -70,10 +73,12 @@ func NewConsumer(ctx context.Context, config config.Config, topic string, listen
 				}, 10*time.Minute)
 
 				if err != nil {
+					config.GetLogger().Error("FATAL: unable to handle message", "topic", topic, "error", err)
 					log.Fatal("ERROR: unable to handle message (no commit)", err)
 				} else {
 					err = r.CommitMessages(ctx, m)
 					if err != nil {
+						config.GetLogger().Error("FATAL: while committing consumption", "topic", topic, "error", err)
 						log.Fatal("ERROR: while committing consumption ", topic, err)
 						return
 					}
@@ -90,10 +95,10 @@ func retry(f func() error, waitProvider func(n int64) time.Duration, timeout tim
 	for i := int64(1); err != nil && time.Since(start) < timeout; i++ {
 		err = f()
 		if err != nil {
-			log.Println("ERROR: kafka listener error:", err)
+			slog.Default().Error("kafka listener error", "error", err)
 			wait := waitProvider(i)
 			if time.Since(start)+wait < timeout {
-				log.Println("ERROR: retry after:", wait.String())
+				slog.Default().Error("retry after", "wait", wait, "error", err)
 				time.Sleep(wait)
 			} else {
 				return err

@@ -19,16 +19,15 @@ package stringifier
 import (
 	"errors"
 	"fmt"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deploymentmodel"
 	"github.com/beevik/etree"
-	"log"
-	"runtime/debug"
 )
 
 func (this *Stringifier) updateStartParameter(doc *etree.Document, parameter []deploymentmodel.ProcessStartParameter, setIgnoreOnStartProperty bool) (err error) {
 	defer func() {
 		if r := recover(); r != nil && err == nil {
-			log.Printf("%s: %s", r, debug.Stack())
+			this.conf.GetLogger().Error("recovered from panic", "error", r)
 			err = errors.New(fmt.Sprint("Recovered Error: ", r))
 		}
 	}()

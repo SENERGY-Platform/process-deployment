@@ -19,13 +19,14 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/SENERGY-Platform/process-deployment/lib"
-	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/SENERGY-Platform/process-deployment/lib"
+	"github.com/SENERGY-Platform/process-deployment/lib/config"
 )
 
 func main() {
@@ -46,14 +47,14 @@ func main() {
 
 	err = lib.StartCacheInvalidator(ctx, config)
 	if err != nil {
-		log.Println("WARNING: unable to start cache invalidator:", err)
+		config.GetLogger().Warn("unable to start cache invalidator", "error", err)
 	}
 
 	go func() {
 		shutdown := make(chan os.Signal, 1)
 		signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 		sig := <-shutdown
-		log.Println("received shutdown signal", sig)
+		config.GetLogger().Info("received shutdown signal", "signal", sig)
 		cancel()
 	}()
 
