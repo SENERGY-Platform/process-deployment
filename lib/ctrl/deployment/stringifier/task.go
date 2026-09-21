@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
@@ -68,6 +69,10 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 		command.DeviceClass = &devicemodel.DeviceClass{Id: *task.Selection.FilterCriteria.DeviceClassId}
 	}
 
+	//both aspect spellings of the criteria are passed on as they were selected: Aspect is
+	//deprecated and an alias for an Aspects list with a single element, and a command that
+	//carries it alone stays readable for a worker that only knows the single field. The
+	//worker folds the two on read, at its camunda boundary.
 	if task.Selection.FilterCriteria.AspectId != nil {
 		temp, err := this.aspectNodeProvider(token, *task.Selection.FilterCriteria.AspectId)
 		if err != nil {
@@ -75,6 +80,11 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 			return err
 		}
 		command.Aspect = &temp
+	}
+
+	command.Aspects, err = this.aspectNodes(token, task.Selection.FilterCriteria.AspectIds)
+	if err != nil {
+		return err
 	}
 
 	xpath := "//bpmn:serviceTask[@id='" + element.BpmnId + "']//camunda:inputParameter[@name='" + executionmodel.CAMUNDA_VARIABLES_PAYLOAD + "']"
@@ -112,6 +122,24 @@ func (this *Stringifier) Task(doc *etree.Document, element deploymentmodel.Eleme
 		doc.FindElement(xpath).SetText(value)
 	}
 	return nil
+}
+
+// aspectNodes resolves the aspects a criteria names, in a stable order, so that the same
+// criteria always produces the same command payload. Sorting by id also puts the node the
+// deprecated single field would carry first, which is how the platform picks it elsewhere.
+func (this *Stringifier) aspectNodes(token auth.Token, aspectIds []string) (result []devicemodel.AspectNode, err error) {
+	for _, aspectId := range slices.Sorted(slices.Values(aspectIds)) {
+		if aspectId == "" {
+			continue
+		}
+		node, err := this.aspectNodeProvider(token, aspectId)
+		if err != nil {
+			this.conf.GetLogger().Error("unable to load aspect node", "aspectId", aspectId, "error", err)
+			return nil, err
+		}
+		result = append(result, node)
+	}
+	return result, nil
 }
 
 func isControllingFunction(functionId string) bool {

@@ -729,6 +729,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "aspect_class_id": {
+                    "type": "string"
+                },
                 "child_ids": {
                     "type": "array",
                     "items": {
@@ -785,7 +788,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "aspect_node": {
-                    "$ref": "#/definitions/models.AspectNode"
+                    "description": "deprecated: alias for a single element AspectNodes; holds the node with the alphabetically first id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.AspectNode"
+                        }
+                    ]
+                },
+                "aspect_nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AspectNode"
+                    }
                 },
                 "characteristic_id": {
                     "type": "string"
@@ -797,7 +811,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.Type"
                 },
                 "value": {}
             }
@@ -904,7 +918,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "aspect_id": {
+                    "description": "deprecated: please use AspectIds",
                     "type": "string"
+                },
+                "aspect_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "characteristic_id": {
                     "type": "string"
@@ -935,8 +956,11 @@ const docTemplate = `{
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.ImportConfig"
+                        "$ref": "#/definitions/models.ImportTypeConfig"
                     }
+                },
+                "cost": {
+                    "type": "integer"
                 },
                 "default_restart": {
                     "type": "boolean"
@@ -961,6 +985,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ImportTypeConfig": {
+            "type": "object",
+            "properties": {
+                "default_value": {},
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.Type"
+                }
+            }
+        },
         "models.IncidentHandling": {
             "type": "object",
             "properties": {
@@ -971,6 +1010,19 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "models.Interaction": {
+            "type": "string",
+            "enum": [
+                "event",
+                "request",
+                "event+request"
+            ],
+            "x-enum-varnames": [
+                "EVENT",
+                "REQUEST",
+                "EVENT_AND_REQUEST"
+            ]
         },
         "models.MessageEvent": {
             "type": "object",
@@ -1007,7 +1059,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "aspectNode": {
-                    "$ref": "#/definitions/models.AspectNode"
+                    "description": "deprecated: alias for a single element AspectNodes; holds the node with the alphabetically first id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.AspectNode"
+                        }
+                    ]
+                },
+                "aspectNodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AspectNode"
+                    }
                 },
                 "characteristicId": {
                     "type": "string"
@@ -1021,6 +1084,9 @@ const docTemplate = `{
                 "functionId": {
                     "type": "string"
                 },
+                "interaction": {
+                    "$ref": "#/definitions/models.Interaction"
+                },
                 "isVoid": {
                     "type": "boolean"
                 },
@@ -1028,7 +1094,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.Type"
                 },
                 "value": {}
             }
@@ -1037,7 +1103,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "aspect_id": {
+                    "description": "deprecated: please use AspectIds",
                     "type": "string"
+                },
+                "aspect_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "characteristic_id": {
                     "type": "string"

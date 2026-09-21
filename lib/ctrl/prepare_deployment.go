@@ -19,6 +19,7 @@ package ctrl
 import (
 	"errors"
 	"net/http"
+	"slices"
 	"sort"
 
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
@@ -329,29 +330,69 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 	return result
 }
 
+// serviceMatchesCriteria answers whether a service of a selectable offers what the element
+// asks for. Several aspects in one criteria are an AND, the way the device-repository reads
+// them: one content variable, and therefore one path option, has to carry all of them.
 func serviceMatchesCriteria(service devicemodel.Service, criteria deploymentmodel.FilterCriteria, servicePathOptions map[string][]deviceselectionmodel.PathOption) bool {
+	aspectIds := criteriaAspectIds(criteria)
 	implementsFunction := false
-	matchesAspect := false
+	matchesAspects := false
 	pathOptions, ok := servicePathOptions[service.Id]
 	if !ok {
 		return false
 	}
 	for _, option := range pathOptions {
-		aspects := append(option.AspectNode.AncestorIds, option.AspectNode.Id)
-		for _, aspect := range aspects {
-			if criteria.AspectId != nil && *criteria.AspectId == aspect {
-				matchesAspect = true
-				break
-			}
+		if optionCoversAspects(option, aspectIds) {
+			matchesAspects = true
 		}
 		if criteria.FunctionId != nil && *criteria.FunctionId == option.FunctionId {
 			implementsFunction = true
 		}
-		if (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction) {
+		if (len(aspectIds) == 0 || matchesAspects) && (criteria.FunctionId == nil || implementsFunction) {
 			return true
 		}
 	}
-	return (criteria.AspectId == nil || matchesAspect) && (criteria.FunctionId == nil || implementsFunction)
+	return (len(aspectIds) == 0 || matchesAspects) && (criteria.FunctionId == nil || implementsFunction)
+}
+
+// criteriaAspectIds folds the deprecated single aspect of a criteria into its aspect list.
+// AspectId is an alias for a list with one element, so a criteria may carry either spelling
+// and everything behind this point evaluates the list only. An empty aspect is not a filter.
+func criteriaAspectIds(criteria deploymentmodel.FilterCriteria) (result []string) {
+	result = slices.Clone(criteria.AspectIds)
+	if criteria.AspectId != nil && *criteria.AspectId != "" && !slices.Contains(result, *criteria.AspectId) {
+		result = append(result, *criteria.AspectId)
+	}
+	return result
+}
+
+// optionCoversAspects checks the AND: every aspect the criteria names has to be the aspect of
+// one of the nodes the path option offers, or an ancestor of it, because a queried aspect
+// covers its own subtree.
+func optionCoversAspects(option deviceselectionmodel.PathOption, aspectIds []string) bool {
+	nodes := pathOptionAspectNodes(option)
+	for _, aspectId := range aspectIds {
+		if !slices.ContainsFunc(nodes, func(node devicemodel.AspectNode) bool {
+			return node.Id == aspectId || slices.Contains(node.AncestorIds, aspectId)
+		}) {
+			return false
+		}
+	}
+	return true
+}
+
+// pathOptionAspectNodes returns the aspect nodes a path option offers. AspectNode is
+// deprecated and an alias for a single element AspectNodes, so the list is preferred and the
+// single node only used when it is empty - a device-selection that predates the list fills
+// the single field alone, while a current one fills both.
+func pathOptionAspectNodes(option deviceselectionmodel.PathOption) []devicemodel.AspectNode {
+	if len(option.AspectNodes) > 0 {
+		return option.AspectNodes
+	}
+	if option.AspectNode.Id == "" {
+		return nil
+	}
+	return []devicemodel.AspectNode{option.AspectNode}
 }
 
 func (this *Ctrl) SetDeployment(token auth.Token, deployment deploymentmodel.Deployment, source string, optionals map[string]bool) (result deploymentmodel.Deployment, err error, code int) {

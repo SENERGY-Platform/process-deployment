@@ -79,8 +79,13 @@ func (this *Parser) getTask(element *etree.Element) (result deploymentmodel.Elem
 		CharacteristicId: &cmd.CharacteristicId,
 		FunctionId:       &cmd.Function.Id,
 	}
+	//the payload names its aspects the way the command does: aspect is deprecated and an
+	//alias for a single element aspects list. Both are taken as they were written.
 	if cmd.Aspect != nil {
 		filterCriteria.AspectId = &cmd.Aspect.Id
+	}
+	for _, aspect := range cmd.Aspects {
+		filterCriteria.AspectIds = append(filterCriteria.AspectIds, aspect.Id)
 	}
 	if cmd.DeviceClass != nil {
 		filterCriteria.DeviceClassId = &cmd.DeviceClass.Id

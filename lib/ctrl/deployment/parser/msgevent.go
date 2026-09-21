@@ -42,8 +42,7 @@ func (this *Parser) isMsgEvent(element *etree.Element) bool {
 	if msgEvent.SelectAttrValue("messageRef", "") != "" {
 		return false //msg event uses user defined events
 	}
-	aspect := element.SelectAttr("aspect")
-	if aspect == nil || aspect.Value == "" {
+	if !hasAspect(element) {
 		return false
 	}
 
@@ -71,10 +70,10 @@ func (this *Parser) getMsgEvent(element *etree.Element) (result deploymentmodel.
 
 	filterCriteria := deploymentmodel.FilterCriteria{}
 
-	aspect := element.SelectAttr("aspect")
-	if aspect != nil {
-		filterCriteria.AspectId = &aspect.Value
+	if aspectId := selectAspectId(element); aspectId != "" {
+		filterCriteria.AspectId = &aspectId
 	}
+	filterCriteria.AspectIds = selectAspectIds(element)
 
 	function := element.SelectAttr("function")
 	if function != nil {

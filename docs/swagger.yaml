@@ -94,6 +94,8 @@ definitions:
         items:
           type: string
         type: array
+      aspect_class_id:
+        type: string
       child_ids:
         items:
           type: string
@@ -131,7 +133,14 @@ definitions:
   models.Configurable:
     properties:
       aspect_node:
-        $ref: '#/definitions/models.AspectNode'
+        allOf:
+        - $ref: '#/definitions/models.AspectNode'
+        description: 'deprecated: alias for a single element AspectNodes; holds the
+          node with the alphabetically first id'
+      aspect_nodes:
+        items:
+          $ref: '#/definitions/models.AspectNode'
+        type: array
       characteristic_id:
         type: string
       function_id:
@@ -139,7 +148,7 @@ definitions:
       path:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/models.Type'
       value: {}
     type: object
   models.Diagram:
@@ -209,7 +218,12 @@ definitions:
   models.ImportContentVariable:
     properties:
       aspect_id:
+        description: 'deprecated: please use AspectIds'
         type: string
+      aspect_ids:
+        items:
+          type: string
+        type: array
       characteristic_id:
         type: string
       function_id:
@@ -229,8 +243,10 @@ definitions:
     properties:
       configs:
         items:
-          $ref: '#/definitions/models.ImportConfig'
+          $ref: '#/definitions/models.ImportTypeConfig'
         type: array
+      cost:
+        type: integer
       default_restart:
         type: boolean
       description:
@@ -246,6 +262,16 @@ definitions:
       owner:
         type: string
     type: object
+  models.ImportTypeConfig:
+    properties:
+      default_value: {}
+      description:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/models.Type'
+    type: object
   models.IncidentHandling:
     properties:
       notify:
@@ -253,6 +279,16 @@ definitions:
       restart:
         type: boolean
     type: object
+  models.Interaction:
+    enum:
+    - event
+    - request
+    - event+request
+    type: string
+    x-enum-varnames:
+    - EVENT
+    - REQUEST
+    - EVENT_AND_REQUEST
   models.MessageEvent:
     properties:
       event_id:
@@ -276,7 +312,14 @@ definitions:
   models.PathOption:
     properties:
       aspectNode:
-        $ref: '#/definitions/models.AspectNode'
+        allOf:
+        - $ref: '#/definitions/models.AspectNode'
+        description: 'deprecated: alias for a single element AspectNodes; holds the
+          node with the alphabetically first id'
+      aspectNodes:
+        items:
+          $ref: '#/definitions/models.AspectNode'
+        type: array
       characteristicId:
         type: string
       configurables:
@@ -285,18 +328,25 @@ definitions:
         type: array
       functionId:
         type: string
+      interaction:
+        $ref: '#/definitions/models.Interaction'
       isVoid:
         type: boolean
       path:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/models.Type'
       value: {}
     type: object
   models.ProcessFilterCriteria:
     properties:
       aspect_id:
+        description: 'deprecated: please use AspectIds'
         type: string
+      aspect_ids:
+        items:
+          type: string
+        type: array
       characteristic_id:
         type: string
       device_class_id:
