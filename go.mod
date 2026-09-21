@@ -1,6 +1,6 @@
 module github.com/SENERGY-Platform/process-deployment
 
-go 1.26
+go 1.26.1
 
 require (
 	github.com/beevik/etree v1.4.0
@@ -8,18 +8,19 @@ require (
 	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/segmentio/kafka-go v0.4.50
 	go.mongodb.org/mongo-driver v1.17.9
-	golang.org/x/crypto v0.52.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
 )
 
 require (
 	github.com/SENERGY-Platform/camunda-engine-wrapper v1.0.17
-	github.com/SENERGY-Platform/device-repository v0.3.2
-	github.com/SENERGY-Platform/event-deployment v0.0.41
+	github.com/SENERGY-Platform/device-repository/v2 v2.2.1
+	github.com/SENERGY-Platform/device-selection/v2 v2.0.2
+	github.com/SENERGY-Platform/event-deployment v0.1.0
 	github.com/SENERGY-Platform/go-service-base/struct-logger v0.8.0
-	github.com/SENERGY-Platform/models/go v0.0.0-20260710115411-5b8e00d6e038
+	github.com/SENERGY-Platform/models/go v0.0.0-20260911075423-f01521c01da2
 	github.com/SENERGY-Platform/permissions-v2 v0.0.47
-	github.com/SENERGY-Platform/service-commons v0.0.0-20260821114734-3e4578ac2358
+	github.com/SENERGY-Platform/service-commons v0.0.0-20260915085610-4949c31a01ef
 	github.com/google/uuid v1.6.0
 	github.com/swaggo/swag v1.16.6
 	github.com/testcontainers/testcontainers-go v0.40.0
@@ -138,14 +139,14 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.27.0 // indirect
 	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa // indirect
-	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/mod v0.38.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/tools v0.48.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
-	google.golang.org/grpc v1.82.1 // indirect
+	google.golang.org/grpc v1.83.2 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect

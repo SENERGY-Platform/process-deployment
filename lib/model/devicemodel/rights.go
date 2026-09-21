@@ -16,6 +16,6 @@
 
 package devicemodel
 
-import "github.com/SENERGY-Platform/device-repository/lib/model"
+import "github.com/SENERGY-Platform/device-repository/v2/lib/model"
 
 type ResourceRights = model.ResourceRights

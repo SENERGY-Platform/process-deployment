@@ -17,32 +17,34 @@
 package deviceselectionmodel
 
 import (
+	dsmodel "github.com/SENERGY-Platform/device-selection/v2/pkg/model"
+	dsdevicemodel "github.com/SENERGY-Platform/device-selection/v2/pkg/model/devicemodel"
 	"github.com/SENERGY-Platform/models/go/models"
 )
 
-type Selectable = models.Selectable
+//the selectables answer and the request that asks for it are shaped by the service that
+//answers, so they are taken from its client package rather than from the shared model. The
+//two differ where the shared model has not caught up: a selectable device carries its
+//permissions, and an import type carries the declaration of its configs instead of their
+//values.
 
-type DeviceWithDisplayName = models.DeviceWithDisplayName
+type Selectable = dsmodel.Selectable
 
-type FilterCriteriaAndSet = models.FilterCriteriaAndSet
+type FilterCriteria = dsdevicemodel.FilterCriteria
 
-type FilterCriteriaOrSet = models.FilterCriteriaOrSet
+type FilterCriteriaAndSet = dsmodel.FilterCriteriaAndSet
 
-type FilterCriteria = models.FilterCriteria
+type BulkRequestElementV2 = dsmodel.BulkRequestElementV2
 
-type FilterCriteriaWithInteraction = models.FilterCriteriaWithInteraction
+type BulkRequestV2 = dsmodel.BulkRequestV2
 
-type BulkRequestElement = models.BulkRequestElement
+type BulkResult = dsmodel.BulkResult
 
-type BulkRequest = models.BulkRequest
+type BulkResultElement = dsmodel.BulkResultElement
 
-type BulkRequestElementV2 = models.BulkRequestElementV2
-
-type BulkRequestV2 = models.BulkRequestV2
-
-type BulkResult = models.BulkResult
-
-type BulkResultElement = models.BulkResultElement
+//PathOption and Configurable live in the shared model, which is also where the deployment
+//keeps the path the user selected, so these stay aliases of it. dsmodel.PathOption is an
+//alias of the same type; naming the shared model here says which side owns the shape.
 
 type PathOption = models.PathOption
 

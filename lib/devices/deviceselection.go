@@ -17,133 +17,20 @@
 package devices
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
+	"github.com/SENERGY-Platform/device-selection/v2/pkg/client"
 
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
-	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
-
-	"net/http"
-	"net/url"
-	"runtime/debug"
 )
 
-func (this *Repository) GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
-	payload, err := json.Marshal(descriptions)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-
-	path := "/v2/selectables?include_id_modified=true&json=" + url.QueryEscape(string(payload))
-	if filterByInteraction != "" {
-		path = path + "&filter_interaction=" + url.QueryEscape(string(filterByInteraction))
-	}
-
-	req, err := http.NewRequest(
-		"GET",
-		this.config.DeviceSelectionUrl+path,
-		nil,
-	)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	req.Header.Set("Authorization", token.Token)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= 300 {
-		debug.PrintStack()
-		return result, errors.New("unexpected statuscode"), resp.StatusCode
-	}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	return result, err, resp.StatusCode
-}
-
-func (this *Repository) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
-	if this.config.Debug {
-		temp, _ := json.Marshal(bulk)
-		this.config.GetLogger().Debug("send GetBulkDeviceSelection()", "request", string(temp))
-	}
-	buff := new(bytes.Buffer)
-	err = json.NewEncoder(buff).Encode(bulk)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-
-	path := "/bulk/selectables?complete_services=true"
-	req, err := http.NewRequest(
-		"POST",
-		this.config.DeviceSelectionUrl+path,
-		buff,
-	)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	req.Header.Set("Authorization", token.Token)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= 300 {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		debug.PrintStack()
-		return nil, fmt.Errorf("unable to load selectables: %v", buf.String()), resp.StatusCode
-	}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	return result, err, resp.StatusCode
-}
-
+// GetBulkDeviceSelectionV2 asks the selection service which devices, groups and imports can
+// serve the criteria of every element of a deployment, in one request. complete_services is
+// set because the deployment options need the full import type and its path options; for
+// devices the flag does nothing, its name is a legacy artefact of the endpoint.
 func (this *Repository) GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int) {
 	if this.config.Debug {
-		temp, _ := json.Marshal(bulk)
-		this.config.GetLogger().Debug("send GetBulkDeviceSelectionV2()", "request", string(temp))
+		this.config.GetLogger().Debug("send GetBulkDeviceSelectionV2()", "elements", len(bulk))
 	}
-	buff := new(bytes.Buffer)
-	err = json.NewEncoder(buff).Encode(bulk)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-
-	path := "/v2/bulk/selectables?complete_services=true"
-	req, err := http.NewRequest(
-		"POST",
-		this.config.DeviceSelectionUrl+path,
-		buff,
-	)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	req.Header.Set("Authorization", token.Token)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		debug.PrintStack()
-		return result, err, http.StatusInternalServerError
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= 300 {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		debug.PrintStack()
-		return nil, fmt.Errorf("unable to load selectables: %v", buf.String()), resp.StatusCode
-	}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	return result, err, resp.StatusCode
+	result, code, err = this.deviceselection.GetBulkSelectablesV2(token.Token, bulk, &client.GetBulkSelectablesOptions{CompleteServices: true})
+	return result, err, code
 }

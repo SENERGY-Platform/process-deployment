@@ -42,14 +42,10 @@ type ProtocolSegment = models.ProtocolSegment
 
 type DeviceGroup = models.DeviceGroup
 
-type FilterCriteria struct {
-	FunctionId    string `json:"function_id"`
-	AspectId      string `json:"aspect_id"`
-	DeviceClassId string `json:"device_class_id"`
-}
+//the criteria shape is the shared model's, so that this package mirrors it instead of
+//carrying a third copy of it. Short() is gone with the local struct — nothing called it, and
+//an alias cannot carry a method; models.AspectIdsShort renders the aspect half of such a key.
 
-func (this FilterCriteria) Short() string {
-	return this.FunctionId + "_" + this.AspectId + "_" + this.DeviceClassId
-}
+type FilterCriteria = models.FilterCriteria
 
 type DeviceGroupFilterCriteria = models.DeviceGroupFilterCriteria

@@ -18,8 +18,8 @@ package mocks
 
 import (
 	"context"
-	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
-	"github.com/SENERGY-Platform/device-repository/lib/database"
+	devicerepo "github.com/SENERGY-Platform/device-repository/v2/lib/client"
+	"github.com/SENERGY-Platform/device-repository/v2/lib/database"
 	"github.com/SENERGY-Platform/models/go/models"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
@@ -111,24 +111,6 @@ func (this *DeviceRepoMock) SetOptions(options []deviceselectionmodel.Selectable
 	this.mux.Lock()
 	defer this.mux.Unlock()
 	this.options = options
-}
-
-func (this *DeviceRepoMock) GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	return this.options, nil, 200
-}
-
-func (this *DeviceRepoMock) GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int) {
-	this.mux.Lock()
-	defer this.mux.Unlock()
-	for _, element := range bulk {
-		result = append(result, deviceselectionmodel.BulkResultElement{
-			Id:          element.Id,
-			Selectables: this.options,
-		})
-	}
-	return result, nil, 200
 }
 
 func (this *DeviceRepoMock) GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int) {

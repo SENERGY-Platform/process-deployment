@@ -33,8 +33,6 @@ type Devices interface {
 	GetService(token auth.Token, id string) (devicemodel.Service, error, int)
 	GetDeviceGroup(token auth.Token, id string) (result devicemodel.DeviceGroup, err error, code int)
 	CheckAccess(token auth.Token, kind string, ids []string) (map[string]bool, error)
-	GetDeviceSelection(token auth.Token, descriptions deviceselectionmodel.FilterCriteriaAndSet, filterByInteraction devicemodel.Interaction) (result []deviceselectionmodel.Selectable, err error, code int)
-	GetBulkDeviceSelection(token auth.Token, bulk deviceselectionmodel.BulkRequest) (result deviceselectionmodel.BulkResult, err error, code int)
 	GetBulkDeviceSelectionV2(token auth.Token, bulk deviceselectionmodel.BulkRequestV2) (result deviceselectionmodel.BulkResult, err error, code int)
 	GetAspectNode(token auth.Token, id string) (aspectNode devicemodel.AspectNode, err error)
 }

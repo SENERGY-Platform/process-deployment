@@ -27,6 +27,7 @@
         	"aspect": {
         		"id": "urn:infai:ses:aspect:a7470d73-dde3-41fc-92bd-f16bb28f2da6",
         		"name": "",
+        		"aspect_class_id": "",
         		"root_id": "",
         		"parent_id": "",
         		"child_ids": null,
@@ -43,6 +44,7 @@
         			"aspect_node": {
         				"id": "notThisAspectId2",
         				"name": "",
+        				"aspect_class_id": "",
         				"root_id": "",
         				"parent_id": "",
         				"child_ids": null,
@@ -59,6 +61,7 @@
         			"aspect_node": {
         				"id": "notThisAspectId3",
         				"name": "",
+        				"aspect_class_id": "",
         				"root_id": "",
         				"parent_id": "",
         				"child_ids": null,
@@ -112,6 +115,7 @@
         			"aspect_node": {
         				"id": "notThisAspectId5",
         				"name": "",
+        				"aspect_class_id": "",
         				"root_id": "",
         				"parent_id": "",
         				"child_ids": null,
@@ -128,6 +132,7 @@
         			"aspect_node": {
         				"id": "notThisAspectId6",
         				"name": "",
+        				"aspect_class_id": "",
         				"root_id": "",
         				"parent_id": "",
         				"child_ids": null,

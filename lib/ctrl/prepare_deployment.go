@@ -18,6 +18,9 @@ package ctrl
 
 import (
 	"errors"
+	"net/http"
+	"sort"
+
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/config"
 	"github.com/SENERGY-Platform/process-deployment/lib/model"
@@ -25,8 +28,6 @@ import (
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/deviceselectionmodel"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/importmodel"
-	"net/http"
-	"sort"
 )
 
 func (this *Ctrl) PrepareDeployment(token auth.Token, xml string, svg string, withOptions bool) (result deploymentmodel.Deployment, err error, code int) {
@@ -177,9 +178,9 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 			if element.Group == nil {
 				bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 					Id: element.BpmnId,
-					Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-						FilterCriteria: element.Task.Selection.FilterCriteria.ToFilterCriteria(),
-					}},
+					Criteria: deviceselectionmodel.FilterCriteriaAndSet{
+						selectionCriteria(element.Task.Selection.FilterCriteria, ""),
+					},
 					IncludeGroups:            this.config.EnableDeviceGroupsForTasks,
 					IncludeDevices:           true,
 					IncludeIdModifiedDevices: this.config.EnableModifiedDevicesForDeploymentOptions,
@@ -191,10 +192,9 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 		if element.MessageEvent != nil {
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 				Id: element.BpmnId,
-				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-					FilterCriteria: element.MessageEvent.Selection.FilterCriteria.ToFilterCriteria(),
-					Interaction:    devicemodel.EVENT,
-				}},
+				Criteria: deviceselectionmodel.FilterCriteriaAndSet{
+					selectionCriteria(element.MessageEvent.Selection.FilterCriteria, devicemodel.EVENT),
+				},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
 				IncludeImports:           this.config.EnableImportsForEvents,
 				IncludeDevices:           true,
@@ -204,10 +204,9 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 		if element.ConditionalEvent != nil {
 			bulk = append(bulk, deviceselectionmodel.BulkRequestElementV2{
 				Id: element.BpmnId,
-				Criteria: []deviceselectionmodel.FilterCriteriaWithInteraction{{
-					FilterCriteria: element.ConditionalEvent.Selection.FilterCriteria.ToFilterCriteria(),
-					Interaction:    devicemodel.EVENT,
-				}},
+				Criteria: deviceselectionmodel.FilterCriteriaAndSet{
+					selectionCriteria(element.ConditionalEvent.Selection.FilterCriteria, devicemodel.EVENT),
+				},
 				IncludeGroups:            this.config.EnableDeviceGroupsForEvents,
 				IncludeImports:           this.config.EnableImportsForEvents,
 				IncludeDevices:           true,
@@ -217,13 +216,11 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 	}
 
 	for _, indexes := range taskGroups {
-		filter := []deviceselectionmodel.FilterCriteriaWithInteraction{}
+		filter := deviceselectionmodel.FilterCriteriaAndSet{}
 		for _, index := range indexes {
 			element := deployment.Elements[index]
 			if element.Task != nil {
-				filter = append(filter, deviceselectionmodel.FilterCriteriaWithInteraction{
-					FilterCriteria: element.Task.Selection.FilterCriteria.ToFilterCriteria(),
-				})
+				filter = append(filter, selectionCriteria(element.Task.Selection.FilterCriteria, ""))
 			}
 		}
 		for _, index := range indexes {
@@ -240,6 +237,25 @@ func (this *Ctrl) getDeploymentBulkSelectableRequestV2(deployment *deploymentmod
 		}
 	}
 	return bulk
+}
+
+// selectionCriteria translates a deployment criteria into the shape the selection service is
+// asked with. Both aspect spellings are passed on as they were selected: AspectId is
+// deprecated and an alias for an AspectIds list with a single element, and the selection
+// service folds the two at its own boundary.
+func selectionCriteria(criteria deploymentmodel.FilterCriteria, interaction devicemodel.Interaction) deviceselectionmodel.FilterCriteria {
+	result := deviceselectionmodel.FilterCriteria{Interaction: string(interaction)}
+	if criteria.FunctionId != nil {
+		result.FunctionId = *criteria.FunctionId
+	}
+	if criteria.DeviceClassId != nil {
+		result.DeviceClassId = *criteria.DeviceClassId
+	}
+	if criteria.AspectId != nil {
+		result.AspectId = *criteria.AspectId
+	}
+	result.AspectIds = criteria.AspectIds
+	return result
 }
 
 func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria deploymentmodel.FilterCriteria) (result []deploymentmodel.SelectionOption) {
@@ -274,6 +290,10 @@ func getSelectionOptions(selectables []deviceselectionmodel.Selectable, criteria
 			}
 		}
 		if selectable.Import != nil && selectable.ImportType != nil {
+			//the answer and the deployment model hold the same import types since
+			//device-selection reads its import shapes from models/go, so the option takes
+			//them as they arrived. A cast layer here would silently drop every field it
+			//does not name - that is how Cost went missing before.
 			selectableImport = selectable.Import
 			importType = selectable.ImportType
 		}

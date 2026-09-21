@@ -18,7 +18,7 @@ package devices
 
 import (
 	"errors"
-	devicerepo "github.com/SENERGY-Platform/device-repository/lib/client"
+	devicerepo "github.com/SENERGY-Platform/device-repository/v2/lib/client"
 	"github.com/SENERGY-Platform/process-deployment/lib/auth"
 	"github.com/SENERGY-Platform/process-deployment/lib/model/devicemodel"
 	"github.com/SENERGY-Platform/service-commons/pkg/cache"
