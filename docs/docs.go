@@ -21,11 +21,6 @@ const docTemplate = `{
     "paths": {
         "/dependencies": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "list dependencies",
                 "produces": [
                     "application/json"
@@ -79,16 +74,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/dependencies/{id}": {
-            "get": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/dependencies/{id}": {
+            "get": {
                 "description": "get dependencies of deployment",
                 "produces": [
                     "application/json"
@@ -128,16 +123,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/v3/deployments": {
-            "get": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/v3/deployments": {
+            "get": {
                 "description": "list process deployments",
                 "produces": [
                     "application/json"
@@ -191,14 +186,14 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            },
-            "post": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            },
+            "post": {
                 "description": "deploy process",
                 "produces": [
                     "application/json"
@@ -252,16 +247,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/v3/deployments/{id}": {
-            "get": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/v3/deployments/{id}": {
+            "get": {
                 "description": "get process deployment",
                 "produces": [
                     "application/json"
@@ -307,14 +302,14 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            },
-            "put": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            },
+            "put": {
                 "description": "update process deployment",
                 "produces": [
                     "application/json"
@@ -375,14 +370,14 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            },
-            "delete": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            },
+            "delete": {
                 "description": "delete process deployment",
                 "tags": [
                     "deployment"
@@ -416,16 +411,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/v3/prepared-deployments": {
-            "post": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/v3/prepared-deployments": {
+            "post": {
                 "description": "prepare process deployment",
                 "produces": [
                     "application/json"
@@ -473,16 +468,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/v3/prepared-deployments/{modelId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/v3/prepared-deployments/{modelId}": {
+            "get": {
                 "description": "prepare process deployment with model-id",
                 "produces": [
                     "application/json"
@@ -528,16 +523,16 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
-            }
-        },
-        "/v3/start-parameters/{modelId}": {
-            "get": {
+                },
                 "security": [
                     {
                         "Bearer": []
                     }
-                ],
+                ]
+            }
+        },
+        "/v3/start-parameters/{modelId}": {
+            "get": {
                 "description": "get start-parameters of a process-model",
                 "produces": [
                     "application/json"
@@ -580,7 +575,12 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
             }
         }
     },
@@ -648,32 +648,6 @@ const docTemplate = `{
                 }
             }
         },
-        "deploymentmodel.ConditionalEvent": {
-            "type": "object",
-            "properties": {
-                "event_id": {
-                    "type": "string"
-                },
-                "qos": {
-                    "type": "integer"
-                },
-                "script": {
-                    "type": "string"
-                },
-                "selection": {
-                    "$ref": "#/definitions/deploymentmodel.Selection"
-                },
-                "value_variable": {
-                    "type": "string"
-                },
-                "variables": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "deploymentmodel.Deployment": {
             "type": "object",
             "properties": {
@@ -681,12 +655,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "diagram": {
-                    "$ref": "#/definitions/deploymentmodel.Diagram"
+                    "$ref": "#/definitions/models.Diagram"
                 },
                 "elements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/deploymentmodel.Element"
+                        "$ref": "#/definitions/models.Element"
                     }
                 },
                 "executable": {
@@ -696,7 +670,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "incident_handling": {
-                    "$ref": "#/definitions/deploymentmodel.IncidentHandling"
+                    "$ref": "#/definitions/models.IncidentHandling"
                 },
                 "name": {
                     "type": "string"
@@ -704,153 +678,11 @@ const docTemplate = `{
                 "start_parameter": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/deploymentmodel.ProcessStartParameter"
+                        "$ref": "#/definitions/models.ProcessStartParameter"
                     }
                 },
                 "version": {
                     "type": "integer"
-                }
-            }
-        },
-        "deploymentmodel.Device": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.DeviceGroup": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.Diagram": {
-            "type": "object",
-            "properties": {
-                "svg": {
-                    "type": "string"
-                },
-                "xml_deployed": {
-                    "type": "string"
-                },
-                "xml_raw": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.Element": {
-            "type": "object",
-            "properties": {
-                "bpmn_id": {
-                    "type": "string"
-                },
-                "conditional_event": {
-                    "$ref": "#/definitions/deploymentmodel.ConditionalEvent"
-                },
-                "group": {
-                    "type": "string"
-                },
-                "message_event": {
-                    "$ref": "#/definitions/deploymentmodel.MessageEvent"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notification": {
-                    "$ref": "#/definitions/deploymentmodel.Notification"
-                },
-                "order": {
-                    "type": "integer"
-                },
-                "task": {
-                    "$ref": "#/definitions/deploymentmodel.Task"
-                },
-                "time_event": {
-                    "$ref": "#/definitions/deploymentmodel.TimeEvent"
-                }
-            }
-        },
-        "deploymentmodel.FilterCriteria": {
-            "type": "object",
-            "properties": {
-                "aspect_id": {
-                    "type": "string"
-                },
-                "characteristic_id": {
-                    "description": "TODO: remove?",
-                    "type": "string"
-                },
-                "device_class_id": {
-                    "type": "string"
-                },
-                "function_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.GenericEventSource": {
-            "type": "object",
-            "properties": {
-                "filter_ids": {
-                    "type": "string"
-                },
-                "filter_type": {
-                    "type": "string"
-                },
-                "topic": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.IncidentHandling": {
-            "type": "object",
-            "properties": {
-                "notify": {
-                    "type": "boolean"
-                },
-                "restart": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "deploymentmodel.MessageEvent": {
-            "type": "object",
-            "properties": {
-                "event_id": {
-                    "type": "string"
-                },
-                "flow_id": {
-                    "type": "string"
-                },
-                "selection": {
-                    "$ref": "#/definitions/deploymentmodel.Selection"
-                },
-                "use_marshaller": {
-                    "type": "boolean"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "deploymentmodel.Notification": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
                 }
             }
         },
@@ -877,113 +709,18 @@ const docTemplate = `{
                 }
             }
         },
-        "deploymentmodel.Selection": {
+        "messages.PrepareRequest": {
             "type": "object",
             "properties": {
-                "filter_criteria": {
-                    "$ref": "#/definitions/deploymentmodel.FilterCriteria"
-                },
-                "selected_device_group_id": {
+                "svg": {
                     "type": "string"
                 },
-                "selected_device_id": {
-                    "type": "string"
-                },
-                "selected_generic_event_source": {
-                    "$ref": "#/definitions/deploymentmodel.GenericEventSource"
-                },
-                "selected_import_id": {
-                    "type": "string"
-                },
-                "selected_path": {
-                    "$ref": "#/definitions/deviceselectionmodel.PathOption"
-                },
-                "selected_service_id": {
-                    "type": "string"
-                },
-                "selection_options": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/deploymentmodel.SelectionOption"
-                    }
-                }
-            }
-        },
-        "deploymentmodel.SelectionOption": {
-            "type": "object",
-            "properties": {
-                "device": {
-                    "$ref": "#/definitions/deploymentmodel.Device"
-                },
-                "device_group": {
-                    "$ref": "#/definitions/deploymentmodel.DeviceGroup"
-                },
-                "import": {
-                    "$ref": "#/definitions/importmodel.Import"
-                },
-                "importType": {
-                    "$ref": "#/definitions/importmodel.ImportType"
-                },
-                "path_options": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/deviceselectionmodel.PathOption"
-                        }
-                    }
-                },
-                "services": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/deploymentmodel.Service"
-                    }
-                }
-            }
-        },
-        "deploymentmodel.Service": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
+                "xml": {
                     "type": "string"
                 }
             }
         },
-        "deploymentmodel.Task": {
-            "type": "object",
-            "properties": {
-                "parameter": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "prefer_event": {
-                    "type": "boolean"
-                },
-                "retries": {
-                    "type": "integer"
-                },
-                "selection": {
-                    "$ref": "#/definitions/deploymentmodel.Selection"
-                }
-            }
-        },
-        "deploymentmodel.TimeEvent": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "devicemodel.AspectNode": {
+        "models.AspectNode": {
             "type": "object",
             "properties": {
                 "ancestor_ids": {
@@ -1018,11 +755,37 @@ const docTemplate = `{
                 }
             }
         },
-        "deviceselectionmodel.Configurable": {
+        "models.ConditionalEvent": {
+            "type": "object",
+            "properties": {
+                "event_id": {
+                    "type": "string"
+                },
+                "qos": {
+                    "type": "integer"
+                },
+                "script": {
+                    "type": "string"
+                },
+                "selection": {
+                    "$ref": "#/definitions/models.Selection"
+                },
+                "value_variable": {
+                    "type": "string"
+                },
+                "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.Configurable": {
             "type": "object",
             "properties": {
                 "aspect_node": {
-                    "$ref": "#/definitions/devicemodel.AspectNode"
+                    "$ref": "#/definitions/models.AspectNode"
                 },
                 "characteristic_id": {
                     "type": "string"
@@ -1039,43 +802,73 @@ const docTemplate = `{
                 "value": {}
             }
         },
-        "deviceselectionmodel.PathOption": {
+        "models.Diagram": {
             "type": "object",
             "properties": {
-                "aspectNode": {
-                    "$ref": "#/definitions/devicemodel.AspectNode"
-                },
-                "characteristicId": {
+                "svg": {
                     "type": "string"
                 },
-                "configurables": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/deviceselectionmodel.Configurable"
-                    }
-                },
-                "functionId": {
+                "xml_deployed": {
                     "type": "string"
                 },
-                "isVoid": {
-                    "type": "boolean"
-                },
-                "path": {
+                "xml_raw": {
                     "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "value": {}
+                }
             }
         },
-        "importmodel.Import": {
+        "models.Element": {
+            "type": "object",
+            "properties": {
+                "bpmn_id": {
+                    "type": "string"
+                },
+                "conditional_event": {
+                    "$ref": "#/definitions/models.ConditionalEvent"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "message_event": {
+                    "$ref": "#/definitions/models.MessageEvent"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notification": {
+                    "$ref": "#/definitions/models.Notification"
+                },
+                "order": {
+                    "type": "integer"
+                },
+                "task": {
+                    "$ref": "#/definitions/models.Task"
+                },
+                "time_event": {
+                    "$ref": "#/definitions/models.TimeEvent"
+                }
+            }
+        },
+        "models.GenericEventSource": {
+            "type": "object",
+            "properties": {
+                "filter_ids": {
+                    "type": "string"
+                },
+                "filter_type": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Import": {
             "type": "object",
             "properties": {
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/importmodel.ImportConfig"
+                        "$ref": "#/definitions/models.ImportConfig"
                     }
                 },
                 "id": {
@@ -1098,7 +891,7 @@ const docTemplate = `{
                 }
             }
         },
-        "importmodel.ImportConfig": {
+        "models.ImportConfig": {
             "type": "object",
             "properties": {
                 "name": {
@@ -1107,7 +900,7 @@ const docTemplate = `{
                 "value": {}
             }
         },
-        "importmodel.ImportContentVariable": {
+        "models.ImportContentVariable": {
             "type": "object",
             "properties": {
                 "aspect_id": {
@@ -1125,24 +918,24 @@ const docTemplate = `{
                 "sub_content_variables": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/importmodel.ImportContentVariable"
+                        "$ref": "#/definitions/models.ImportContentVariable"
                     }
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.Type"
                 },
                 "use_as_tag": {
                     "type": "boolean"
                 }
             }
         },
-        "importmodel.ImportType": {
+        "models.ImportType": {
             "type": "object",
             "properties": {
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/importmodel.ImportConfig"
+                        "$ref": "#/definitions/models.ImportConfig"
                     }
                 },
                 "default_restart": {
@@ -1161,23 +954,271 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "output": {
-                    "$ref": "#/definitions/importmodel.ImportContentVariable"
+                    "$ref": "#/definitions/models.ImportContentVariable"
                 },
                 "owner": {
                     "type": "string"
                 }
             }
         },
-        "messages.PrepareRequest": {
+        "models.IncidentHandling": {
             "type": "object",
             "properties": {
-                "svg": {
+                "notify": {
+                    "type": "boolean"
+                },
+                "restart": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.MessageEvent": {
+            "type": "object",
+            "properties": {
+                "event_id": {
                     "type": "string"
                 },
-                "xml": {
+                "flow_id": {
+                    "type": "string"
+                },
+                "selection": {
+                    "$ref": "#/definitions/models.Selection"
+                },
+                "use_marshaller": {
+                    "type": "boolean"
+                },
+                "value": {
                     "type": "string"
                 }
             }
+        },
+        "models.Notification": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PathOption": {
+            "type": "object",
+            "properties": {
+                "aspectNode": {
+                    "$ref": "#/definitions/models.AspectNode"
+                },
+                "characteristicId": {
+                    "type": "string"
+                },
+                "configurables": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Configurable"
+                    }
+                },
+                "functionId": {
+                    "type": "string"
+                },
+                "isVoid": {
+                    "type": "boolean"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
+        "models.ProcessFilterCriteria": {
+            "type": "object",
+            "properties": {
+                "aspect_id": {
+                    "type": "string"
+                },
+                "characteristic_id": {
+                    "type": "string"
+                },
+                "device_class_id": {
+                    "type": "string"
+                },
+                "function_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ProcessStartParameter": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Selection": {
+            "type": "object",
+            "properties": {
+                "filter_criteria": {
+                    "$ref": "#/definitions/models.ProcessFilterCriteria"
+                },
+                "selected_device_group_id": {
+                    "type": "string"
+                },
+                "selected_device_id": {
+                    "type": "string"
+                },
+                "selected_generic_event_source": {
+                    "$ref": "#/definitions/models.GenericEventSource"
+                },
+                "selected_import_id": {
+                    "type": "string"
+                },
+                "selected_path": {
+                    "$ref": "#/definitions/models.PathOption"
+                },
+                "selected_service_id": {
+                    "type": "string"
+                },
+                "selection_options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SelectionOption"
+                    }
+                }
+            }
+        },
+        "models.SelectionDevice": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SelectionDeviceGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SelectionOption": {
+            "type": "object",
+            "properties": {
+                "device": {
+                    "$ref": "#/definitions/models.SelectionDevice"
+                },
+                "device_group": {
+                    "$ref": "#/definitions/models.SelectionDeviceGroup"
+                },
+                "import": {
+                    "$ref": "#/definitions/models.Import"
+                },
+                "importType": {
+                    "$ref": "#/definitions/models.ImportType"
+                },
+                "path_options": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/models.PathOption"
+                        }
+                    }
+                },
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.SelectionService"
+                    }
+                }
+            }
+        },
+        "models.SelectionService": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Task": {
+            "type": "object",
+            "properties": {
+                "parameter": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "prefer_event": {
+                    "type": "boolean"
+                },
+                "retries": {
+                    "type": "integer"
+                },
+                "selection": {
+                    "$ref": "#/definitions/models.Selection"
+                }
+            }
+        },
+        "models.TimeEvent": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Type": {
+            "type": "string",
+            "enum": [
+                "https://schema.org/Text",
+                "https://schema.org/Integer",
+                "https://schema.org/Float",
+                "https://schema.org/Boolean",
+                "https://schema.org/ItemList",
+                "https://schema.org/StructuredValue"
+            ],
+            "x-enum-varnames": [
+                "String",
+                "Integer",
+                "Float",
+                "Boolean",
+                "List",
+                "Structure"
+            ]
         }
     },
     "securityDefinitions": {
