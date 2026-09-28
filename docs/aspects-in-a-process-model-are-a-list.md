@@ -93,11 +93,11 @@ invisible from the struct, and a bson tag added to one field and not another wou
 break it silently. `lib/db/aspects_test.go` asserts the round trip for both
 spellings rather than leaving it to be reasoned about.
 
-## Where the aspect list has no producer yet
+## Who writes the list
 
-As of 2026-09-10 no client writes an aspect list into a process model: the
-process designer still emits a single `senergy:aspect` and a single `aspect` in
-the task payload. Until that changes, an aspect list reaches a deployment only
-through a client that posts `filter_criteria.aspect_ids` to `/v3/deployments`
-directly. The parsing and stringifying above are in place regardless, so the
-model side needs no further change when a producer appears.
+The web-ui process designer writes both spellings from `v0.36.0` on:
+`senergy:aspects` next to `senergy:aspect` on an event, `aspects` next to `aspect`
+in a task payload, the single field holding the alphabetically first entry. Models
+saved with an older designer carry the single field only and parse as a
+one-element list. A client can also post `filter_criteria.aspect_ids` to
+`/v3/deployments` directly.
