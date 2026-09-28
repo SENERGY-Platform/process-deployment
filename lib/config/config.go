@@ -41,7 +41,10 @@ type ConfigStruct struct {
 	PermissionsV2Url             string   `json:"permissions_v2_url"`
 	DeviceSelectionUrl           string   `json:"device_selection_url"`
 	MongoUrl                     string   `json:"mongo_url"`
-	MongoTable                   string   `json:"mongo_table"`
+	MongoUser                    string   `json:"mongo_user"`
+	MongoPassword                string   `json:"mongo_password" config:"secret"`
+	MongoAuthSource              string   `json:"mongo_auth_source"`
+	MongoDatabase                string   `json:"mongo_database"`
 	MongoDeploymentCollection    string   `json:"mongo_deployment_collection"`
 	MongoDependenciesCollection  string   `json:"mongo_dependencies_collection"`
 	ConsumerGroup                string   `json:"consumer_group"`
@@ -84,8 +87,13 @@ func LoadConfig(location string) (config Config, err error) {
 		log.Println("error on config load: ", err)
 		return config, err
 	}
+	config = &ConfigStruct{
+		MongoUrl:        "mongodb://localhost:27017",
+		MongoAuthSource: "admin",
+		MongoDatabase:   "process_deployment",
+	}
 	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
+	err = decoder.Decode(config)
 	if err != nil {
 		log.Println("invalid config json: ", err)
 		return config, err
@@ -93,6 +101,36 @@ func LoadConfig(location string) (config Config, err error) {
 	HandleEnvironmentVars(config)
 	setDefaultHttpClient(config)
 	return config, nil
+}
+
+func isSecret(field reflect.StructField) bool {
+	return strings.Contains(field.Tag.Get("config"), "secret")
+}
+
+// plainConfig has none of ConfigStruct's methods, so formatting it does not recurse.
+type plainConfig ConfigStruct
+
+// masked returns a copy in which every non-empty field tagged config:"secret" is replaced.
+func (c ConfigStruct) masked() plainConfig {
+	v := reflect.ValueOf(&c).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		if isSecret(v.Type().Field(i)) && v.Field(i).Kind() == reflect.String && v.Field(i).String() != "" {
+			v.Field(i).SetString("***")
+		}
+	}
+	return plainConfig(c)
+}
+
+func (c ConfigStruct) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.masked())
+}
+
+func (c ConfigStruct) String() string {
+	return fmt.Sprintf("%+v", c.masked())
+}
+
+func (c ConfigStruct) GoString() string {
+	return fmt.Sprintf("%#v", c.masked())
 }
 
 var camel = regexp.MustCompile("(^[^A-Z]*|[A-Z]*)([A-Z][^A-Z]+|$)")
@@ -119,7 +157,9 @@ func HandleEnvironmentVars(config Config) {
 		envName := fieldNameToEnvName(fieldName)
 		envValue := os.Getenv(envName)
 		if envValue != "" {
-			fmt.Println("use environment variable: ", envName, " = ", envValue)
+			if !isSecret(configType.Field(index)) {
+				fmt.Println("use environment variable: ", envName, " = ", envValue)
+			}
 			if configValue.FieldByName(fieldName).Kind() == reflect.Int64 {
 				i, _ := strconv.ParseInt(envValue, 10, 64)
 				configValue.FieldByName(fieldName).SetInt(i)
