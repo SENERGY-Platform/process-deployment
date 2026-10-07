@@ -1,0 +1,938 @@
+{
+  "aspect_classes": [
+    {
+      "id": "urn:infai:ses:aspect-class:17239e5e-4148-4b3a-956e-95d2dca23872",
+      "name": "Value Role"
+    },
+    {
+      "id": "urn:infai:ses:aspect-class:7157f1f4-dca2-4217-9ad7-7eaae8434ba8",
+      "name": "Instance"
+    },
+    {
+      "id": "urn:infai:ses:aspect-class:bdc48d82-445e-4841-8344-7ad5b2e824a0",
+      "name": "Medium"
+    },
+    {
+      "id": "urn:infai:ses:aspect-class:e5e6b3bd-c86c-414f-8080-8462fb23565b",
+      "name": "Location"
+    },
+    {
+      "id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+      "name": "Component"
+    }
+  ],
+  "aspects": [
+    {
+      "id": "urn:infai:ses:aspect:4f4188b6-f944-45fa-9429-15655f691397",
+      "name": "Target",
+      "aspect_class_id": "urn:infai:ses:aspect-class:17239e5e-4148-4b3a-956e-95d2dca23872",
+      "sub_aspects": null
+    },
+    {
+      "id": "urn:infai:ses:aspect:81936bcb-3625-4054-9f88-8934ee63d3ca",
+      "name": "Main",
+      "aspect_class_id": "urn:infai:ses:aspect-class:7157f1f4-dca2-4217-9ad7-7eaae8434ba8",
+      "sub_aspects": null
+    },
+    {
+      "id": "urn:infai:ses:aspect:861227f6-1523-46a7-b8ab-a4e76f0bdd32",
+      "name": "Device",
+      "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+      "sub_aspects": [
+        {
+          "id": "urn:infai:ses:aspect:0f2601d9-9bd0-4861-90a3-8ee5d6a52d91",
+          "name": "Components",
+          "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+          "sub_aspects": [
+            {
+              "id": "urn:infai:ses:aspect:502ebd61-81b8-44d0-840e-d30cf35adec9",
+              "name": "Consumables",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": [
+                {
+                  "id": "urn:infai:ses:aspect:5ca16f66-4c24-4e1a-86f8-858ae068b8f5",
+                  "name": "Brush",
+                  "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+                  "sub_aspects": [
+                    {
+                      "id": "urn:infai:ses:aspect:5fe2556e-a994-4e92-ade2-67f3a8762d3b",
+                      "name": "Main Brush",
+                      "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+                      "sub_aspects": null
+                    },
+                    {
+                      "id": "urn:infai:ses:aspect:c46eaf2f-2cfa-43c4-9381-eff0e6c77b7c",
+                      "name": "Side Brush Right",
+                      "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+                      "sub_aspects": null
+                    }
+                  ]
+                },
+                {
+                  "id": "urn:infai:ses:aspect:5dedc63a-747a-4654-a615-bad26582431e",
+                  "name": "Filter",
+                  "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+                  "sub_aspects": null
+                }
+              ]
+            },
+            {
+              "id": "urn:infai:ses:aspect:d4625151-ce27-4620-9b7e-93ded78484f8",
+              "name": "Battery",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": [
+                {
+                  "id": "urn:infai:ses:aspect:77080edb-989f-4232-ac12-794f993e64bd",
+                  "name": "Charge Port",
+                  "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+                  "sub_aspects": null
+                }
+              ]
+            },
+            {
+              "id": "urn:infai:ses:aspect:934b0058-37f3-44bb-bf65-e6be660a5bbd",
+              "name": "Key",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:1ee9eb2e-38ee-4e71-ae1a-da9a436900b9",
+              "name": "Roof",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:336da506-5c9b-4167-8883-f0d134e463d6",
+              "name": "Horn",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:5443e04a-8246-457a-8cde-1d2389e128fd",
+              "name": "Valve",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:7c931f9e-230d-42ec-9700-34fb719b6394",
+              "name": "Panels",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:d22ad743-9229-4185-a346-e85030c45409",
+              "name": "Unspecified",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            },
+            {
+              "id": "urn:infai:ses:aspect:52b44148-1dc0-4aab-b61c-a4bd6392e8de",
+              "name": "Antenna",
+              "aspect_class_id": "urn:infai:ses:aspect-class:f5e3d1da-2082-49ad-995f-90a4e06253ea",
+              "sub_aspects": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+      "name": "Air",
+      "aspect_class_id": "urn:infai:ses:aspect-class:bdc48d82-445e-4841-8344-7ad5b2e824a0",
+      "sub_aspects": null
+    },
+    {
+      "id": "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378",
+      "name": "Indoor",
+      "aspect_class_id": "urn:infai:ses:aspect-class:e5e6b3bd-c86c-414f-8080-8462fb23565b",
+      "sub_aspects": null
+    },
+    {
+      "id": "urn:infai:ses:aspect:ffcdc0a6-0957-49d7-be9a-af912ecbd3cf",
+      "name": "Reading",
+      "aspect_class_id": "urn:infai:ses:aspect-class:17239e5e-4148-4b3a-956e-95d2dca23872",
+      "sub_aspects": null
+    }
+  ],
+  "characteristics": [
+    {
+      "id": "urn:infai:ses:characteristic:062da5dd-085e-4b01-9e13-e331cb97dc0f",
+      "name": "Percentage (int)",
+      "display_unit": "%",
+      "type": "https://schema.org/Integer",
+      "min_value": 0,
+      "max_value": 100,
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+      "name": "Percentage",
+      "display_unit": "%",
+      "type": "https://schema.org/Float",
+      "min_value": 0,
+      "max_value": 100,
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+      "name": "Degree Celsius",
+      "display_unit": "°C",
+      "type": "https://schema.org/Float",
+      "min_value": -273.15,
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:695b17be-aa62-4f25-a5a8-9b0fcc5fd99a",
+      "name": "Millivolt",
+      "display_unit": "",
+      "type": "https://schema.org/Float",
+      "allowed_values": [],
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:6bf7ce8b-4782-4ce6-b46a-b53f0a50bd65",
+      "name": "Level (high/medium/low)",
+      "display_unit": "",
+      "type": "https://schema.org/Text",
+      "allowed_values": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:75b2d113-1d03-4ef8-977a-8dbcbb31a683",
+      "name": "Kelvin (Temperature)",
+      "display_unit": "K",
+      "type": "https://schema.org/Float",
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:89b10b7b-0331-4319-9ca2-411b7e8c0f26",
+      "name": "Fraction",
+      "display_unit": "",
+      "type": "https://schema.org/Float",
+      "min_value": 0,
+      "max_value": 1,
+      "allowed_values": [],
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:a49a48fc-3a2c-4149-ac7f-1a5482d4c6e1",
+      "name": "Degree Celsius (int)",
+      "display_unit": "°C",
+      "type": "https://schema.org/Integer",
+      "min_value": -274,
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:a924efd4-9397-474b-ba01-6de49e0283e3",
+      "name": "Volt",
+      "display_unit": "V",
+      "type": "https://schema.org/Float",
+      "allowed_values": null,
+      "sub_characteristics": []
+    },
+    {
+      "id": "urn:infai:ses:characteristic:b8d260e5-2395-4548-8974-9814afe749ef",
+      "name": "Internal/External",
+      "display_unit": "",
+      "type": "https://schema.org/Text",
+      "allowed_values": [
+        "internal",
+        "external"
+      ],
+      "sub_characteristics": []
+    }
+  ],
+  "concepts": [
+    {
+      "id": "urn:infai:ses:concept:0bc81398-3ed6-4e2b-a6c4-b754583aac37",
+      "name": "Temperature",
+      "characteristic_ids": [
+        "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+        "urn:infai:ses:characteristic:a49a48fc-3a2c-4149-ac7f-1a5482d4c6e1",
+        "urn:infai:ses:characteristic:75b2d113-1d03-4ef8-977a-8dbcbb31a683"
+      ],
+      "base_characteristic_id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+      "conversions": [
+        {
+          "from": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+          "to": "urn:infai:ses:characteristic:a49a48fc-3a2c-4149-ac7f-1a5482d4c6e1",
+          "distance": 1,
+          "formula": "atoi(ntoa(x))",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:a49a48fc-3a2c-4149-ac7f-1a5482d4c6e1",
+          "to": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+          "distance": 1,
+          "formula": "x",
+          "placeholder_name": "x"
+        }
+      ]
+    },
+    {
+      "id": "urn:infai:ses:concept:397de0f8-a79f-484f-aa13-0042e48e5648",
+      "name": "Electric Voltage",
+      "characteristic_ids": [
+        "urn:infai:ses:characteristic:695b17be-aa62-4f25-a5a8-9b0fcc5fd99a",
+        "urn:infai:ses:characteristic:a924efd4-9397-474b-ba01-6de49e0283e3"
+      ],
+      "base_characteristic_id": "urn:infai:ses:characteristic:a924efd4-9397-474b-ba01-6de49e0283e3",
+      "conversions": [
+        {
+          "from": "urn:infai:ses:characteristic:695b17be-aa62-4f25-a5a8-9b0fcc5fd99a",
+          "to": "urn:infai:ses:characteristic:a924efd4-9397-474b-ba01-6de49e0283e3",
+          "distance": 1,
+          "formula": "x/1000",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:a924efd4-9397-474b-ba01-6de49e0283e3",
+          "to": "urn:infai:ses:characteristic:695b17be-aa62-4f25-a5a8-9b0fcc5fd99a",
+          "distance": 1,
+          "formula": "x*1000",
+          "placeholder_name": "x"
+        }
+      ]
+    },
+    {
+      "id": "urn:infai:ses:concept:91dfced5-472e-468a-9ddc-e3fe4efe8963",
+      "name": "Internal/External",
+      "characteristic_ids": [
+        "urn:infai:ses:characteristic:b8d260e5-2395-4548-8974-9814afe749ef"
+      ],
+      "base_characteristic_id": "urn:infai:ses:characteristic:b8d260e5-2395-4548-8974-9814afe749ef",
+      "conversions": null
+    },
+    {
+      "id": "urn:infai:ses:concept:f917e146-9192-4796-8bbe-6be14292346f",
+      "name": "Remaining Relative Durability",
+      "characteristic_ids": [
+        "urn:infai:ses:characteristic:6bf7ce8b-4782-4ce6-b46a-b53f0a50bd65",
+        "urn:infai:ses:characteristic:89b10b7b-0331-4319-9ca2-411b7e8c0f26",
+        "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+        "urn:infai:ses:characteristic:062da5dd-085e-4b01-9e13-e331cb97dc0f"
+      ],
+      "base_characteristic_id": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+      "conversions": [
+        {
+          "from": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "to": "urn:infai:ses:characteristic:062da5dd-085e-4b01-9e13-e331cb97dc0f",
+          "distance": 1,
+          "formula": "atoi(ntoa(x))",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:062da5dd-085e-4b01-9e13-e331cb97dc0f",
+          "to": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "distance": 1,
+          "formula": "x",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "to": "urn:infai:ses:characteristic:89b10b7b-0331-4319-9ca2-411b7e8c0f26",
+          "distance": 1,
+          "formula": "x/100",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:89b10b7b-0331-4319-9ca2-411b7e8c0f26",
+          "to": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "distance": 1,
+          "formula": "x*100",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:6bf7ce8b-4782-4ce6-b46a-b53f0a50bd65",
+          "to": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "distance": 1,
+          "formula": "x == \"high\" ? 100 : (x == \"medium\" ? 50 : 0)",
+          "placeholder_name": "x"
+        },
+        {
+          "from": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+          "to": "urn:infai:ses:characteristic:6bf7ce8b-4782-4ce6-b46a-b53f0a50bd65",
+          "distance": 1,
+          "formula": "x > 50 ? \"high\": (x > 0 ? \"medium\" : \"low\")",
+          "placeholder_name": "x"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "id": "urn:infai:ses:controlling-function:d18dbee0-a53f-4f7a-909c-d16834369c6b",
+      "name": "Set-Internal/External",
+      "display_name": "Temperature Source",
+      "description": "",
+      "concept_id": "urn:infai:ses:concept:91dfced5-472e-468a-9ddc-e3fe4efe8963",
+      "rdf_type": "https://senergy.infai.org/ontology/ControllingFunction"
+    },
+    {
+      "id": "urn:infai:ses:controlling-function:df08a869-f6b7-4c8a-ada7-2147255b6d70",
+      "name": "Set-Temperature",
+      "display_name": "Set-Temperature",
+      "description": "",
+      "concept_id": "urn:infai:ses:concept:0bc81398-3ed6-4e2b-a6c4-b754583aac37",
+      "rdf_type": "https://senergy.infai.org/ontology/ControllingFunction"
+    },
+    {
+      "id": "urn:infai:ses:measuring-function:68dae5ce-a9ee-4487-8872-7943a94e2595",
+      "name": "Get-Remaining Relative Durability",
+      "display_name": "Get-Remaining Relative Durability",
+      "description": "",
+      "concept_id": "urn:infai:ses:concept:f917e146-9192-4796-8bbe-6be14292346f",
+      "rdf_type": "https://senergy.infai.org/ontology/MeasuringFunction"
+    },
+    {
+      "id": "urn:infai:ses:measuring-function:a9df8f7c-9979-4090-9b06-ba83e3fb6899",
+      "name": "Get-Electric Voltage",
+      "display_name": "Get-Electric Voltage",
+      "description": "",
+      "concept_id": "urn:infai:ses:concept:397de0f8-a79f-484f-aa13-0042e48e5648",
+      "rdf_type": "https://senergy.infai.org/ontology/MeasuringFunction"
+    },
+    {
+      "id": "urn:infai:ses:measuring-function:d19ffeb0-877c-4611-951c-b3fc37d9b9ba",
+      "name": "Get-Temperature",
+      "display_name": "Get-Temperature",
+      "description": "",
+      "concept_id": "urn:infai:ses:concept:0bc81398-3ed6-4e2b-a6c4-b754583aac37",
+      "rdf_type": "https://senergy.infai.org/ontology/MeasuringFunction"
+    }
+  ],
+  "device_classes": [
+    {
+      "id": "urn:infai:ses:device-class:997937d6-c5f3-4486-b67c-114675038393",
+      "image": "https://i.imgur.com/rkfMAXm.png",
+      "name": "Thermostat"
+    }
+  ],
+  "protocols": [
+    {
+      "id": "urn:infai:ses:protocol:f3a63aeb-187e-4dd9-9ef5-d97a6eb6292b",
+      "name": "standard-connector",
+      "handler": "http://senergy-connector-clientcert.senergy-connector-clientcert:8081/commands",
+      "protocol_segments": [
+        {
+          "id": "urn:infai:ses:protocol-segment:9956d8b5-46fa-4381-a227-c1df69808997",
+          "name": "metadata"
+        },
+        {
+          "id": "urn:infai:ses:protocol-segment:0d211842-cef8-41ec-ab6b-9dbc31bc3a65",
+          "name": "data"
+        }
+      ],
+      "constraints": [
+        "senergy_connector_local_id"
+      ]
+    }
+  ],
+  "device_types": [
+    {
+      "id": "urn:infai:ses:device-type:d447354d-2773-4a9c-b393-f07c745b04d4",
+      "name": "zigbee2mqtt Aqara SRTS-A01",
+      "description": "",
+      "service_groups": [],
+      "services": [
+        {
+          "id": "urn:infai:ses:service:6ebd538a-4129-49c6-bd29-efcacf310444",
+          "local_id": "get",
+          "name": "get",
+          "description": "",
+          "interaction": "event+request",
+          "protocol_id": "urn:infai:ses:protocol:f3a63aeb-187e-4dd9-9ef5-d97a6eb6292b",
+          "inputs": [],
+          "outputs": [
+            {
+              "id": "urn:infai:ses:content:b50e8648-0eb8-495d-b726-593ae888c57e",
+              "content_variable": {
+                "id": "urn:infai:ses:content-variable:b66d1306-2fa9-430a-b380-1b7168b3da04",
+                "name": "value",
+                "is_void": false,
+                "omit_empty": true,
+                "type": "https://schema.org/StructuredValue",
+                "sub_content_variables": [
+                  {
+                    "id": "urn:infai:ses:content-variable:20c7ce1f-fa65-4549-951a-5e8e6b98c626",
+                    "name": "battery",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:46f808f4-bb9e-4cc2-bd50-dc33ca74f273",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:measuring-function:68dae5ce-a9ee-4487-8872-7943a94e2595",
+                    "aspect_id": "urn:infai:ses:aspect:81936bcb-3625-4054-9f88-8934ee63d3ca",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:81936bcb-3625-4054-9f88-8934ee63d3ca",
+                      "urn:infai:ses:aspect:d4625151-ce27-4620-9b7e-93ded78484f8"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:1187188c-1324-434b-94f0-de72351f3e5e",
+                    "name": "device_temperature",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:2f125118-9df5-4ad9-813d-cca241d3fba0",
+                    "name": "setup",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:4a5e27e6-4bca-4491-80d8-d58518ea708c",
+                    "name": "calibrated",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:ed81530b-a12f-486e-a7a2-d88bd3ffbc16",
+                    "name": "window_open",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:fb574e3b-e9ec-4e61-b77f-8540a94c0f3a",
+                    "name": "schedule",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:9220fd6c-d407-441f-a4a6-0607e4485012",
+                    "name": "linkquality",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:269110e3-2a3b-47d1-b2c7-038a7c8b5d8e",
+                    "name": "system_mode",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:a7fcb4ab-4d7a-4e51-a553-472a280ea934",
+                    "name": "sensor",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:f2e12349-3ca4-4d1f-ba5c-345a5365a978",
+                    "name": "calibrate",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:f14257c2-3ba1-4598-a787-baea4783614d",
+                    "name": "window_detection",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:4d8cdd29-3195-4c9d-8d71-573b9a3cb960",
+                    "name": "valve_detection",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:411ffb7a-333d-4ccc-8c0c-53f21d95e214",
+                    "name": "valve_alarm",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:e64ccd31-9677-4819-bf48-896fa81bac3e",
+                    "name": "voltage",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:695b17be-aa62-4f25-a5a8-9b0fcc5fd99a",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:measuring-function:a9df8f7c-9979-4090-9b06-ba83e3fb6899",
+                    "aspect_id": "urn:infai:ses:aspect:81936bcb-3625-4054-9f88-8934ee63d3ca",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:81936bcb-3625-4054-9f88-8934ee63d3ca",
+                      "urn:infai:ses:aspect:d4625151-ce27-4620-9b7e-93ded78484f8"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:69888e14-5282-4137-b15c-faa73cf8e60b",
+                    "name": "power_outage_count",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:dcf80e55-eca9-47b4-8d49-34e7cfc4fa2e",
+                    "name": "occupied_heating_setpoint",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:measuring-function:d19ffeb0-877c-4611-951c-b3fc37d9b9ba",
+                    "aspect_id": "urn:infai:ses:aspect:4f4188b6-f944-45fa-9429-15655f691397",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:4f4188b6-f944-45fa-9429-15655f691397",
+                      "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                      "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:b90b8fff-556c-498c-a508-fd333421cff5",
+                    "name": "local_temperature",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:measuring-function:d19ffeb0-877c-4611-951c-b3fc37d9b9ba",
+                    "aspect_id": "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                      "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378",
+                      "urn:infai:ses:aspect:ffcdc0a6-0957-49d7-be9a-af912ecbd3cf"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:52c49c67-0332-42da-9845-13fd1e67c55a",
+                    "name": "external_temperature_input",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:bb57c19e-ad22-4d55-85ee-ce17f69f8e48",
+                    "name": "schedule_settings",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:ac380563-a2cd-453f-b34a-382c2428ebfa",
+                    "name": "preset",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:64a82c7b-d6dd-4840-9ac8-57296161869e",
+                    "name": "away_preset_temperature",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  }
+                ],
+                "characteristic_id": "",
+                "value": null,
+                "serialization_options": null
+              },
+              "serialization": "json",
+              "protocol_segment_id": "urn:infai:ses:protocol-segment:0d211842-cef8-41ec-ab6b-9dbc31bc3a65"
+            }
+          ],
+          "attributes": [
+            {
+              "key": "senergy/time_path",
+              "value": "",
+              "origin": "web-ui"
+            }
+          ],
+          "service_group_key": ""
+        },
+        {
+          "id": "urn:infai:ses:service:cbfd5a2b-f2ae-420d-84cd-0b21593f43be",
+          "local_id": "set",
+          "name": "set",
+          "description": "",
+          "interaction": "request",
+          "protocol_id": "urn:infai:ses:protocol:f3a63aeb-187e-4dd9-9ef5-d97a6eb6292b",
+          "inputs": [
+            {
+              "id": "urn:infai:ses:content:0c28b264-07c5-4563-9a73-96285f1b1efc",
+              "content_variable": {
+                "id": "urn:infai:ses:content-variable:cb53a146-4658-4f3b-8cf8-c8e413f53227",
+                "name": "value",
+                "is_void": false,
+                "omit_empty": true,
+                "type": "https://schema.org/StructuredValue",
+                "sub_content_variables": [
+                  {
+                    "id": "urn:infai:ses:content-variable:bc9e530a-6805-4a72-a132-284f70d6ba21",
+                    "name": "sensor",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:b8d260e5-2395-4548-8974-9814afe749ef",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:controlling-function:d18dbee0-a53f-4f7a-909c-d16834369c6b",
+                    "aspect_id": "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                      "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:914da7a2-2ac2-46e5-a158-5d6ca7de865a",
+                    "name": "external_temperature_input",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:controlling-function:df08a869-f6b7-4c8a-ada7-2147255b6d70",
+                    "aspect_id": "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                      "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378",
+                      "urn:infai:ses:aspect:ffcdc0a6-0957-49d7-be9a-af912ecbd3cf"
+                    ]
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:43263071-7d0c-40f3-8c13-ad2440f99f14",
+                    "name": "calibrate",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:a887e7f8-0f45-46f9-a912-3f73ddad965e",
+                    "name": "valve_detection",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:2a6995c2-fb7f-439d-9ed0-fd5ca13f6469",
+                    "name": "schedule_settings",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:16389710-7dfd-49cc-8ce3-d4c152d87a46",
+                    "name": "preset",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:7ffe0986-c5d9-4e80-ad17-ed6950fa7e65",
+                    "name": "system_mode",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Text",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:427267bd-add1-4308-90dd-d37d0b5f65f2",
+                    "name": "window_detection",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:ccfa9b2e-e1a4-4356-b739-d036d8e4a1fe",
+                    "name": "away_preset_temperature",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:7802ea27-be3c-4293-9727-23960e3f2dcf",
+                    "name": "schedule",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Boolean",
+                    "sub_content_variables": null,
+                    "characteristic_id": "",
+                    "value": null,
+                    "serialization_options": null
+                  },
+                  {
+                    "id": "urn:infai:ses:content-variable:20ade05e-b480-4666-addd-80a469151f0e",
+                    "name": "occupied_heating_setpoint",
+                    "is_void": false,
+                    "omit_empty": true,
+                    "type": "https://schema.org/Float",
+                    "sub_content_variables": null,
+                    "characteristic_id": "urn:infai:ses:characteristic:5ba31623-0ccb-4488-bfb7-f73b50e03b5a",
+                    "value": null,
+                    "serialization_options": null,
+                    "function_id": "urn:infai:ses:controlling-function:df08a869-f6b7-4c8a-ada7-2147255b6d70",
+                    "aspect_id": "urn:infai:ses:aspect:4f4188b6-f944-45fa-9429-15655f691397",
+                    "aspect_ids": [
+                      "urn:infai:ses:aspect:4f4188b6-f944-45fa-9429-15655f691397",
+                      "urn:infai:ses:aspect:a14c5efb-b0b6-46c3-982e-9fded75b5ab6",
+                      "urn:infai:ses:aspect:f65876d6-77db-4123-b38b-f0eef5169378"
+                    ]
+                  }
+                ],
+                "characteristic_id": "",
+                "value": null,
+                "serialization_options": null
+              },
+              "serialization": "json",
+              "protocol_segment_id": "urn:infai:ses:protocol-segment:0d211842-cef8-41ec-ab6b-9dbc31bc3a65"
+            }
+          ],
+          "outputs": [],
+          "attributes": [
+            {
+              "key": "senergy/time_path",
+              "value": "",
+              "origin": "web-ui"
+            }
+          ],
+          "service_group_key": ""
+        }
+      ],
+      "device_class_id": "urn:infai:ses:device-class:997937d6-c5f3-4486-b67c-114675038393",
+      "attributes": [
+        {
+          "key": "senergy/zigbee-dc",
+          "value": "true",
+          "origin": ""
+        },
+        {
+          "key": "senergy/zigbee-vendor",
+          "value": "Aqara",
+          "origin": ""
+        },
+        {
+          "key": "senergy/zigbee-model",
+          "value": "SRTS-A01",
+          "origin": ""
+        }
+      ]
+    }
+  ]
+}

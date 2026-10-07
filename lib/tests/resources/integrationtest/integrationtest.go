@@ -24,6 +24,8 @@ import (
 	"io"
 	"net/http"
 	"text/template"
+
+	"github.com/SENERGY-Platform/models/go/models"
 )
 
 //go:embed task.json
@@ -63,6 +65,53 @@ func getEventDeploymentMessage(deviceId string, serviceId string) (buff *bytes.B
 	buff = &bytes.Buffer{}
 	err = templ.Execute(buff, map[string]string{"DeviceId": deviceId, "ServiceId": serviceId})
 	return buff, err
+}
+
+//go:embed aspect_task.json
+var AspectTaskDeploymentTemplate string
+
+func getAspectTaskDeploymentMessage(deviceId string, serviceId string, input string) (buff *bytes.Buffer, err error) {
+	templ, err := template.New("deployment").Parse(AspectTaskDeploymentTemplate)
+	if err != nil {
+		return buff, err
+	}
+	buff = &bytes.Buffer{}
+	err = templ.Execute(buff, map[string]string{"DeviceId": deviceId, "ServiceId": serviceId, "Input": input})
+	return buff, err
+}
+
+// DeployAspectTaskProcess deploys a single task that sets a temperature, given in Kelvin, with the
+// function urn:infai:ses:controlling-function:df08a869-f6b7-4c8a-ada7-2147255b6d70 and the aspect
+// "Reading" (aspect class "Value Role"). No path is selected, so the marshaller has to find the
+// variable by function and aspect.
+func DeployAspectTaskProcess(token string, deploymentUrl string, deviceId string, serviceId string, input string) (deploymentId string, err error) {
+	buff, err := getAspectTaskDeploymentMessage(deviceId, serviceId, input)
+	if err != nil {
+		return "", err
+	}
+	return DeployProcess(token, deploymentUrl, buff)
+}
+
+// ThermostatMetadata is the device type urn:infai:ses:device-type:d447354d-2773-4a9c-b393-f07c745b04d4
+// (zigbee2mqtt Aqara SRTS-A01) as exported from the platform on 2026-10-07, together with every
+// entity it references, in the order the device-repository needs to store them.
+type ThermostatMetadata struct {
+	AspectClasses   []models.AspectClass    `json:"aspect_classes"`
+	Aspects         []models.Aspect         `json:"aspects"`
+	Characteristics []models.Characteristic `json:"characteristics"`
+	Concepts        []models.Concept        `json:"concepts"`
+	Functions       []models.Function       `json:"functions"`
+	DeviceClasses   []models.DeviceClass    `json:"device_classes"`
+	Protocols       []models.Protocol       `json:"protocols"`
+	DeviceTypes     []models.DeviceType     `json:"device_types"`
+}
+
+//go:embed thermostat_metadata.json
+var thermostatMetadata []byte
+
+func LoadThermostatMetadata() (result ThermostatMetadata, err error) {
+	err = json.Unmarshal(thermostatMetadata, &result)
+	return result, err
 }
 
 type Wrapper struct {

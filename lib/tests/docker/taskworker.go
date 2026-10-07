@@ -20,28 +20,40 @@ import (
 	"context"
 	"github.com/testcontainers/testcontainers-go"
 	"log"
+	"maps"
 	"sync"
 )
 
 func TaskWorker(ctx context.Context, wg *sync.WaitGroup, deviceRepoUrl string, kafkaUrl string, incidentApiUrl string, shardsDbUrl string, memcachedUrl string) (err error) {
+	return TaskWorkerWithEnv(ctx, wg, deviceRepoUrl, kafkaUrl, incidentApiUrl, shardsDbUrl, memcachedUrl, nil, nil)
+}
+
+// TaskWorkerWithEnv starts the worker of TaskWorker with env overriding its environment, for
+// example with a reachable AUTH_ENDPOINT and MARSHALLER_URL, so that tasks are executed instead
+// of ending as incidents. hostAccessPorts are reachable from the container under
+// testcontainers.HostInternal.
+func TaskWorkerWithEnv(ctx context.Context, wg *sync.WaitGroup, deviceRepoUrl string, kafkaUrl string, incidentApiUrl string, shardsDbUrl string, memcachedUrl string, env map[string]string, hostAccessPorts []int) (err error) {
 	log.Println("start task-worker")
+	containerEnv := map[string]string{
+		"DEBUG":                      "true",
+		"DEVICE_REPO_URL":            deviceRepoUrl,
+		"KAFKA_URL":                  kafkaUrl,
+		"AUTH_ENDPOINT":              "-", //may be left empty because we want incidents
+		"COMPLETION_STRATEGY":        "pessimistic",
+		"CAMUNDA_TOPIC":              "pessimistic",
+		"INCIDENT_API_URL":           incidentApiUrl,
+		"USE_HTTP_INCIDENT_PRODUCER": "true",
+		"MARSHALLER_URL":             "-", //may be left empty because we want incidents
+		"SHARDS_DB":                  shardsDbUrl,
+		"SUB_RESULT_DATABASE_URLS":   memcachedUrl,
+		"TIMESCALE_WRAPPER_URL":      "-",
+	}
+	maps.Copy(containerEnv, env)
 	c, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
-			Image: "ghcr.io/senergy-platform/external-task-worker:dev",
-			Env: map[string]string{
-				"DEBUG":                      "true",
-				"DEVICE_REPO_URL":            deviceRepoUrl,
-				"KAFKA_URL":                  kafkaUrl,
-				"AUTH_ENDPOINT":              "-", //may be left empty because we want incidents
-				"COMPLETION_STRATEGY":        "pessimistic",
-				"CAMUNDA_TOPIC":              "pessimistic",
-				"INCIDENT_API_URL":           incidentApiUrl,
-				"USE_HTTP_INCIDENT_PRODUCER": "true",
-				"MARSHALLER_URL":             "-", //may be left empty because we want incidents
-				"SHARDS_DB":                  shardsDbUrl,
-				"SUB_RESULT_DATABASE_URLS":   memcachedUrl,
-				"TIMESCALE_WRAPPER_URL":      "-",
-			},
+			Image:           "ghcr.io/senergy-platform/external-task-worker:dev",
+			Env:             containerEnv,
+			HostAccessPorts: hostAccessPorts,
 			AlwaysPullImage: true,
 		},
 		Started: true,
