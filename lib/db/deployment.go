@@ -38,7 +38,7 @@ var DeploymentBson = getBsonFieldObject[messages.DeploymentCommand]()
 func init() {
 	CreateCollections = append(CreateCollections, func(db *Mongo, config config.Config) error {
 		var err error
-		collection := db.client.Database(db.config.MongoTable).Collection(db.config.MongoDeploymentCollection)
+		collection := db.client.Database(db.config.MongoDatabase).Collection(db.config.MongoDeploymentCollection)
 		err = db.ensureIndex(collection, "deploymentidindex", DeploymentBson.Id, true, true)
 		if err != nil {
 			debug.PrintStack()
@@ -54,7 +54,7 @@ func init() {
 }
 
 func (this *Mongo) deploymentsCollection() *mongo.Collection {
-	return this.client.Database(this.config.MongoTable).Collection(this.config.MongoDeploymentCollection)
+	return this.client.Database(this.config.MongoDatabase).Collection(this.config.MongoDeploymentCollection)
 }
 
 func (this *Mongo) CheckDeploymentAccess(user string, deploymentId string) (err error, code int) {

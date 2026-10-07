@@ -47,7 +47,7 @@ func init() {
 			debug.PrintStack()
 			return err
 		}
-		collection := db.client.Database(db.config.MongoTable).Collection(db.config.MongoDependenciesCollection)
+		collection := db.client.Database(db.config.MongoDatabase).Collection(db.config.MongoDependenciesCollection)
 		err = db.ensureIndex(collection, "dependenciesidindex", dependenciesIdKey, true, true)
 		if err != nil {
 			debug.PrintStack()
@@ -63,7 +63,7 @@ func init() {
 }
 
 func (this *Mongo) dependenciesCollection() *mongo.Collection {
-	return this.client.Database(this.config.MongoTable).Collection(this.config.MongoDependenciesCollection)
+	return this.client.Database(this.config.MongoDatabase).Collection(this.config.MongoDependenciesCollection)
 }
 
 func (this *Mongo) SetDependencies(dependencies dependencymodel.Dependencies) error {
