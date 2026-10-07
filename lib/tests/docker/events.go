@@ -94,7 +94,9 @@ func EventWorker(ctx context.Context, wg *sync.WaitGroup, deviceRepoUrl string, 
 				"EVENT_TRIGGER_URL": eventTriggerUrl,
 				"KAFKA_URL":         kafkaUrl,
 				"WATCHED_PROCESS_DEPLOYMENT_DONE_HANDLER": "github.com/SENERGY-Platform/process-deployment",
-				"CLOUD_EVENT_REPO_MONGO_URL":              mongoUrl,
+				//until event-worker 1c83206 (2026-09-28) CLOUD_EVENT_REPO_MONGO_URL; the worker ignores
+				//that name now, falls back to localhost and exits on its mongo startup check
+				"MONGO_URL": mongoUrl,
 			},
 			AlwaysPullImage: true,
 		},
