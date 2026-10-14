@@ -47,9 +47,7 @@ func (this *Ctrl) StartSyncLoop(ctx context.Context, interval time.Duration, loc
 }
 
 func (this *Ctrl) Sync(lockduration time.Duration) interface{} {
-	return this.db.RetryDeploymentSync(lockduration, this.syncDeploymentDelete, func(command messages.DeploymentCommand) error {
-		return this.deleteDeployment(command.Id)
-	})
+	return this.db.RetryDeploymentSync(lockduration, this.syncDeploymentDelete, this.syncDeployment)
 }
 
 func (this *Ctrl) setDeployment(owner string, source string, deployment deploymentmodel.Deployment) error {
