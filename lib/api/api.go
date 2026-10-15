@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"net"
 	"net/http"
 	"reflect"
 	"time"
@@ -53,9 +54,14 @@ func Start(ctx context.Context, config config.Config, ctrl *ctrl.Ctrl) error {
 
 	router := GetRouter(config, ctrl)
 	server := &http.Server{Addr: ":" + config.ApiPort, Handler: router, WriteTimeout: timeout, ReadTimeout: readtimeout}
+	// Bind before returning, so the api accepts requests as soon as Start is done.
+	listener, err := net.Listen("tcp", server.Addr)
+	if err != nil {
+		return err
+	}
 	go func() {
 		config.GetLogger().Info("start api server", "address", server.Addr)
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.Serve(listener); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
 				config.GetLogger().Error("FATAL api server error", "error", err)
 				log.Fatal(err)
