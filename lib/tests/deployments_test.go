@@ -104,7 +104,9 @@ func TestDeploymentListApi(t *testing.T) {
 				},
 			},
 		}
-		for user, deployments := range deploymentsByUser {
+		// The list subtests rely on ids in creation order, so the map is not ranged over directly.
+		for _, user := range []string{"user1", "user2"} {
+			deployments := deploymentsByUser[user]
 			token, err := auth.CreateToken("test", user)
 			if err != nil {
 				t.Error(err)
